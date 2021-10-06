@@ -113,8 +113,8 @@
     <DataTemplate x:Key="DashBoardViewTemplate" DataType="{x:Type viewModels:DashBoardViewModel}">
         <views:DashBoardView/>
     </DataTemplate>
-    <DataTemplate x:Key="BookingViewTemplate" DataType="{x:Type viewModels:BookingViewModel}">
-        <views:BookingView/>
+    <DataTemplate x:Key="BookingViewTemplate" DataType="{x:Type viewModels:ReservationListViewModel}">
+        <views:ReservationListView/>
     </DataTemplate>
     <DataTemplate x:Key="CalendarViewTemplate" DataType="{x:Type viewModels:CalendarViewModel}">
         <views:CalendarView/>
