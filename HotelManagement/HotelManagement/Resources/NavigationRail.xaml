@@ -98,6 +98,12 @@
             <DataTrigger Binding="{Binding}" Value="Reports">
                 <Setter TargetName="MenuItemIcon" Property="Kind" Value="Receipt"/>
             </DataTrigger>
+            <DataTrigger Binding="{Binding}" Value="Accounts">
+                <Setter TargetName="MenuItemIcon" Property="Kind" Value="Account"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding}" Value="Services">
+                <Setter TargetName="MenuItemIcon" Property="Kind" Value="RoomService"/>
+            </DataTrigger>
         </DataTemplate.Triggers>
     </DataTemplate>
 
@@ -108,6 +114,8 @@
         <system:String>Guests</system:String>
         <system:String>Rooms</system:String>
         <system:String>Reports</system:String>
+        <system:String>Accounts</system:String>
+        <system:String>Services</system:String>
     </x:Array>
 
     <DataTemplate x:Key="DashBoardViewTemplate" DataType="{x:Type viewModels:DashBoardViewModel}">
@@ -127,5 +135,11 @@
     </DataTemplate>
     <DataTemplate x:Key="RoomsViewTemplate" DataType="{x:Type viewModels:RoomsViewModels}">
         <views:RoomsView/>
+    </DataTemplate>
+    <DataTemplate x:Key="AccountsViewTemplate" DataType="{x:Type viewModels:AccountViewModel}">
+        <views:AccountsView/>
+    </DataTemplate>
+    <DataTemplate x:Key="ServicesViewTemplate" DataType="{x:Type viewModels:ServicesViewModel}">
+        <views:ServicesView/>
     </DataTemplate>
 </ResourceDictionary>
