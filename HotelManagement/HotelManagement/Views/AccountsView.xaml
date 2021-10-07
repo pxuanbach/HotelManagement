@@ -6,23 +6,70 @@
              xmlns:local="clr-namespace:HotelManagement.Views"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d" FontFamily="Roboto" FontSize="14"
+             d:DesignHeight="600" d:DesignWidth="1000">
     <UserControl.DataContext>
         <viewModels:AccountViewModel/>
     </UserControl.DataContext>
-    <Grid>
-        <StackPanel Orientation="Vertical"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
-            <materialDesign:PackIcon HorizontalAlignment="Center"
-                                              Foreground="{StaticResource PrimaryDarkBrush}"
-                                              Width="100" Height="100"
-                                              Kind="Account"/>
-            <TextBlock FontSize="40" FontWeight="Bold" 
-                       VerticalAlignment="Center" HorizontalAlignment="Center" 
-                       Foreground="{StaticResource PrimaryDarkBrush}"
-                       Text="{Binding Title}"/>
-        </StackPanel>
+    
+    <Grid Background="White">
+        <materialDesign:DialogHost Name="dialog" BorderBrush="{DynamicResource MaterialDesignDivider}">
+            <materialDesign:DialogHost.DialogContent>
+                <Grid Height="240" Width="300">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="New Account" Margin="8" FontSize="18" FontWeight="Bold"/>
+                    <TextBox Grid.Row="2" Margin="4"
+                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                        VerticalAlignment="Top"
+                        AcceptsReturn="True"
+                        materialDesign:HintAssist.Hint="Username"/>
+                    <ComboBox Grid.Row="3" Grid.Column="1" x:Name="cbx_cat" 
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}" 
+                        Margin="4" materialDesign:TextFieldAssist.PrefixText="Role: ">
+                        <ComboBoxItem>
+                            <TextBlock Text="Admin"/>
+                        </ComboBoxItem>
+                        <ComboBoxItem>
+                            <TextBlock Text="Reservation"/>
+                        </ComboBoxItem>
+                        <ComboBoxItem>
+                            <TextBlock Text="Receptionist"/>
+                        </ComboBoxItem>
+                    </ComboBox>
+                    <StackPanel Grid.Row="4" Orientation="Horizontal">
+                        <Button HorizontalAlignment="Center" Margin="4"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                            <TextBlock Text="Save" FontSize="18"/>
+                        </Button>
+                        <Button HorizontalAlignment="Center" Margin="4"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                            <TextBlock Text="Close" FontSize="18"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:DialogHost.DialogContent>
+        </materialDesign:DialogHost>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="100"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Button Grid.Row="0" HorizontalAlignment="Center" Width="120" Height="40" Margin="4"
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                    CommandTarget="{Binding ElementName=dialog}">
+                <TextBlock Text="Close" FontSize="18"/>
+            </Button>
+        </Grid>
+
+
     </Grid>
 </UserControl>
