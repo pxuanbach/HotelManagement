@@ -16,8 +16,19 @@ namespace HotelManagement.ViewModels
     class AccountViewModel : BaseViewModel
     {
         #region Properties
+
+        #region Dialog Properties
+        private string _dialogTittle;
+        public string DialogTittle { get { return _dialogTittle; } set { _dialogTittle = value; OnPropertyChanged(); } }
+
+        private string _subText;
+        public string SubText { get { return _subText; } set { _subText = value; OnPropertyChanged(); } }
+
         private string _username;
         public string Username { get { return _username; } set { _username = value; OnPropertyChanged(); } }
+
+        private string _errorMessage;
+        public string ErrorMessage { get { return _errorMessage; } set { _errorMessage = value; OnPropertyChanged(); } }
 
         private List<string> _roles;
         public List<string> Roles { get { return _roles; } set { _roles = value; OnPropertyChanged(); } }
@@ -26,7 +37,36 @@ namespace HotelManagement.ViewModels
         public string SelectedRole { get { return _selectedRole; } set { _selectedRole = value; OnPropertyChanged(); } }
 
         private bool _isOpenDialog;
-        public bool IsOpenDialog { get { return _isOpenDialog; } set { _isOpenDialog = value; OnPropertyChanged(); } }
+        public bool IsOpenDialog 
+        { 
+            get { return _isOpenDialog; } 
+            set { _isOpenDialog = value; OnPropertyChanged(); } 
+        }
+
+        private bool _isReadOnlyUsername;
+        public bool IsReadOnlyUsername 
+        { 
+            get { return _isReadOnlyUsername; } 
+            set { _isReadOnlyUsername = value; OnPropertyChanged(); } 
+        }
+        #endregion
+
+        #region Role Count
+        private int _numberOfAdmins;
+        public int NumberOfAdmins { get { return _numberOfAdmins; } set { _numberOfAdmins = value; OnPropertyChanged(); } }
+
+        private int _numberOfReservations;
+        public int NumberOfReservations { get { return _numberOfReservations; } set { _numberOfReservations = value; OnPropertyChanged(); } }
+
+        private int _numberOfReceptionists;
+        public int NumberOfReceptionists { get { return _numberOfReceptionists; } set { _numberOfReceptionists = value; OnPropertyChanged(); } }
+
+        private int _numberOfCashiers;
+        public int NumberOfCashiers { get { return _numberOfCashiers; } set { _numberOfCashiers = value; OnPropertyChanged(); } }
+        
+        private int _numberOfUndefined;
+        public int NumberOfUndefined { get { return _numberOfUndefined; } set { _numberOfUndefined = value; OnPropertyChanged(); } }
+        #endregion
 
         private ObservableCollection<ACCOUNT> _accounts;
         public ObservableCollection<ACCOUNT> Accounts
@@ -39,7 +79,7 @@ namespace HotelManagement.ViewModels
         #region Command
         public ICommand AddNewAccountCommand { get; set; }
         public ICommand SearchAccountCommand { get; set; }
-        public ICommand SaveNewAccountCommand { get; set; }
+        public ICommand SaveAccountCommand { get; set; }
         public ICommand EditAccountCommand { get; set; }
 
         #endregion
@@ -54,42 +94,118 @@ namespace HotelManagement.ViewModels
             }, (p) =>
             {
                 IsOpenDialog = true;
+                DialogPropertiesChanged(null);
             });
 
-            SaveNewAccountCommand = new RelayCommand<object>((p) =>
+            SaveAccountCommand = new RelayCommand<object>((p) =>
             {
                 if (string.IsNullOrEmpty(Username))
                     return false;
                 return true;
             }, (p) =>
             {
+                Save(IsReadOnlyUsername);
+            });
 
+            EditAccountCommand = new RelayCommand<ACCOUNT>((p) =>
+            {
+                return Accounts.Count > 0;
+            }, (p) =>
+            {
+                IsOpenDialog = true;
+                DialogPropertiesChanged(p);
             });
         }
 
         void InitProperties()
         {
-            Accounts = new ObservableCollection<ACCOUNT>();
-            var objList = DataProvider.Instance.DB.ACCOUNTs.Where(p => p.permission != "Admin").ToList();
-            foreach (var obj in objList)
-            {
-                ACCOUNT acc = new ACCOUNT();
-                acc = obj;
-                Accounts.Add(acc);
-            }
+            InitRoleCount();
+
+            IsOpenDialog = false;
+            Accounts = new ObservableCollection<ACCOUNT>(
+                DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission != "Admin"));
 
             Roles = new List<string>();
             Roles.Add("Reservation");
             Roles.Add("Receptionist");
             Roles.Add("Cashier");
             Roles.Add("Undefined");
-
-            SelectedRole = "Undefined";
         }
 
-        void Save(object p)
+        void RefreshProperties()
         {
+            IsOpenDialog = false;
+            Accounts = new ObservableCollection<ACCOUNT>(
+                DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission != "Admin"));
 
+            InitRoleCount();
+        }
+
+        void InitRoleCount()
+        {
+            NumberOfAdmins = DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == "Admin").Count();
+            NumberOfReservations = DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == "Reservation").Count();
+            NumberOfReceptionists = DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == "Receptionist").Count();
+            NumberOfCashiers = DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == "Cashier").Count();
+            NumberOfUndefined = DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == "Undefined").Count();
+        }
+
+        void DialogPropertiesChanged(ACCOUNT p)
+        {
+            ErrorMessage = "";
+            if (p == null)
+            {
+                DialogTittle = "New Account";
+                IsReadOnlyUsername = false;
+                Username = "";
+                SelectedRole = "Undefined";
+                SubText = "Default password is 1";
+            }    
+            else
+            {
+                DialogTittle = "Edit Account";
+                IsReadOnlyUsername = true;
+                SubText = "ID: " + p.id;
+                Username = p.username;
+                SelectedRole = p.permission;
+            }    
+        }
+
+        void Save(bool isEdit)
+        {
+            if (isEdit)
+            {
+                //Get id account
+                int id = Convert.ToInt32(SubText.Substring(4));
+                var account = DataProvider.Instance.DB.ACCOUNTs.Where(x => x.id == id).SingleOrDefault();
+                account.permission = SelectedRole;
+                DataProvider.Instance.DB.SaveChanges();
+            }
+            else
+            {
+                //Check username
+                var accCount = DataProvider.Instance.DB.ACCOUNTs
+                    .Where(x => x.username == Username).Count();
+
+                if (accCount > 0)
+                {
+                    ErrorMessage = "\"" + Username + "\"" + " has already existed";
+                    Username = "";
+                    return;
+                }
+                else
+                {
+                    ACCOUNT account = new ACCOUNT()
+                    {
+                        username = Username,
+                        password = HashModule.Hash("1"),
+                        permission = SelectedRole,
+                    };
+                    DataProvider.Instance.DB.ACCOUNTs.Add(account);
+                    DataProvider.Instance.DB.SaveChanges();
+                }    
+            }
+            RefreshProperties();
         }
     }
 }
