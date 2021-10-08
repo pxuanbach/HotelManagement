@@ -133,10 +133,12 @@
     <Compile Include="Models\SERVICE.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\AccountAddOrUpdateViewModel.cs" />
     <Compile Include="ViewModels\AccountViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\BookingViewModel.cs" />
     <Compile Include="ViewModels\CalendarViewModel.cs" />
+    <Compile Include="ViewModels\Converter.cs" />
     <Compile Include="ViewModels\DashBoardViewModel.cs" />
     <Compile Include="ViewModels\GuestsViewModel.cs" />
     <Compile Include="ViewModels\HashModule.cs" />
@@ -145,6 +147,9 @@
     <Compile Include="ViewModels\ReportsViewModel.cs" />
     <Compile Include="ViewModels\RoomsViewModels.cs" />
     <Compile Include="ViewModels\ServicesViewModel.cs" />
+    <Compile Include="Views\AccountAddOrUpdateView.xaml.cs">
+      <DependentUpon>AccountAddOrUpdateView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\AccountsView.xaml.cs">
       <DependentUpon>AccountsView.xaml</DependentUpon>
     </Compile>
@@ -176,6 +181,10 @@
       <DependentUpon>ServicesView.xaml</DependentUpon>
     </Compile>
     <Page Include="Resources\NavigationRail.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AccountAddOrUpdateView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
