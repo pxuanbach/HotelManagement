@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows;
 using System.Collections.ObjectModel;
 using HotelManagement.Models;
+using HotelManagement.Views;
 
 namespace HotelManagement.ViewModels
 {
@@ -37,9 +38,10 @@ namespace HotelManagement.ViewModels
 
         #region Command
         public ICommand AddNewAccountCommand { get; set; }
-        public ICommand SaveNewAccountCommand { get; set; }
         public ICommand SearchAccountCommand { get; set; }
+        public ICommand SaveNewAccountCommand { get; set; }
         public ICommand EditAccountCommand { get; set; }
+
         #endregion
 
         public AccountViewModel()
@@ -61,17 +63,7 @@ namespace HotelManagement.ViewModels
                 return true;
             }, (p) =>
             {
-                Save(p);
-            });
 
-            EditAccountCommand = new RelayCommand<ACCOUNT>((p) =>
-            {
-                return true;
-            }, (p) =>
-            {
-                IsOpenDialog = true;
-                Username = p.username;
-                SelectedRole = p.permission;
             });
         }
 
@@ -84,9 +76,7 @@ namespace HotelManagement.ViewModels
                 ACCOUNT acc = new ACCOUNT();
                 acc = obj;
                 Accounts.Add(acc);
-            }    
-
-            IsOpenDialog = false;
+            }
 
             Roles = new List<string>();
             Roles.Add("Reservation");
@@ -99,7 +89,7 @@ namespace HotelManagement.ViewModels
 
         void Save(object p)
         {
-            IsOpenDialog = false;
+
         }
     }
 }
