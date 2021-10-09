@@ -10,12 +10,33 @@ using System.Windows;
 using System.Collections.ObjectModel;
 using HotelManagement.Models;
 using HotelManagement.Views;
+using System.Data.Entity.SqlServer;
 
 namespace HotelManagement.ViewModels
 {
     class AccountViewModel : BaseViewModel
     {
         #region Properties
+
+        #region Search Bar
+        private string _contentSearch;
+        public string ContentSearch 
+        { 
+            get { return _contentSearch; } 
+            set { 
+                _contentSearch = value; 
+                OnPropertyChanged(); 
+                if (_contentSearch == "")
+                    RefreshProperties(false);
+            } 
+        }
+
+        private List<string> _searchTypes;
+        public List<string> SearchTypes { get { return _searchTypes; } set { _searchTypes = value; OnPropertyChanged(); } }
+
+        private string _selectedSearchType;
+        public string SelectedSearchType { get { return _selectedSearchType; } set { _selectedSearchType = value; OnPropertyChanged(); } }
+        #endregion
 
         #region Dialog Properties
         private string _dialogTittle;
@@ -115,6 +136,16 @@ namespace HotelManagement.ViewModels
                 IsOpenDialog = true;
                 DialogPropertiesChanged(p);
             });
+
+            SearchAccountCommand = new RelayCommand<object>((p) =>
+            {
+                if (string.IsNullOrEmpty(ContentSearch))
+                    return false;
+                return true;
+            }, (p) =>
+            {
+                Search();
+            });
         }
 
         void InitProperties()
@@ -125,20 +156,17 @@ namespace HotelManagement.ViewModels
             Accounts = new ObservableCollection<ACCOUNT>(
                 DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission != "Admin"));
 
+            SearchTypes = new List<string>();
+            SearchTypes.Add("ID");
+            SearchTypes.Add("Username");
+
+            SelectedSearchType = "ID";
+
             Roles = new List<string>();
             Roles.Add("Reservation");
             Roles.Add("Receptionist");
             Roles.Add("Cashier");
             Roles.Add("Undefined");
-        }
-
-        void RefreshProperties()
-        {
-            IsOpenDialog = false;
-            Accounts = new ObservableCollection<ACCOUNT>(
-                DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission != "Admin"));
-
-            InitRoleCount();
         }
 
         void InitRoleCount()
@@ -148,6 +176,16 @@ namespace HotelManagement.ViewModels
             NumberOfReceptionists = DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == "Receptionist").Count();
             NumberOfCashiers = DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == "Cashier").Count();
             NumberOfUndefined = DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == "Undefined").Count();
+        }
+
+        void RefreshProperties(bool isRoleCount)
+        {
+            IsOpenDialog = false;
+            Accounts = new ObservableCollection<ACCOUNT>(
+                DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission != "Admin"));
+
+            if (isRoleCount)
+                InitRoleCount();
         }
 
         void DialogPropertiesChanged(ACCOUNT p)
@@ -205,7 +243,26 @@ namespace HotelManagement.ViewModels
                     DataProvider.Instance.DB.SaveChanges();
                 }    
             }
-            RefreshProperties();
+            RefreshProperties(true);
+        }
+
+        void Search()
+        {
+            switch (SelectedSearchType)
+            {
+                case "ID":
+                    Accounts = new ObservableCollection<ACCOUNT>(
+                        DataProvider.Instance.DB.ACCOUNTs.Where(
+                            x => x.id.ToString().Contains(ContentSearch) && x.permission != "Admin"));
+                    break;
+                case "Username":
+                    Accounts = new ObservableCollection<ACCOUNT>(
+                        DataProvider.Instance.DB.ACCOUNTs.Where(
+                            x => x.username.Contains(ContentSearch) && x.permission != "Admin"));
+                    break;
+                default:
+                    break;
+            }    
         }
     }
 }

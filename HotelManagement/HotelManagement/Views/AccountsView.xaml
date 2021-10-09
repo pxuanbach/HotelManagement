@@ -47,12 +47,20 @@
                             <Button Grid.Column="0" HorizontalAlignment="Center" Margin="4"
                             Style="{StaticResource MaterialDesignRaisedButton}"
                             Command="{Binding SaveAccountCommand}">
-                                <TextBlock Text="Save" FontSize="18"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="ContentSave" Width="18" Height="18" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2 2 4 2"/>
+                                    <TextBlock Text="Save" FontSize="18"/>
+                                </StackPanel>
                             </Button>
                             <Button Grid.Column="1" HorizontalAlignment="Center" Margin="4"
                             Style="{StaticResource MaterialDesignRaisedButton}"
                             Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
-                                <TextBlock Text="Close" FontSize="18"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="CloseCircle" Width="18" Height="18" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2 2 4 2"/>
+                                    <TextBlock Text="Close" FontSize="18"/>
+                                </StackPanel>
                             </Button>
                         </Grid>
                     </Grid>
@@ -71,21 +79,26 @@
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="Accounts" FontSize="20" FontWeight="Bold" 
-                    HorizontalAlignment="Stretch" Margin="8" Foreground="White" VerticalAlignment="Center"/>
+                             HorizontalAlignment="Stretch" Margin="8" Foreground="White" VerticalAlignment="Center"/>
                         <Border Grid.Column="1" BorderBrush="White" BorderThickness="0.3" Margin="15 10 5 10" MaxWidth="600" HorizontalAlignment="Stretch" CornerRadius="3">
                             <Grid>
                                 <Grid.Resources>
                                     <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="Transparent"/>
                                 </Grid.Resources>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width=".2*"/>
+                                    <ColumnDefinition Width=".4*"/>
+                                    <ColumnDefinition Width="auto"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <Button Width="Auto" Height="Auto"
-                                    Style="{StaticResource MaterialDesignFlatButton}" 
-                                    Content="{materialDesign:PackIcon Kind=Search, Size=20}" 
-                                    Foreground="White"/>
-                                <TextBox Grid.Column="1" Margin="5 0" 
+                            <ComboBox x:Name="cbbSearch" BorderThickness="0.2" Padding="8 2 2 2" 
+                                BorderBrush="White" Foreground="White" 
+                                ItemsSource="{Binding SearchTypes}" SelectedItem="{Binding SelectedSearchType}"
+                                Style="{StaticResource MaterialDesignOutlinedComboBox}" 
+                                materialDesign:ColorZoneAssist.Mode="Inverted"
+                                VerticalContentAlignment="Center" Width="auto" >
+                            </ComboBox>
+                            <Separator Grid.Column="1" Background="White" Margin="1 0 1 0"/>
+                            <TextBox Grid.Column="2" Margin="5 0" 
                                     Text="{Binding ContentSearch,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" 
                                     CaretBrush="White" VerticalContentAlignment="Center" 
                                     FontSize="16" Foreground="White" 
