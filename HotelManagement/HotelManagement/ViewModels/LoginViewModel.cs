@@ -86,6 +86,7 @@ namespace HotelManagement.ViewModels
 
             if (accCount > 0)
             {
+                CurrentAccount.Instance.GetCurrentAccount(Username);
                 p.Hide();
                 (new MainWindow()).Show();
                 p.Close();

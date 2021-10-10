@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using HotelManagement.Models;
 using HotelManagement.Views;
 using System.Data.Entity.SqlServer;
+using System.Windows.Threading;
 
 namespace HotelManagement.ViewModels
 {
