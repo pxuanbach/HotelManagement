@@ -96,7 +96,6 @@
                     <DatePicker Width="100"
                         materialDesign:HintAssist.Hint="Pick a date"
                         materialDesign:HintAssist.IsFloating="False"/>
-                    <!--Style="{StaticResource CustomDatePicker}"/>-->
                 </StackPanel>
 
             </Grid>
@@ -111,7 +110,6 @@
                     <DatePicker Width="100"
                         materialDesign:HintAssist.Hint="Pick a date"
                         materialDesign:HintAssist.IsFloating="False"/>
-                    <!--Style="{StaticResource CustomDatePicker}"/>-->
                 </StackPanel>
             </Grid>
 

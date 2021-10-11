@@ -145,7 +145,6 @@
     <Compile Include="ViewModels\Reservation\BindingProxy.cs" />
     <Compile Include="ViewModels\Reservation\NewReservationViewModel.cs" />
     <Compile Include="ViewModels\Reservation\ReservationListViewModel.cs" />
-    <Compile Include="ViewModels\Reservation\ReservationViewModel.cs" />
     <Compile Include="ViewModels\RoomsViewModels.cs" />
     <Compile Include="Views\BookingView.xaml.cs">
       <DependentUpon>BookingView.xaml</DependentUpon>
