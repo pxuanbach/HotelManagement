@@ -12,6 +12,7 @@ using HotelManagement.Models;
 using HotelManagement.Views;
 using System.Data.Entity.SqlServer;
 using System.Windows.Threading;
+using System.Windows.Controls;
 
 namespace HotelManagement.ViewModels
 {
@@ -24,11 +25,12 @@ namespace HotelManagement.ViewModels
         public string ContentSearch 
         { 
             get { return _contentSearch; } 
-            set { 
+            set 
+            { 
                 _contentSearch = value; 
-                OnPropertyChanged(); 
-                if (_contentSearch == "")
-                    RefreshProperties(false);
+                OnPropertyChanged();
+                if (ContentSearch == "")
+                    Load(false);
             } 
         }
 
@@ -74,9 +76,6 @@ namespace HotelManagement.ViewModels
         #endregion
 
         #region Role Count
-        private int _numberOfAdmins;
-        public int NumberOfAdmins { get { return _numberOfAdmins; } set { _numberOfAdmins = value; OnPropertyChanged(); } }
-
         private int _numberOfReservations;
         public int NumberOfReservations { get { return _numberOfReservations; } set { _numberOfReservations = value; OnPropertyChanged(); } }
 
@@ -90,6 +89,8 @@ namespace HotelManagement.ViewModels
         public int NumberOfUndefined { get { return _numberOfUndefined; } set { _numberOfUndefined = value; OnPropertyChanged(); } }
         #endregion
 
+        public string RoleSelected { get; set; }
+
         private ObservableCollection<ACCOUNT> _accounts;
         public ObservableCollection<ACCOUNT> Accounts
         {
@@ -99,16 +100,29 @@ namespace HotelManagement.ViewModels
         #endregion
 
         #region Command
-        public ICommand AddNewAccountCommand { get; set; }
         public ICommand SearchAccountCommand { get; set; }
+        public ICommand AddNewAccountCommand { get; set; }
         public ICommand SaveAccountCommand { get; set; }
         public ICommand EditAccountCommand { get; set; }
 
+        public ICommand AllCommnad { get; set; }
+        public ICommand ReservationCommnad { get; set; }
+        public ICommand ReceptionistCommnad { get; set; }
+        public ICommand CashierCommnad { get; set; }
+        public ICommand UndefinedCommnad { get; set; }
         #endregion
 
         public AccountViewModel()
         {
             InitProperties();
+
+            SearchAccountCommand = new RelayCommand<object>((p) =>
+            {
+                return true;
+            }, (p) =>
+            {
+                Search();
+            });
 
             AddNewAccountCommand = new RelayCommand<object>((p) =>
             {
@@ -117,6 +131,15 @@ namespace HotelManagement.ViewModels
             {
                 IsOpenDialog = true;
                 DialogPropertiesChanged(null);
+            });
+
+            EditAccountCommand = new RelayCommand<ACCOUNT>((p) =>
+            {
+                return Accounts.Count > 0;
+            }, (p) =>
+            {
+                IsOpenDialog = true;
+                DialogPropertiesChanged(p);
             });
 
             SaveAccountCommand = new RelayCommand<object>((p) =>
@@ -129,29 +152,56 @@ namespace HotelManagement.ViewModels
                 Save(IsReadOnlyUsername);
             });
 
-            EditAccountCommand = new RelayCommand<ACCOUNT>((p) =>
+            AllCommnad = new RelayCommand<object>((p) =>
             {
-                return Accounts.Count > 0;
-            }, (p) =>
-            {
-                IsOpenDialog = true;
-                DialogPropertiesChanged(p);
-            });
-
-            SearchAccountCommand = new RelayCommand<object>((p) =>
-            {
-                if (string.IsNullOrEmpty(ContentSearch))
-                    return false;
                 return true;
             }, (p) =>
             {
-                Search();
+                RoleSelected = "All";
+                LoadPropertiesAll();
+            });
+
+            ReservationCommnad = new RelayCommand<object>((p) =>
+            {
+                return true;
+            }, (p) =>
+            {
+                RoleSelected = "Reservation";
+                LoadPropertiesByRole(RoleSelected);
+            });
+
+            ReceptionistCommnad = new RelayCommand<object>((p) =>
+            {
+                return true;
+            }, (p) =>
+            {
+                RoleSelected = "Receptionist";
+                LoadPropertiesByRole(RoleSelected);
+            });
+
+            CashierCommnad = new RelayCommand<object>((p) =>
+            {
+                return true;
+            }, (p) =>
+            {
+                RoleSelected = "Cashier";
+                LoadPropertiesByRole(RoleSelected);
+            });
+
+            UndefinedCommnad = new RelayCommand<object>((p) =>
+            {
+                return true;
+            }, (p) =>
+            {
+                RoleSelected = "Undefined";
+                LoadPropertiesByRole(RoleSelected);
             });
         }
 
         void InitProperties()
         {
             InitRoleCount();
+            RoleSelected = "All";
 
             IsOpenDialog = false;
             Accounts = new ObservableCollection<ACCOUNT>(
@@ -172,21 +222,10 @@ namespace HotelManagement.ViewModels
 
         void InitRoleCount()
         {
-            NumberOfAdmins = DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == "Admin").Count();
             NumberOfReservations = DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == "Reservation").Count();
             NumberOfReceptionists = DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == "Receptionist").Count();
             NumberOfCashiers = DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == "Cashier").Count();
             NumberOfUndefined = DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == "Undefined").Count();
-        }
-
-        void RefreshProperties(bool isRoleCount)
-        {
-            IsOpenDialog = false;
-            Accounts = new ObservableCollection<ACCOUNT>(
-                DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission != "Admin"));
-
-            if (isRoleCount)
-                InitRoleCount();
         }
 
         void DialogPropertiesChanged(ACCOUNT p)
@@ -244,10 +283,54 @@ namespace HotelManagement.ViewModels
                     DataProvider.Instance.DB.SaveChanges();
                 }    
             }
-            RefreshProperties(true);
+            Load(true);
         }
 
+        #region Load Function
+        void Load(bool isRoleCount)
+        {
+            IsOpenDialog = false;
+
+            if (RoleSelected == "All")
+            {
+                LoadPropertiesAll();
+            }
+            else
+            {
+                LoadPropertiesByRole(RoleSelected);
+            }
+
+            if (isRoleCount)
+                InitRoleCount();
+        }
+
+        void LoadPropertiesAll()
+        {
+            Accounts = new ObservableCollection<ACCOUNT>(
+                DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission != "Admin"));
+        }
+
+        void LoadPropertiesByRole(string role)
+        {
+            Accounts = new ObservableCollection<ACCOUNT>(
+                DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == role));
+        }
+        #endregion
+
+        #region Search Function
         void Search()
+        {
+            if (RoleSelected == "All")
+            {
+                SearchAll();
+            }
+            else
+            {
+                SearchByRole(RoleSelected);
+            } 
+        }
+
+        void SearchAll()
         {
             switch (SelectedSearchType)
             {
@@ -263,7 +346,27 @@ namespace HotelManagement.ViewModels
                     break;
                 default:
                     break;
-            }    
+            }
         }
+
+        void SearchByRole(string role)
+        {
+            switch (SelectedSearchType)
+            {
+                case "ID":
+                    Accounts = new ObservableCollection<ACCOUNT>(
+                        DataProvider.Instance.DB.ACCOUNTs.Where(
+                            x => x.id.ToString().Contains(ContentSearch) && x.permission == role));
+                    break;
+                case "Username":
+                    Accounts = new ObservableCollection<ACCOUNT>(
+                        DataProvider.Instance.DB.ACCOUNTs.Where(
+                            x => x.username.Contains(ContentSearch) && x.permission == role));
+                    break;
+                default:
+                    break;
+            }
+        }
+        #endregion
     }
 }
