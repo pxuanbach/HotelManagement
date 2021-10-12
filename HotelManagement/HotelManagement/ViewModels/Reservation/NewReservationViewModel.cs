@@ -302,9 +302,11 @@ namespace HotelManagement.ViewModels
             var db = new HotelManagementEntities();
 
             var allrooms = from r in db.ROOMs
-                           join rt in db.ROOMTYPEs on r.roomtype_id equals rt.id
+                           join rt in db.ROOMTYPEs on r.roomtype_id equals rt.id 
                            join rb in db.ROOM_BOOKED on r.id equals rb.room_id into result
-                           from rs in result.DefaultIfEmpty()      
+                           from rs in result.DefaultIfEmpty()
+                           join res in db.RESERVATIONs on rs.reservation_id equals res.id into result1
+                           from rs1 in result1.DefaultIfEmpty()
                            select new
                            {
                                 RoomID = r.id,
@@ -312,16 +314,18 @@ namespace HotelManagement.ViewModels
                                 TypeID = rt.id,
                                 TypeName = rt.name,
                                 ResID = rs == null ? 0 : rs.reservation_id,
+                                Arrival = rs1.arrival,
+                                Departure = rs1.departure,
                                 Price = rt.price,
                                 RT_DateCreated = rt.date_created,
                                 RT_DateUpdated = rt.date_updated,
                                 OOS = r.out_of_service,
                            };
 
+            var excepts = from r in allrooms where !(r.Arrival >= StayInformation.Departure || r.Departure <= StayInformation.Arrival) select r;
+
             var rooms = (from r in allrooms
-                         join res in db.RESERVATIONs on r.ResID equals res.id into result
-                         from rs in result.DefaultIfEmpty()
-                         where (rs.arrival >= StayInformation.Departure || rs.departure <= StayInformation.Arrival || r.ResID == 0) &&
+                         where !excepts.Any(exc => exc.RoomID == r.RoomID) || r.ResID == 0 &&
                          r.RT_DateCreated <= DateTime.Today && (r.RT_DateUpdated == null || r.RT_DateUpdated >= DateTime.Today) &&
                          r.OOS == false
                          select r).ToList();
@@ -336,7 +340,7 @@ namespace HotelManagement.ViewModels
                     RoomTypeID = room.TypeID,
                     Price = Decimal.Round((decimal)room.Price),
                 };
-                Console.WriteLine(room.RoomName + "\t" + room.ResID);
+                Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}", room.RoomID, room.RoomName, room.ResID, room.Arrival, room.Departure);
 
                 AvailableRooms.Add(obj);
 
