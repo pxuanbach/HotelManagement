@@ -20,11 +20,22 @@ namespace HotelManagement.ViewModels
 
         public ObservableCollection<GuestViewModel> Sharers { get; set; }
 
+        public bool BeASharer { get; set; }
+
         public bool Guaranteed { get; set; }
 
         public IEnumerable<string> Gender => new[] { "Male", "Female", "Other" };
 
         #region Command
+        private ICommand _beASharerCommand;
+        public ICommand BeASharerCommand
+        {
+            get
+            {
+                return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => true, (p) => ReserveLikeASharer()));
+            }
+        }
+
         private ICommand _addSharerCommand;
         public ICommand AddSharerCommand
         {
@@ -48,7 +59,16 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _reserveCommand ?? (_reserveCommand = new RelayCommand<object>((p) => CanReserve, (p) => Reserve()));
+                return _reserveCommand ?? (_reserveCommand = new RelayCommand<Window>((p) => CanReserve, (p) => Reserve(p)));
+            }
+        }
+
+        private ICommand _cancelCommand;
+        public ICommand CancelCommand
+        {
+            get
+            {
+                return _cancelCommand ?? (_cancelCommand = new RelayCommand<Window>((p) => true, (p) => p.Close()));
             }
         }
         #endregion
@@ -130,9 +150,22 @@ namespace HotelManagement.ViewModels
             get
             {
                 if (!FilledGuestInformation) return false;
-                if (!CanAddSharer || Sharers.Count == 0) return false;
+                if (StayInformation.Pax == 0) return false;
                 if (StayInformation.Rooms == 0) return false;
                 return true;
+            }
+        }
+
+        public void ReserveLikeASharer()
+        {
+            BeASharer = !BeASharer;
+            if (BeASharer)
+            {
+                StayInformation.Pax++;
+            }
+            else
+            {
+                StayInformation.Pax--;
             }
         }
 
@@ -147,10 +180,21 @@ namespace HotelManagement.ViewModels
             Sharers.Remove(sharer);
         }
 
-        public void Reserve() 
+        public void Reserve(Window window) 
         {
             using (var context = new HotelManagementEntities())
             {
+                // Insert reservation
+                var reservation = new RESERVATION()
+                {
+                    date_created = DateTime.Today,
+                    arrival = StayInformation.Arrival,
+                    departure = StayInformation.Departure,
+                    main_guest = GuestInformation.ID,
+                    status = Guaranteed ? "Confirmed" : "On Request",
+                };
+                context.RESERVATIONs.Add(reservation);
+
                 // Insert main guest
                 var mainGuest = new GUEST()
                 {
@@ -162,18 +206,25 @@ namespace HotelManagement.ViewModels
                     phone = GuestInformation.Phone,
                     address = GuestInformation.Address,
                 };
-                context.GUESTs.Add(mainGuest);
 
-                // Insert reservation
-                var reservation = new RESERVATION()
+                if (!context.GUESTs.Any(g => g.id == mainGuest.id))
                 {
-                    date_created = DateTime.Today,
-                    arrival = StayInformation.Arrival,
-                    departure = StayInformation.Departure,
-                    main_guest = mainGuest.id,
-                    status = Guaranteed ? "Confirmed" : "On Request",
-                };
-                context.RESERVATIONs.Add(reservation);
+                    context.GUESTs.Add(mainGuest);
+                }
+                else
+                {
+                    Console.WriteLine("[ERROR] Guest ID {0} existed in Guest Database!!!", mainGuest.id);
+                }
+
+                if (BeASharer)
+                {
+                    var guestBooking = new GUEST_BOOKING()
+                    {
+                        reservation_id = reservation.id,
+                        guest_id = mainGuest.id,
+                    };
+                    context.GUEST_BOOKING.Add(guestBooking);
+                }
 
                 // Insert room_booked
                 foreach (var selectedRoom in SelectedRooms)
@@ -196,7 +247,14 @@ namespace HotelManagement.ViewModels
                         gender = sharer.Gender,
                         address = sharer.Address,
                     };
-                    context.GUESTs.Add(newGuest);
+                    if (!context.GUESTs.Any(g => g.id == newGuest.id))
+                    {
+                        context.GUESTs.Add(newGuest);
+                    }
+                    else
+                    {
+                        Console.WriteLine("[ERROR] Guest ID {0} is existing in Guest Database!!!", newGuest.id);
+                    }
 
                     var guestBooking = new GUEST_BOOKING()
                     {
@@ -208,6 +266,8 @@ namespace HotelManagement.ViewModels
 
                 context.SaveChanges();
             }
+
+            window.Close();
         }
 
         public bool? IsAllRoomsSelected
@@ -259,13 +319,14 @@ namespace HotelManagement.ViewModels
                            };
 
             var rooms = (from r in allrooms
-                         join res in db.RESERVATIONs on r.ResID equals res.id
-                         where res.arrival >= StayInformation.Departure || res.departure <= StayInformation.Arrival || r.ResID == 0 &&
+                         join res in db.RESERVATIONs on r.ResID equals res.id into result
+                         from rs in result.DefaultIfEmpty()
+                         where (rs.arrival >= StayInformation.Departure || rs.departure <= StayInformation.Arrival || r.ResID == 0) &&
                          r.RT_DateCreated <= DateTime.Today && (r.RT_DateUpdated == null || r.RT_DateUpdated >= DateTime.Today) &&
                          r.OOS == false
                          select r).ToList();
 
-            foreach (var room in allrooms)
+            foreach (var room in rooms)
             {
                 var obj = new RoomViewModel()
                 {
@@ -275,7 +336,7 @@ namespace HotelManagement.ViewModels
                     RoomTypeID = room.TypeID,
                     Price = Decimal.Round((decimal)room.Price),
                 };
-                Console.WriteLine(room.RoomName + "\t" + room.TypeName + "\t" + room.Price.ToString());
+                Console.WriteLine(room.RoomName + "\t" + room.ResID);
 
                 AvailableRooms.Add(obj);
 

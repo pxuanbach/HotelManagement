@@ -22,10 +22,5 @@ namespace HotelManagement.Views
         {
             InitializeComponent();
         }
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            NewReservationWindow newReservationWindow = new NewReservationWindow();
-            newReservationWindow.Show();
-        }
     }
 }

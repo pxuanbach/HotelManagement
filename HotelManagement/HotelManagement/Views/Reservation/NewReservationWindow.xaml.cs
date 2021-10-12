@@ -21,15 +21,5 @@ namespace HotelManagement.Views
         {
             InitializeComponent();
         }
-
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
-        private void btnReserve_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
     }
 }

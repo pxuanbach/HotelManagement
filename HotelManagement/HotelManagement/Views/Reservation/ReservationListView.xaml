@@ -68,7 +68,7 @@
 
                 <Button Grid.Column="3"
                     Content="New Reservation" 
-                    Click="Button_Click"
+                    Command="{Binding NewReservationCommand}"
                     Margin="0,0,20,0"
                     Style="{StaticResource MaterialDesignRaisedButton}"
                     materialDesign:ButtonAssist.CornerRadius="15">

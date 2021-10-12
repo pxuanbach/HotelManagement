@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:HotelManagement.Views"
         xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
         mc:Ignorable="d"
+        Name="windowNewReservation"
         Background="WhiteSmoke"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
@@ -48,6 +49,8 @@
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
 
                                 <Grid.ColumnDefinitions>
@@ -59,11 +62,12 @@
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock
+                                    Grid.Row="2" Grid.Column="0"
                                     Margin="0,0,20,0" VerticalAlignment="Center"
                                     Text="Name" FontSize="16"/>
 
                                 <TextBox 
-                                    Grid.Row="0" Grid.Column="1"
+                                    Grid.Row="2" Grid.Column="1"
                                     FontSize="14" Width="230"
                                     Style="{StaticResource MaterialDesignTextBox}"
                                     Text="{Binding Path=GuestInformation.Name}"
@@ -99,12 +103,12 @@
                                     materialDesign:HintAssist.IsFloating="False"/>
 
                                 <TextBlock
-                                    Grid.Row="2" Grid.Column="0"
+                                    Grid.Row="0" Grid.Column="0"
                                     Margin="0,0,32,0" VerticalAlignment="Center"
                                     Text="ID No." FontSize="16"/>
 
                                 <TextBox
-                                    Grid.Row="2" Grid.Column="1"
+                                    Grid.Row="0" Grid.Column="1"
                                     FontSize="14" Width="230"
                                     Text="{Binding Path=GuestInformation.ID}"
                                     Style="{StaticResource MaterialDesignTextBox}"
@@ -136,21 +140,28 @@
                                     Style="{StaticResource MaterialDesignTextBox}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
                                     materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"/>
-                            </Grid>
 
-                            <DockPanel LastChildFill="True">
                                 <TextBlock
-                                    Grid.Row="2" Grid.Column="0"
+                                    Grid.Row="6" Grid.Column="0"
                                     Margin="0,0,20,0" VerticalAlignment="Center"
                                     Text="Address" FontSize="16"/>
 
                                 <TextBox
-                                    FontSize="14" Width="auto"
+                                    Grid.Row="6" Grid.Column="1"
+                                    FontSize="14" Width="230"
                                     Text="{Binding Path=GuestInformation.Address}"
                                     Style="{StaticResource MaterialDesignTextBox}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
                                     materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"/>
-                            </DockPanel>
+
+                                <TextBlock Grid.Row="6" Grid.Column="3"
+                                    Margin="20,0,0,0" VerticalAlignment="Center"
+                                    Text="Be sharer" FontSize="16"/>
+
+                                <CheckBox 
+                                    Grid.Row="6" Grid.Column="4" Height="26"
+                                    Margin="10,0,0,0" Command="{Binding BeASharerCommand}"/>
+                            </Grid>
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -390,6 +401,27 @@
 
                                 <DataGrid.Columns>
                                     <DataGridTextColumn 
+                                        Header="ID No." Width="80"
+                                        Binding="{Binding ID}"
+                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    
+                                    <DataGridTextColumn 
                                         Header="Name" Width="150"
                                         Binding="{Binding Name}"
                                         EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
@@ -410,26 +442,6 @@
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
 
-                                    <DataGridTextColumn 
-                                        Header="ID No." Width="80"
-                                        Binding="{Binding ID}"
-                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
-                                        <DataGridTextColumn.HeaderStyle>
-                                            <Style TargetType="{x:Type DataGridColumnHeader}"
-                                                BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
-                                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                                <Setter Property="HorizontalAlignment" Value="Center"/>
-                                            </Style>
-                                        </DataGridTextColumn.HeaderStyle>
-
-                                        <DataGridTextColumn.ElementStyle>
-                                            <Style TargetType="{x:Type TextBlock}"
-                                                BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
-                                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                                <Setter Property="HorizontalAlignment" Value="Left"/>
-                                            </Style>
-                                        </DataGridTextColumn.ElementStyle>
-                                    </DataGridTextColumn>
 
                                     <materialDesign:DataGridComboBoxColumn
                                         Header="Gender" 
@@ -517,14 +529,14 @@
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
                         <Button 
-                            x:Name="btnReserve" Content="Reserve" 
-                            Command="{Binding ReserveCommand}"
-                            Click="btnReserve_Click"/>
+                            Content="Reserve" Command="{Binding ReserveCommand}"
+                            CommandParameter="{Binding ElementName=windowNewReservation}"/>
                         
                         <Button 
-                            x:Name="btnCancel"
+                            Command="{Binding CancelCommand}"
+                            CommandParameter="{Binding ElementName=windowNewReservation}"
                             Margin="15,0,0,0" Content="Cancel" BorderThickness="1.5"
-                            Style="{StaticResource MaterialDesignOutlinedButton}" Click="btnCancel_Click"/>
+                            Style="{StaticResource MaterialDesignOutlinedButton}"/>
                     </StackPanel>
                 </Grid>
             </Border>

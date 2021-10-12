@@ -1,4 +1,5 @@
 ﻿using HotelManagement.Models;
+using HotelManagement.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -6,12 +7,22 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Input;
 
 namespace HotelManagement.ViewModels
 {
     class ReservationListViewModel : BaseViewModel
     {
         public ObservableCollection<ReservationItemViewModel> Reservations { get; set; }
+
+        private ICommand _newReservationCommand;
+        public ICommand NewReservationCommand
+        {
+            get
+            {
+                return _newReservationCommand ?? (_newReservationCommand = new RelayCommand<object>((p) => true, (p) => OpenNewReservationWindow()));
+            }
+        }
         public ReservationListViewModel()
         {
             Reservations = new ObservableCollection<ReservationItemViewModel>();
@@ -25,6 +36,12 @@ namespace HotelManagement.ViewModels
                         OnPropertyChanged(nameof(IsAllReservationsSelected));
                 };
             }
+        }
+
+        public void OpenNewReservationWindow()
+        {
+            var wd = new NewReservationWindow();
+            wd.Show();
         }
 
         public bool? IsAllReservationsSelected
@@ -77,9 +94,9 @@ namespace HotelManagement.ViewModels
                     Status = res.status,
                     Rooms = res.ROOM_BOOKED.Count,
                     Guest = mainGuest.name,
-                    DateCreated = (res.date_created.HasValue) ? DateTime.Now : (DateTime)res.date_created,
-                    Arrival = (res.arrival.HasValue) ? DateTime.Now : (DateTime)res.arrival,
-                    Departure = (res.departure.HasValue) ? DateTime.Now : (DateTime)res.departure,
+                    DateCreated = (DateTime)res.date_created,
+                    Arrival = (!res.arrival.HasValue) ? DateTime.Now : (DateTime)res.arrival,
+                    Departure = (!res.departure.HasValue) ? DateTime.Now : (DateTime)res.departure,
                     Pax = res.GUEST_BOOKING.Count
                 };
 
