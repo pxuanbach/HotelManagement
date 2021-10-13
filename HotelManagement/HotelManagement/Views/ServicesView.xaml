@@ -12,17 +12,131 @@
         <viewModels:ServicesViewModel/>
     </UserControl.DataContext>
     <Grid>
-        <StackPanel Orientation="Vertical"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
-            <materialDesign:PackIcon HorizontalAlignment="Center"
-                                              Foreground="{StaticResource PrimaryDarkBrush}"
-                                              Width="100" Height="100"
-                                              Kind="RoomService"/>
-            <TextBlock FontSize="40" FontWeight="Bold" 
-                       VerticalAlignment="Center" HorizontalAlignment="Center" 
-                       Foreground="{StaticResource PrimaryDarkBrush}"
-                       Text="{Binding Title}"/>
-        </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="99"/>
+            <RowDefinition Height="1"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Background="{StaticResource PrimaryLightBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <TextBox
+                    Width="200"
+                    FontSize="14"
+                    Height="40"
+                    materialDesign:HintAssist.Hint="Service's name"
+                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Left"
+                    Margin="35 0"/> 
+            </Grid>
+            <Grid Grid.Column="1">
+                <Button
+                    Background="{StaticResource PrimaryDarkBrush}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Right"
+                    Margin="35 0"
+                    Width="140"
+                    Height="40"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    ToolTip="New Service"
+                    Content="New Service"  />
+            </Grid>
+        </Grid>
+        <Grid Grid.Row="1" Background="{StaticResource PrimaryLightBrush}">
+            <Rectangle Margin="35 0" Fill="{StaticResource PrimaryDarkBrush}"/>
+        </Grid>
+        <Grid Grid.Row="2" Background="{StaticResource PrimaryLightBrush}">
+            <DataGrid
+                 x:Name="dataGridServices" Margin="35"
+                 ItemsSource="{Binding ItemSourceServices}"
+                 CanUserResizeColumns="False" IsReadOnly="False"
+                 CanUserAddRows="False" AutoGenerateColumns="False"
+                 BorderThickness="1" BorderBrush="{StaticResource PrimaryDarkBrush}">
+                <DataGrid.Columns>
+                    <materialDesign:DataGridTextColumn
+                            Header="Id" Binding="{Binding id}" 
+                            IsReadOnly="True">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                       BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}"
+                                       BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </materialDesign:DataGridTextColumn>
+                    <materialDesign:DataGridTextColumn
+                            Header="Name" Binding="{Binding name}" 
+                            IsReadOnly="True">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                       BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}"
+                                       BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </materialDesign:DataGridTextColumn>
+                    <materialDesign:DataGridTextColumn
+                            Header="Price" Binding="{Binding price}" 
+                            IsReadOnly="True">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                       BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}"
+                                       BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </materialDesign:DataGridTextColumn>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Width="40" Padding="0" Background="#637BCF"
+                                        Style="{StaticResource MaterialDesignRaisedButton}">
+                                    <materialDesign:PackIcon Kind="Tools" />
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn >
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Width="40" Padding="0" Background="#637BCF"
+                                        Style="{StaticResource MaterialDesignRaisedButton}">
+                                    <materialDesign:PackIcon Kind="Delete"/>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
     </Grid>
 </UserControl>
