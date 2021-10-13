@@ -4,8 +4,8 @@
                     xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
                     xmlns:system="clr-namespace:System;assembly=mscorlib"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
-    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#FF0D2738"/>
-    <SolidColorBrush x:Key="PrimaryLightBrush" Color="#FF1F90FF"/>
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#637BCF"/>
+    <SolidColorBrush x:Key="PrimaryLightBrush" Color="#F0F0F0"/>
 
     <Style x:Key="NavigationListBoxStyle" TargetType="{x:Type ListBox}">
         <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
@@ -57,7 +57,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="true">
                             <Setter TargetName="Bd" Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
-                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="Foreground" Value="{StaticResource PrimaryDarkBrush}"/>
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -65,7 +65,7 @@
                                 <Condition Property="Selector.IsSelectionActive" Value="false"/>
                             </MultiTrigger.Conditions>
                             <Setter Property="Background" TargetName="Bd" Value="{StaticResource PrimaryLightBrush}"/>
-                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="Foreground" Value="{StaticResource PrimaryDarkBrush}"/>
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
@@ -121,8 +121,8 @@
     <DataTemplate x:Key="DashBoardViewTemplate" DataType="{x:Type viewModels:DashBoardViewModel}">
         <views:DashBoardView/>
     </DataTemplate>
-    <DataTemplate x:Key="BookingViewTemplate" DataType="{x:Type viewModels:BookingViewModel}">
-        <views:BookingView/>
+    <DataTemplate x:Key="BookingViewTemplate" DataType="{x:Type viewModels:ReservationListViewModel}">
+        <views:ReservationListView/>
     </DataTemplate>
     <DataTemplate x:Key="CalendarViewTemplate" DataType="{x:Type viewModels:CalendarViewModel}">
         <views:CalendarView/>
