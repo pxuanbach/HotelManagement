@@ -78,7 +78,7 @@
                     </materialDesign:DataGridTextColumn>
                     <materialDesign:DataGridTextColumn
                             Header="Name" Binding="{Binding name}" 
-                            IsReadOnly="True">
+                            >
                         <DataGridTextColumn.HeaderStyle>
                             <Style TargetType="{x:Type DataGridColumnHeader}"
                                        BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
@@ -97,7 +97,7 @@
                     </materialDesign:DataGridTextColumn>
                     <materialDesign:DataGridTextColumn
                             Header="Price" Binding="{Binding price}" 
-                            IsReadOnly="True">
+                            >
                         <DataGridTextColumn.HeaderStyle>
                             <Style TargetType="{x:Type DataGridColumnHeader}"
                                        BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
