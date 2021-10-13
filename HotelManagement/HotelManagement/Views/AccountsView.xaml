@@ -31,7 +31,9 @@
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="{Binding DialogTittle}" Margin="8" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="0" Text="{Binding DialogTittle}" Margin="8" FontSize="22" 
+                                   Foreground="{StaticResource PrimaryHueDarkBrush}" 
+                                   FontWeight="Bold" VerticalAlignment="Center"/>
                         <TextBlock Grid.Row="1" Text="{Binding SubText}" Margin="8 4 4 12"/>
                         <TextBox Grid.Row="2" Margin="4"
                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
@@ -77,15 +79,15 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0" Background="{StaticResource PrimaryLightBrush}">
+                <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="Accounts" FontSize="20" FontWeight="Bold" 
-                             HorizontalAlignment="Stretch" Margin="8" Foreground="White" VerticalAlignment="Center"/>
-                        <Border Grid.Column="1" BorderBrush="White" BorderThickness="0.3" Margin="15 10 5 10" MaxWidth="600" HorizontalAlignment="Stretch" CornerRadius="3">
+                    <TextBlock Grid.Column="0" Text="Accounts" FontSize="24" FontWeight="Bold" 
+                             HorizontalAlignment="Stretch" Margin="8 8 0 8" Foreground="{StaticResource PrimaryHueDarkBrush}" VerticalAlignment="Center"/>
+                    <Border Grid.Column="1" BorderBrush="{StaticResource PrimaryHueDarkBrush}" BorderThickness="0.3" Margin="15 10 5 10" MaxWidth="600" HorizontalAlignment="Stretch" CornerRadius="3">
                             <Grid>
                                 <Grid.Resources>
                                     <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="Transparent"/>
@@ -96,17 +98,16 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width=".2*"/>
                                 </Grid.ColumnDefinitions>
-                                <ComboBox x:Name="cbbSearch" BorderThickness="0.2" Padding="8 2 2 2" 
-                                    BorderBrush="White" Foreground="White" 
+                                <ComboBox x:Name="cbbSearch" BorderThickness="0.2" Padding="8 2 2 2"
+                                    BorderBrush="{StaticResource PrimaryHueDarkBrush}" 
                                     ItemsSource="{Binding SearchTypes}" SelectedItem="{Binding SelectedSearchType}"
                                     Style="{StaticResource MaterialDesignOutlinedComboBox}" 
-                                    materialDesign:ColorZoneAssist.Mode="Inverted"
                                     VerticalContentAlignment="Center" Width="auto" >
                                 </ComboBox>
-                                <Separator Grid.Column="1" Background="White" Margin="1 0 1 0"/>
-                            <TextBox Grid.Column="2" Margin="5 0" Name="tbSearch"
-                                    CaretBrush="White" VerticalContentAlignment="Center" 
-                                    FontSize="16" Foreground="White" Text="{Binding ContentSearch,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                            <Separator Grid.Column="1" Background="{StaticResource PrimaryHueDarkBrush}" Margin="1 0 1 0"/>
+                            <TextBox Grid.Column="2" Margin="5 0" Name="tbSearch" CaretBrush="Black"
+                                    VerticalContentAlignment="Center" FontSize="16"
+                                    Text="{Binding ContentSearch,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
                                     materialDesign:HintAssist.Hint="Type something..." 
                                     BorderBrush="Transparent">
                                 <TextBox.InputBindings>
@@ -116,7 +117,7 @@
                             <Button Grid.Column="3" Width="Auto" Height="Auto" 
                                 Style="{StaticResource MaterialDesignFlatButton}" 
                                 Content="{materialDesign:PackIcon Kind=Search, Size=19}" 
-                                Foreground="White" Command="{Binding SearchAccountCommand}">
+                                Foreground="{StaticResource PrimaryHueDarkBrush}" Command="{Binding SearchAccountCommand}">
                             </Button>
                         </Grid>
                         </Border>
@@ -133,13 +134,13 @@
                 <Border Grid.Row="1" Padding="4 2 4 0">
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
-                            <RadioButton x:Name="rdbtAll" BorderBrush="{StaticResource PrimaryLightBrush}"
+                            <RadioButton x:Name="rdbtAll" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
                             Style="{StaticResource MaterialDesignTabRadioButton}"
                             Margin="4" Command="{Binding AllCommnad}"
                             IsChecked="True">
                                 <TextBlock Text="ALL"/>
                             </RadioButton>
-                            <RadioButton x:Name="rdbtReservation" BorderBrush="{StaticResource PrimaryLightBrush}"
+                            <RadioButton x:Name="rdbtReservation" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
                                 Style="{StaticResource MaterialDesignTabRadioButton}"
                                 Margin="4" Command="{Binding ReservationCommnad}"
                                 IsChecked="False">
@@ -148,7 +149,7 @@
                                     <TextBlock Text="{Binding NumberOfReservations}" Margin="6 0 0 0"/>
                                 </StackPanel>
                             </RadioButton>
-                            <RadioButton x:Name="rdbtReceptionist" BorderBrush="{StaticResource PrimaryLightBrush}"
+                            <RadioButton x:Name="rdbtReceptionist" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
                                 Style="{StaticResource MaterialDesignTabRadioButton}"
                                 Margin="4" Command="{Binding ReceptionistCommnad}"
                                 IsChecked="False">
@@ -157,7 +158,7 @@
                                     <TextBlock Text="{Binding NumberOfReceptionists}" Margin="6 0 0 0"/>
                                 </StackPanel>
                             </RadioButton>
-                            <RadioButton x:Name="rdbtCashier" BorderBrush="{StaticResource PrimaryLightBrush}"
+                            <RadioButton x:Name="rdbtCashier" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
                                 Style="{StaticResource MaterialDesignTabRadioButton}"
                                 Margin="4" Command="{Binding CashierCommnad}"
                                 IsChecked="False">
@@ -166,7 +167,7 @@
                                     <TextBlock Text="{Binding NumberOfCashiers}" Margin="6 0 0 0"/>
                                 </StackPanel>
                             </RadioButton>
-                            <RadioButton x:Name="rdbtUndefined" BorderBrush="{StaticResource PrimaryLightBrush}"
+                            <RadioButton x:Name="rdbtUndefined" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
                                 Style="{StaticResource MaterialDesignTabRadioButton}"
                                 Margin="4" Command="{Binding UndefinedCommnad}"
                                 IsChecked="False">
