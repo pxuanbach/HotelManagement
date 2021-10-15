@@ -12,17 +12,60 @@
         <viewModels:InvoiceViewModel/>
     </UserControl.DataContext>
     <Grid>
-        <StackPanel Orientation="Vertical"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
-            <materialDesign:PackIcon HorizontalAlignment="Center"
-                                              Foreground="{StaticResource PrimaryDarkBrush}"
-                                              Width="100" Height="100"
-                                              Kind="Receipt"/>
-            <TextBlock FontSize="40" FontWeight="Bold" 
-                       VerticalAlignment="Center" HorizontalAlignment="Center" 
-                       Foreground="{StaticResource PrimaryDarkBrush}"
-                       Text="{Binding Title}"/>
-        </StackPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="0.2"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <!-- Header Column 0-->
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Invoices" FontSize="24" FontWeight="Bold" 
+                                 HorizontalAlignment="Stretch" Margin="8 8 0 8" Foreground="{StaticResource PrimaryHueDarkBrush}" VerticalAlignment="Center"/>
+                <Border Grid.Column="1" BorderBrush="{StaticResource PrimaryHueDarkBrush}" BorderThickness="0.3" Margin="15 10 5 10" MaxWidth="700" HorizontalAlignment="Stretch" CornerRadius="3">
+                    <Grid>
+                        <Grid.Resources>
+                            <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="Transparent"/>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width=".3*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width=".2*"/>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox x:Name="cbbSearch" BorderThickness="0.2" Padding="8 2 2 2"
+                                        BorderBrush="{StaticResource PrimaryHueDarkBrush}" 
+                                        ItemsSource="{Binding SearchTypes}" SelectedItem="{Binding SelectedSearchType}"
+                                        Style="{StaticResource MaterialDesignOutlinedComboBox}" 
+                                        VerticalContentAlignment="Center" Width="auto" >
+                        </ComboBox>
+                        <Separator Grid.Column="1" Background="{StaticResource PrimaryHueDarkBrush}" Margin="1 0 1 0"/>
+                        <TextBox Grid.Column="2" Margin="5 0" Name="tbSearch" CaretBrush="Black"
+                                        VerticalContentAlignment="Center" FontSize="16"
+                                        Text="{Binding ContentSearch,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                                        materialDesign:HintAssist.Hint="Type something..." 
+                                        BorderBrush="Transparent">
+                            <TextBox.InputBindings>
+                                <KeyBinding Command="{Binding SearchAccountCommand}" Key="Return"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <Button Grid.Column="3" Width="Auto" Height="Auto" 
+                                    Style="{StaticResource MaterialDesignFlatButton}" 
+                                    Content="{materialDesign:PackIcon Kind=Search, Size=19}" 
+                                    Foreground="{StaticResource PrimaryHueDarkBrush}" Command="{Binding SearchAccountCommand}">
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+        <Border Grid.Column="1" Background="Black"/>
     </Grid>
 </UserControl>

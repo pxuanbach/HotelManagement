@@ -17,7 +17,7 @@
     <UserControl.Resources>
         <viewModels:PassThroughConverter x:Key="passThroughConverter"/>
     </UserControl.Resources>
-    <Grid Background="White">
+    <Grid>
         <materialDesign:DialogHost Name="dialog" Identifier="AccountDialog" CloseOnClickAway="True" 
             DialogTheme="Inherit" IsOpen="{Binding IsOpenDialog}">
             <materialDesign:DialogHost.DialogContent>
@@ -79,6 +79,7 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
+                <!-- Header -->
                 <Grid Grid.Row="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"/>
@@ -120,17 +121,18 @@
                                 Foreground="{StaticResource PrimaryHueDarkBrush}" Command="{Binding SearchAccountCommand}">
                             </Button>
                         </Grid>
-                        </Border>
-                        <Button Grid.Column="2" HorizontalAlignment="Right" Margin="4" Padding="8"
-                            Style="{StaticResource MaterialDesignRaisedButton}"
-                            Command="{Binding AddNewAccountCommand}">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="PlusCircle" VerticalAlignment="Center" Width="16" Height="16"/>
-                                <Grid Width="4"/>
-                                <TextBlock Text="New Account" FontSize="16" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-                    </Grid>
+                    </Border>
+                    <Button Grid.Column="2" HorizontalAlignment="Right" Margin="4" Padding="8"
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        Command="{Binding AddNewAccountCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="PlusCircle" VerticalAlignment="Center" Width="16" Height="16"/>
+                            <Grid Width="4"/>
+                            <TextBlock Text="New Account" FontSize="16" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+                <!-- Filter -->
                 <Border Grid.Row="1" Padding="4 2 4 0">
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
