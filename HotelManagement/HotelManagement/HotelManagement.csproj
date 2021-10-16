@@ -94,6 +94,7 @@
     <Compile Include="Models\FOLIO.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\FolioDisplayItem.cs" />
     <Compile Include="Models\GUEST.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -124,6 +125,7 @@
     <Compile Include="Models\ROOM.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\RoomDisplayItem.cs" />
     <Compile Include="Models\ROOMTYPE.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -135,9 +137,6 @@
     </Compile>
     <Compile Include="Resources\UC\UC_Room.xaml.cs">
       <DependentUpon>UC_Room.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Resources\UC\UC_RoomDetails.xaml.cs">
-      <DependentUpon>UC_RoomDetails.xaml</DependentUpon>
     </Compile>
     <Compile Include="Resources\UC\UC_RoomType.xaml.cs">
       <DependentUpon>UC_RoomType.xaml</DependentUpon>
@@ -210,10 +209,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\UC\UC_Room.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Resources\UC\UC_RoomDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -52,6 +52,24 @@ namespace HotelManagement.ViewModels
         private int _roomCount;
         public int RoomCount { get { return _roomCount; } set { _roomCount = value; OnPropertyChanged(); } }
 
+        private ObservableCollection<RoomDisplayItem> _rooms;
+        public ObservableCollection<RoomDisplayItem> Rooms
+        {
+            get { return _rooms; }
+            set { _rooms = value; OnPropertyChanged(); }
+        }
+        #endregion
+
+        #region Folio
+        private int _folioCount;
+        public int FolioCount { get { return _folioCount; } set { _folioCount = value; OnPropertyChanged(); } }
+
+        private ObservableCollection<FolioDisplayItem> _folio;
+        public ObservableCollection<FolioDisplayItem> Folio
+        {
+            get { return _folio; }
+            set { _folio = value; OnPropertyChanged(); }
+        }
         #endregion
 
         #endregion
@@ -71,17 +89,20 @@ namespace HotelManagement.ViewModels
         public ICommand CompletedCommnad { get; set; }
         public ICommand ListviewSelectionChangedCommand { get; set; }
         public ICommand ClearDetailCommand { get; set; }
+        public ICommand CheckOutCommand { get; set; }
+        public ICommand ExportCommand { get; set; }
         #endregion
 
         public InvoiceViewModel()
         {
             InitProperties();
 
-            OperationalCommnad = new RelayCommand<object>((p) =>
+            OperationalCommnad = new RelayCommand<Button>((p) =>
             {
                 return true;
             }, (p) =>
             {
+                p.IsEnabled = true;
                 if (Reservations.Count > 0)
                     Reservations.Clear();
                 ClearDetailProperties();
@@ -89,11 +110,12 @@ namespace HotelManagement.ViewModels
                 LoadReservations();
             });
 
-            CompletedCommnad = new RelayCommand<object>((p) =>
+            CompletedCommnad = new RelayCommand<Button>((p) =>
             {
                 return true;
             }, (p) =>
             {
+                p.IsEnabled = false;
                 if (Reservations.Count > 0)
                     Reservations.Clear();
                 ClearDetailProperties();
@@ -106,6 +128,7 @@ namespace HotelManagement.ViewModels
                 return !p.Items.IsEmpty;
             }, (p) =>
             {
+                ClearDetailProperties();
                 LoadItemSelected((RESERVATION)p.SelectedItem);
             });
 
@@ -116,12 +139,31 @@ namespace HotelManagement.ViewModels
             {
                 ClearDetailProperties();
             });
+
+            CheckOutCommand = new RelayCommand<object>((p) =>
+            {
+                return true;
+            }, (p) =>
+            {
+
+            });
+
+            ExportCommand = new RelayCommand<object>((p) =>
+            {
+                return true;
+            }, (p) =>
+            {
+
+            });
         }
 
         void InitProperties()
         {
             StatusSelected = "Operational";
             LoadReservations();
+            Guests = new ObservableCollection<GUEST>();
+            Rooms = new ObservableCollection<RoomDisplayItem>();
+            Folio = new ObservableCollection<FolioDisplayItem>();
         }
 
         void ClearDetailProperties()
@@ -142,6 +184,13 @@ namespace HotelManagement.ViewModels
 
             //Rooms
             RoomCount = 0;
+            if (Rooms.Count > 0)
+                Rooms.Clear();
+
+            //Folio
+            FolioCount = 0;
+            if (Folio.Count > 0)
+                Folio.Clear();
         }
 
         #region Load Function
@@ -164,7 +213,6 @@ namespace HotelManagement.ViewModels
             Email = mainGuest.email;
 
             //Guests
-            Guests = new ObservableCollection<GUEST>();
             List<GUEST_BOOKING> guestBookingList = 
                 DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == p.id).ToList();
             
@@ -173,13 +221,41 @@ namespace HotelManagement.ViewModels
             {
                 var guest = DataProvider.Instance.DB.GUESTs.SingleOrDefault(x => x.id == obj.guest_id);
                 Guests.Add(guest);
-            }    
-            
-            //Rooms
-            RoomCount = DataProvider.Instance.DB.ROOM_BOOKED.Where(x => x.reservation_id == p.id).Count();
+            }
+
+            //Rooms + Folio
+            List<ROOM_BOOKED> roomBookedList =
+                DataProvider.Instance.DB.ROOM_BOOKED.Where(x => x.reservation_id == p.id).ToList();
+
+            RoomCount = roomBookedList.Count();
+            foreach (ROOM_BOOKED obj in roomBookedList)
+            {
+                //Rooms
+                var room = DataProvider.Instance.DB.ROOMs.SingleOrDefault(x => x.id == obj.room_id);
+                var roomType = DataProvider.Instance.DB.ROOMTYPEs.SingleOrDefault(x => x.id == room.roomtype_id);
+                RoomDisplayItem roomDisplayItem = new RoomDisplayItem(room.id, room.name, roomType.name);
+                Rooms.Add(roomDisplayItem);
+
+                //Folio
+                List<FOLIO> folio = DataProvider.Instance.DB.FOLIOs.Where(x => x.room_booked_id == obj.id).ToList();
+                foreach (FOLIO item in folio)
+                {
+                    var service = DataProvider.Instance.DB.SERVICEs.SingleOrDefault(x => x.id == item.service_id);
+                    var folioItem = Folio.FirstOrDefault(x => x.Id == service.id);
+
+                    if (folioItem == null)
+                    {
+                        FolioDisplayItem folioDisplayItem = new FolioDisplayItem(service.id, service.name, (int)item.amount);
+                        Folio.Add(folioDisplayItem);
+                    }
+                    else
+                    {
+                        folioItem.Amount += (int)item.amount;
+                    }
+                }
+            }
+            FolioCount = Folio.Count();
         }
         #endregion
-
-
     }
 }
