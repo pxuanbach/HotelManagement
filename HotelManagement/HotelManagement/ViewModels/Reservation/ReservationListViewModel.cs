@@ -23,6 +23,15 @@ namespace HotelManagement.ViewModels
                 return _newReservationCommand ?? (_newReservationCommand = new RelayCommand<object>((p) => true, (p) => OpenNewReservationWindow()));
             }
         }
+
+        private ICommand _reservationDetailsCommand;
+        public ICommand ReservationDetailsCommand
+        {
+            get
+            {
+                return _reservationDetailsCommand ?? (_reservationDetailsCommand = new RelayCommand<ReservationItemViewModel>((p) => true, (p) => OpenReservationDetailsWindow(p.ID)));
+            }
+        }
         public ReservationListViewModel()
         {
             Reservations = new ObservableCollection<ReservationItemViewModel>();
@@ -41,6 +50,13 @@ namespace HotelManagement.ViewModels
         public void OpenNewReservationWindow()
         {
             var wd = new NewReservationWindow();
+            wd.Show();
+        }
+
+        public void OpenReservationDetailsWindow(int ResID)
+        {
+            var wd = new ReservationDetailsWindow();
+            wd.DataContext = new ReservationDetailsViewModel(ResID);
             wd.Show();
         }
 

@@ -153,6 +153,7 @@
     <Compile Include="ViewModels\ReportsViewModel.cs" />
     <Compile Include="ViewModels\Reservation\BindingProxy.cs" />
     <Compile Include="ViewModels\Reservation\NewReservationViewModel.cs" />
+    <Compile Include="ViewModels\Reservation\ReservationDetailsViewModel.cs" />
     <Compile Include="ViewModels\Reservation\ReservationListViewModel.cs" />
     <Compile Include="ViewModels\RoomsViewModels.cs" />
     <Compile Include="ViewModels\ServicesViewModel.cs" />
@@ -185,6 +186,9 @@
     </Compile>
     <Compile Include="Views\ReportsView.xaml.cs">
       <DependentUpon>ReportsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Reservation\ReservationDetailsWindow.xaml.cs">
+      <DependentUpon>ReservationDetailsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Reservation\NewReservationWindow.xaml.cs">
       <DependentUpon>NewReservationWindow.xaml</DependentUpon>
@@ -261,6 +265,10 @@
     <Page Include="Views\ReportsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Reservation\ReservationDetailsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Reservation\NewReservationWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

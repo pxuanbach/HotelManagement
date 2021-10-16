@@ -32,7 +32,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => true, (p) => ReserveLikeASharer()));
+                return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => FilledGuestInformation && !BeASharer, (p) => ReserveLikeASharer()));
             }
         }
 
@@ -84,6 +84,7 @@ namespace HotelManagement.ViewModels
             StayInformation.PropertyChanged += StayInformation_PropertyChanged;
             Sharers.CollectionChanged += Sharers_CollectionChanged;
 
+            BeASharer = false;
             StayInformation.Total = 0;
             StayInformation.Arrival = DateTime.Today;
             StayInformation.Departure = DateTime.Today.AddDays(1);
@@ -94,6 +95,16 @@ namespace HotelManagement.ViewModels
             if (e.PropertyName == nameof(ReservationViewModel.Arrival) ||
                 e.PropertyName == nameof(ReservationViewModel.Departure))
             {
+                var StayInfo = sender as ReservationViewModel;
+                if (StayInfo.Arrival < DateTime.Today)
+                    StayInformation.Arrival = DateTime.Today;
+                if (StayInfo.Departure < DateTime.Today.AddDays(1))
+                    StayInformation.Departure = DateTime.Today.AddDays(1);
+                if ((int)(StayInfo.Departure - StayInfo.Arrival).TotalDays < 1)
+                {
+                    if (e.PropertyName == nameof(ReservationViewModel.Arrival)) StayInformation.Arrival = DateTime.Today;
+                    if (e.PropertyName == nameof(ReservationViewModel.Departure)) StayInformation.Departure = DateTime.Today.AddDays(1);
+                }
                 StayInformation.Stays = (int)(StayInformation.Departure - StayInformation.Arrival).TotalDays;
                 LoadAvailableRooms();
             }
@@ -158,15 +169,8 @@ namespace HotelManagement.ViewModels
 
         public void ReserveLikeASharer()
         {
-            BeASharer = !BeASharer;
-            if (BeASharer)
-            {
-                StayInformation.Pax++;
-            }
-            else
-            {
-                StayInformation.Pax--;
-            }
+            Sharers.Add(GuestInformation);
+            BeASharer = true;
         }
 
         public void AddSharer()
@@ -178,6 +182,7 @@ namespace HotelManagement.ViewModels
         public void RemoveSelectedSharer(GuestViewModel sharer)
         {
             Sharers.Remove(sharer);
+            if (sharer.ID == GuestInformation.ID) BeASharer = false;
         }
 
         public void Reserve(Window window) 
@@ -211,20 +216,6 @@ namespace HotelManagement.ViewModels
                 {
                     context.GUESTs.Add(mainGuest);
                 }
-                else
-                {
-                    Console.WriteLine("[ERROR] Guest ID {0} existed in Guest Database!!!", mainGuest.id);
-                }
-
-                if (BeASharer)
-                {
-                    var guestBooking = new GUEST_BOOKING()
-                    {
-                        reservation_id = reservation.id,
-                        guest_id = mainGuest.id,
-                    };
-                    context.GUEST_BOOKING.Add(guestBooking);
-                }
 
                 // Insert room_booked
                 foreach (var selectedRoom in SelectedRooms)
@@ -247,13 +238,10 @@ namespace HotelManagement.ViewModels
                         gender = sharer.Gender,
                         address = sharer.Address,
                     };
+
                     if (!context.GUESTs.Any(g => g.id == newGuest.id))
                     {
                         context.GUESTs.Add(newGuest);
-                    }
-                    else
-                    {
-                        Console.WriteLine("[ERROR] Guest ID {0} is existing in Guest Database!!!", newGuest.id);
                     }
 
                     var guestBooking = new GUEST_BOOKING()
@@ -298,6 +286,7 @@ namespace HotelManagement.ViewModels
         public void LoadAvailableRooms()
         {
             if (AvailableRooms.Count > 0) AvailableRooms.Clear();
+            if (SelectedRooms.Count > 0) SelectedRooms.Clear();
 
             var db = new HotelManagementEntities();
 
@@ -340,14 +329,14 @@ namespace HotelManagement.ViewModels
                     RoomTypeID = room.TypeID,
                     Price = Decimal.Round((decimal)room.Price),
                 };
-                Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}", room.RoomID, room.RoomName, room.ResID, room.Arrival, room.Departure);
+                //Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}", room.RoomID, room.RoomName, room.ResID, room.Arrival, room.Departure);
 
                 AvailableRooms.Add(obj);
 
                 AvailableRooms.Last().PropertyChanged += NewReservationViewModel_PropertyChanged;
             }
 
-            Console.WriteLine(AvailableRooms.Count);
+            //Console.WriteLine(AvailableRooms.Count);
         }
 
         private void NewReservationViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -386,27 +375,9 @@ namespace HotelManagement.ViewModels
 
         public DateTime DateCreated { get { return _date_created; } set { _date_created = value; OnPropertyChanged(); } }
 
-        public DateTime Arrival 
-        { 
-            get { return _arrival; } 
-            set 
-            {
-                if (value >= DateTime.Today && (int)(_departure - value).TotalDays > 0) _arrival = value;
-                else _arrival = DateTime.Today;
-                OnPropertyChanged(); 
-            } 
-        }
+        public DateTime Arrival { get { return _arrival; } set { _arrival = value; OnPropertyChanged(); } }
 
-        public DateTime Departure 
-        {
-            get { return _departure; }
-            set 
-            {
-                if (value >= DateTime.Today.AddDays(1) && (int)(value - _arrival).TotalDays > 0) _departure = value;
-                else _departure = DateTime.Today.AddDays(1);
-                OnPropertyChanged(); 
-            } 
-        }
+        public DateTime Departure { get { return _departure; } set { _departure = value; OnPropertyChanged(); } }
 
         public int Stays { get { return _stays; } set { _stays = value; OnPropertyChanged(); } }
 
@@ -442,7 +413,7 @@ namespace HotelManagement.ViewModels
         public string Phone { get { return _phone; } set { _phone = value; OnPropertyChanged(); } }
     }
 
-    public class RoomViewModel : BaseViewModel
+    class RoomViewModel : BaseViewModel
     {
         private bool _isSelected;
         int _room_id;

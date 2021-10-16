@@ -335,12 +335,34 @@
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
 
+                    <DataGridTextColumn
+                        Header="Create date" Binding="{Binding DateCreated}"
+                        IsReadOnly="True">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                   BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}"
+                                   BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Width="40" Padding="0"
                                         Style="{StaticResource MaterialDesignOutlinedButton}"
-                                        BorderThickness="1.5">
+                                        BorderThickness="1.5"
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.ReservationDetailsCommand}"
+                                        CommandParameter="{Binding}">
                                     <materialDesign:PackIcon Kind="Edit" Foreground="{StaticResource PrimaryHueMidBrush}"/>
                                 </Button>
                             </DataTemplate>
