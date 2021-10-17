@@ -30,7 +30,8 @@
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Grid Grid.Row="0" Grid.Column="0" Margin="10,10,5,5">
+                <Grid Grid.Row="0" Grid.Column="0" 
+                      Margin="10,10,5,5" IsEnabled="{Binding CanEdit}">
                     <Border Padding="5" Background="White"
                         BorderBrush="LightGray" BorderThickness="1.5">
                         <StackPanel>
@@ -57,19 +58,21 @@
                                     <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
 
+                                <!--ID No.-->
                                 <TextBlock
-                                    Grid.Row="2" Grid.Column="0"
-                                    Margin="0,0,20,0" VerticalAlignment="Center"
-                                    Text="Name" FontSize="16"/>
+                                    Grid.Row="0" Grid.Column="0"
+                                    Margin="0,0,32,0" VerticalAlignment="Center"
+                                    Text="ID No." FontSize="16"/>
 
-                                <TextBox 
-                                    Grid.Row="2" Grid.Column="1"
+                                <TextBox
+                                    Grid.Row="0" Grid.Column="1"
                                     FontSize="14" Width="230"
+                                    Text="{Binding Path=GuestInformation.ID}"
                                     Style="{StaticResource MaterialDesignTextBox}"
-                                    Text="{Binding Path=GuestInformation.Name}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
                                     materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"/>
 
+                                <!--Gender-->
                                 <TextBlock
                                     Grid.Row="0" Grid.Column="3"
                                     Margin="20,0,0,0" VerticalAlignment="Center"
@@ -86,6 +89,21 @@
                                     ItemsSource="{Binding Gender}">
                                 </ComboBox>
 
+                                <!--Name-->
+                                <TextBlock
+                                    Grid.Row="2" Grid.Column="0"
+                                    Margin="0,0,20,0" VerticalAlignment="Center"
+                                    Text="Name" FontSize="16"/>
+
+                                <TextBox
+                                    Grid.Row="2" Grid.Column="1"
+                                    FontSize="14" Width="230"
+                                    Style="{StaticResource MaterialDesignTextBox}"
+                                    Text="{Binding Path=GuestInformation.Name}"
+                                    materialDesign:TextFieldAssist.HasClearButton="True"
+                                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"/>
+
+                                <!--Birthday-->
                                 <TextBlock
                                     Grid.Row="2" Grid.Column="3"
                                     Margin="20,0,10,0" VerticalAlignment="Center"
@@ -98,19 +116,7 @@
                                     materialDesign:HintAssist.Hint="Pick a date"
                                     materialDesign:HintAssist.IsFloating="False"/>
 
-                                <TextBlock
-                                    Grid.Row="0" Grid.Column="0"
-                                    Margin="0,0,32,0" VerticalAlignment="Center"
-                                    Text="ID No." FontSize="16"/>
-
-                                <TextBox
-                                    Grid.Row="0" Grid.Column="1"
-                                    FontSize="14" Width="230"
-                                    Text="{Binding Path=GuestInformation.ID}"
-                                    Style="{StaticResource MaterialDesignTextBox}"
-                                    materialDesign:TextFieldAssist.HasClearButton="True"
-                                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"/>
-
+                                <!--Email-->
                                 <TextBlock
                                     Grid.Row="4" Grid.Column="0"
                                     Margin="0,0,20,0" VerticalAlignment="Center"
@@ -124,6 +130,7 @@
                                     materialDesign:TextFieldAssist.HasClearButton="True"
                                     materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"/>
 
+                                <!--Phone-->
                                 <TextBlock
                                     Grid.Row="4" Grid.Column="3"
                                     Margin="20,0,0,0" VerticalAlignment="Center"
@@ -137,6 +144,7 @@
                                     materialDesign:TextFieldAssist.HasClearButton="True"
                                     materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"/>
 
+                                <!--Address-->
                                 <TextBlock
                                     Grid.Row="6" Grid.Column="0"
                                     Margin="0,0,20,0" VerticalAlignment="Center"
@@ -160,7 +168,8 @@
                     </Border>
                 </Grid>
 
-                <Grid Grid.Row="0" Grid.Column="1" Margin="5,10,10,5">
+                <Grid Grid.Row="0" Grid.Column="1" 
+                      Margin="5,10,10,5" IsEnabled="{Binding CanEdit}">
                     <Border Padding="5" Background="White"
                     BorderBrush="LightGray" BorderThickness="1.5">
                         <StackPanel>
@@ -247,12 +256,23 @@
                                     Grid.Row="4" Grid.Column="6"
                                     Text="{Binding StayInformation.Rooms}" FontSize="16"/>
                             </Grid>
+
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock 
+                                    Margin="0,0,15,0"
+                                    Text="Total" FontSize="22" FontWeight="Bold"/>
+
+                                <TextBlock 
+                                    Text="{Binding StayInformation.Total, Mode=OneWay, StringFormat={}{0:c}, ConverterCulture='vi-VN'}" 
+                                    FontSize="22" FontWeight="Bold"
+                                    Foreground="{StaticResource PrimaryHueMidBrush}"/>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
                 </Grid>
 
                 <Grid Grid.Row="1" Grid.Column="1" 
-                      Margin="5,5,10,5">
+                      Margin="5,5,10,5" IsEnabled="{Binding CanEdit}">
                     <Border Padding="5" Background="White"
                     BorderBrush="LightGray" BorderThickness="1.5">
                         <StackPanel>
@@ -351,7 +371,7 @@
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
-                                    
+
                                     <DataGridTemplateColumn>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
@@ -381,7 +401,7 @@
                 </Grid>
 
                 <Grid Grid.Row="1" Grid.Column="0" 
-                      Margin="10,5,5,5">
+                      Margin="10,5,5,5" IsEnabled="{Binding CanEdit}">
                     <Border Padding="5" Background="White"
                     BorderBrush="LightGray" BorderThickness="1.5">
                         <StackPanel>
@@ -406,7 +426,6 @@
                                 ItemsSource="{Binding Sharers}"
                                 CanUserResizeColumns="False" 
                                 CanUserAddRows="False"
-                                IsReadOnly="False"
                                 AutoGenerateColumns="False"
                                 HeadersVisibility="All">
 
@@ -527,19 +546,23 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <StackPanel Grid.Column="0" 
+                                Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock 
-                            Margin="0,0,15,0"
-                            Text="Total" FontSize="22" FontWeight="Bold"/>
-                        
+                            Margin="10,0,0,0"
+                            Text="Read Only" FontSize="16" FontWeight="Bold"/>
+
+                        <ToggleButton
+                            Margin="15,0,15,0" Command="{Binding CanEditCommand}"
+                            Style="{StaticResource MaterialDesignSwitchToggleButton}"/>
+
                         <TextBlock 
-                            Text="{Binding StayInformation.Total, Mode=OneWay, StringFormat={}{0:c}, ConverterCulture='vi-VN'}" 
-                            FontSize="22" FontWeight="Bold"
-                            Foreground="{StaticResource PrimaryHueMidBrush}"/>
+                            Text="Can Edit" FontSize="16" FontWeight="Bold"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
                         <Button 
+                            Margin="15,0,0,0"
                             Content="Reserve" Command="{Binding ReserveCommand}"
                             CommandParameter="{Binding ElementName=windowReservationDetails}"/>
                         
