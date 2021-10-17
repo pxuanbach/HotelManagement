@@ -10,7 +10,7 @@
         Name="registerWindow"
         mc:Ignorable="d"
         FontFamily="Roboto"
-        FontSize="18"
+        FontSize="16"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="NoResize"

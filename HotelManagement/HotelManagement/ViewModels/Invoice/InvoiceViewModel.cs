@@ -1,4 +1,5 @@
 ﻿using HotelManagement.Models;
+using HotelManagement.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace HotelManagement.ViewModels
 {
@@ -15,7 +17,34 @@ namespace HotelManagement.ViewModels
     {
         #region Properties
 
+        #region Search Bar
+        private string _contentSearch;
+        public string ContentSearch
+        {
+            get { return _contentSearch; }
+            set
+            {
+                _contentSearch = value;
+                OnPropertyChanged();
+                if (ContentSearch == "")
+                    LoadReservations();
+            }
+        }
+
+        private List<string> _searchTypes;
+        public List<string> SearchTypes { get { return _searchTypes; } set { _searchTypes = value; OnPropertyChanged(); } }
+
+        private string _selectedSearchType;
+        public string SelectedSearchType 
+        { 
+            get { return _selectedSearchType; } 
+            set { _selectedSearchType = value; OnPropertyChanged(); } 
+        }
+        #endregion
+
         #region Invoice Details
+        public int ReservationIdSelected { get; set; }
+
         private string _arrival;
         public string Arrival { get { return _arrival; } set { _arrival = value; OnPropertyChanged(); } }
 
@@ -58,6 +87,9 @@ namespace HotelManagement.ViewModels
             get { return _rooms; }
             set { _rooms = value; OnPropertyChanged(); }
         }
+
+        private string _roomsTotalMoney;
+        public string RoomsTotalMoney { get { return _roomsTotalMoney; } set { _roomsTotalMoney = value; OnPropertyChanged(); } }
         #endregion
 
         #region Folio
@@ -70,12 +102,29 @@ namespace HotelManagement.ViewModels
             get { return _folio; }
             set { _folio = value; OnPropertyChanged(); }
         }
+
+        private string _folioTotalMoney;
+        public string FolioTotalMoney { get { return _folioTotalMoney; } set { _folioTotalMoney = value; OnPropertyChanged(); } }
+        #endregion
+
+        #region Fees + Total Money
+        private int _earlyCheckinFee;
+        public int EarlyCheckinFee { get { return _earlyCheckinFee; } set { _earlyCheckinFee = value; OnPropertyChanged(); } }
+
+        private int _lateCheckoutFee;
+        public int LateCheckoutFee { get { return _lateCheckoutFee; } set { _lateCheckoutFee = value; OnPropertyChanged(); } }
+
+        private int _surcharge;
+        public int Surcharge { get { return _surcharge; } set { _surcharge = value; OnPropertyChanged(); } }
+
+        private string _totalMoney;
+        public string TotalMoney { get { return _totalMoney; } set { _totalMoney = value; OnPropertyChanged(); } }
         #endregion
 
         #endregion
 
         public string StatusSelected { get; set; }
-        
+
         private ObservableCollection<RESERVATION> _reservations;
         public ObservableCollection<RESERVATION> Reservations 
         { 
@@ -85,10 +134,12 @@ namespace HotelManagement.ViewModels
         #endregion
 
         #region Command
+        public ICommand SearchReservationCommand { get; set; }
         public ICommand OperationalCommnad { get; set; }
         public ICommand CompletedCommnad { get; set; }
         public ICommand ListviewSelectionChangedCommand { get; set; }
         public ICommand ClearDetailCommand { get; set; }
+        public ICommand FolioOfRoomCommand { get; set; }
         public ICommand CheckOutCommand { get; set; }
         public ICommand ExportCommand { get; set; }
         #endregion
@@ -97,12 +148,19 @@ namespace HotelManagement.ViewModels
         {
             InitProperties();
 
-            OperationalCommnad = new RelayCommand<Button>((p) =>
+            SearchReservationCommand = new RelayCommand<object>((p) =>
             {
                 return true;
             }, (p) =>
             {
-                p.IsEnabled = true;
+                Search();
+            });
+
+            OperationalCommnad = new RelayCommand<object>((p) =>
+            {
+                return true;
+            }, (p) =>
+            {
                 if (Reservations.Count > 0)
                     Reservations.Clear();
                 ClearDetailProperties();
@@ -110,12 +168,11 @@ namespace HotelManagement.ViewModels
                 LoadReservations();
             });
 
-            CompletedCommnad = new RelayCommand<Button>((p) =>
+            CompletedCommnad = new RelayCommand<object>((p) =>
             {
                 return true;
             }, (p) =>
             {
-                p.IsEnabled = false;
                 if (Reservations.Count > 0)
                     Reservations.Clear();
                 ClearDetailProperties();
@@ -132,7 +189,7 @@ namespace HotelManagement.ViewModels
                 LoadItemSelected((RESERVATION)p.SelectedItem);
             });
 
-            ClearDetailCommand = new RelayCommand<object>((p) =>
+            ClearDetailCommand = new RelayCommand<ListView>((p) =>
             {
                 return true;
             }, (p) =>
@@ -140,16 +197,38 @@ namespace HotelManagement.ViewModels
                 ClearDetailProperties();
             });
 
-            CheckOutCommand = new RelayCommand<object>((p) =>
+            FolioOfRoomCommand = new RelayCommand<RoomDisplayItem>((p) =>
             {
+                return true;
+            }, (p) =>
+            {
+                OpenFolioOfRoomWindow(p);
+            });
+
+            CheckOutCommand = new RelayCommand<ListView>((p) =>
+            {
+                if (StatusSelected != "Operational")
+                {
+                    return false; 
+                }    
+                if (p != null)
+                {
+                    if (p.SelectedIndex == -1)
+                        return false;
+                }    
                 return true;
             }, (p) =>
             {
 
             });
 
-            ExportCommand = new RelayCommand<object>((p) =>
+            ExportCommand = new RelayCommand<ListView>((p) =>
             {
+                if (p != null)
+                {
+                    if (p.SelectedIndex == -1)
+                        return false;
+                }
                 return true;
             }, (p) =>
             {
@@ -159,11 +238,17 @@ namespace HotelManagement.ViewModels
 
         void InitProperties()
         {
-            StatusSelected = "Operational";
-            LoadReservations();
+            
             Guests = new ObservableCollection<GUEST>();
             Rooms = new ObservableCollection<RoomDisplayItem>();
             Folio = new ObservableCollection<FolioDisplayItem>();
+            SearchTypes = new List<string>();
+            SearchTypes.Add("ID");
+            SearchTypes.Add("Main Guest");
+
+            StatusSelected = "Operational";
+            LoadReservations();
+            SelectedSearchType = "ID";
         }
 
         void ClearDetailProperties()
@@ -184,13 +269,21 @@ namespace HotelManagement.ViewModels
 
             //Rooms
             RoomCount = 0;
+            RoomsTotalMoney = "";
             if (Rooms.Count > 0)
                 Rooms.Clear();
 
             //Folio
             FolioCount = 0;
+            FolioTotalMoney = "";
             if (Folio.Count > 0)
                 Folio.Clear();
+
+            //Fees + Total Money
+            EarlyCheckinFee = 0;
+            LateCheckoutFee = 0;
+            Surcharge = 0;
+            TotalMoney = "";
         }
 
         #region Load Function
@@ -202,32 +295,22 @@ namespace HotelManagement.ViewModels
 
         void LoadItemSelected(RESERVATION p)
         {
-            Arrival = p.arrival.Value.ToString("dd/MM/yyyy");
-            Departure = p.departure.Value.ToString("dd/MM/yyyy");
-
-            //Main Guest
+            long roomTotalMoney = 0;
+            long folioTotalMoney = 0;
             var mainGuest = DataProvider.Instance.DB.GUESTs.Where(x => x.id == p.main_guest).SingleOrDefault();
-            Identity = p.main_guest;
-            Name = mainGuest.name;
-            Phone = mainGuest.phone;
-            Email = mainGuest.email;
-
-            //Guests
             List<GUEST_BOOKING> guestBookingList = 
                 DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == p.id).ToList();
-            
-            GuestCount = guestBookingList.Count();
+            List<ROOM_BOOKED> roomBookedList =
+                DataProvider.Instance.DB.ROOM_BOOKED.Where(x => x.reservation_id == p.id).ToList();
+
+            //Load Guests
             foreach (GUEST_BOOKING obj in guestBookingList)
             {
                 var guest = DataProvider.Instance.DB.GUESTs.SingleOrDefault(x => x.id == obj.guest_id);
                 Guests.Add(guest);
             }
 
-            //Rooms + Folio
-            List<ROOM_BOOKED> roomBookedList =
-                DataProvider.Instance.DB.ROOM_BOOKED.Where(x => x.reservation_id == p.id).ToList();
-
-            RoomCount = roomBookedList.Count();
+            //Load Rooms + Folio
             foreach (ROOM_BOOKED obj in roomBookedList)
             {
                 //Rooms
@@ -235,6 +318,8 @@ namespace HotelManagement.ViewModels
                 var roomType = DataProvider.Instance.DB.ROOMTYPEs.SingleOrDefault(x => x.id == room.roomtype_id);
                 RoomDisplayItem roomDisplayItem = new RoomDisplayItem(room.id, room.name, roomType.name);
                 Rooms.Add(roomDisplayItem);
+
+                roomTotalMoney = roomTotalMoney + (long)roomType.price * ((int)(p.departure.Value - p.arrival.Value).TotalDays);
 
                 //Folio
                 List<FOLIO> folio = DataProvider.Instance.DB.FOLIOs.Where(x => x.room_booked_id == obj.id).ToList();
@@ -245,17 +330,70 @@ namespace HotelManagement.ViewModels
 
                     if (folioItem == null)
                     {
-                        FolioDisplayItem folioDisplayItem = new FolioDisplayItem(service.id, service.name, (int)item.amount);
+                        FolioDisplayItem folioDisplayItem = new FolioDisplayItem(service.id, service.name, item.amount.Value);
                         Folio.Add(folioDisplayItem);
+
+                        folioTotalMoney = folioTotalMoney + (long)service.price.Value * item.amount.Value;
                     }
                     else
                     {
                         folioItem.Amount += (int)item.amount;
+
+                        folioTotalMoney = folioTotalMoney + (long)service.price.Value * item.amount.Value;
                     }
                 }
             }
+
+            ReservationIdSelected = p.id;
+            Arrival = p.arrival.Value.ToString("dd/MM/yyyy");
+            Departure = p.departure.Value.ToString("dd/MM/yyyy");
+            Identity = p.main_guest;
+            Name = mainGuest.name;
+            Phone = mainGuest.phone;
+            Email = mainGuest.email;
+            GuestCount = guestBookingList.Count();
+            RoomCount = roomBookedList.Count();
             FolioCount = Folio.Count();
+            RoomsTotalMoney = SeparateThousands(roomTotalMoney.ToString());
+            FolioTotalMoney = SeparateThousands(folioTotalMoney.ToString());
+            TotalMoney = CalculateTotalMoney(roomTotalMoney, folioTotalMoney);
         }
         #endregion
+
+        string CalculateTotalMoney(long roomTotalMoney, long folioTotalMoney)
+        {
+            long totalMoney = roomTotalMoney + folioTotalMoney;
+            return SeparateThousands(totalMoney.ToString());
+        }
+
+        void Search()
+        {
+            switch (SelectedSearchType)
+            {
+                case "ID":
+                    Reservations = new ObservableCollection<RESERVATION>(
+                        DataProvider.Instance.DB.RESERVATIONs.Where(
+                            x => x.id.ToString().Contains(ContentSearch) && x.status == StatusSelected));
+                    break;
+                case "Main Guest":
+                    Reservations = new ObservableCollection<RESERVATION>(
+                        DataProvider.Instance.DB.RESERVATIONs.Where(
+                            x => x.main_guest.ToString().Contains(ContentSearch) && x.status == StatusSelected));
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        void OpenFolioOfRoomWindow(RoomDisplayItem room)
+        {
+            FolioOfRoomWindow wd = new FolioOfRoomWindow();
+            FolioOfRoomViewModel vm = new FolioOfRoomViewModel();
+            vm.ReservationId = ReservationIdSelected;
+            vm.RoomId = room.Id;
+            vm.InitProperties();
+            wd.DataContext = vm;
+            wd.ShowDialog();
+        }
     }
 }

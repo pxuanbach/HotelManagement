@@ -150,7 +150,8 @@
     <Compile Include="ViewModels\DashBoardViewModel.cs" />
     <Compile Include="ViewModels\GuestsViewModel.cs" />
     <Compile Include="ViewModels\HashModule.cs" />
-    <Compile Include="ViewModels\InvoiceViewModel.cs" />
+    <Compile Include="ViewModels\Invoice\FolioOfRoomViewModel.cs" />
+    <Compile Include="ViewModels\Invoice\InvoiceViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\ReportsViewModel.cs" />
@@ -180,7 +181,10 @@
     <Compile Include="Views\GuestsView.xaml.cs">
       <DependentUpon>GuestsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\InvoiceView.xaml.cs">
+    <Compile Include="Views\Invoice\FolioOfRoomWindow.xaml.cs">
+      <DependentUpon>FolioOfRoomWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Invoice\InvoiceView.xaml.cs">
       <DependentUpon>InvoiceView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoginWindow.xaml.cs">
@@ -228,7 +232,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\InvoiceView.xaml">
+    <Page Include="Views\Invoice\FolioOfRoomWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Invoice\InvoiceView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
