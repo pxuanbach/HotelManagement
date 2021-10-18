@@ -81,6 +81,29 @@ namespace HotelManagement.ViewModels
                 e.Handled = true;
             }
         }
+
+        public void AlphabetValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^a-zA-Z]+");
+            if (regex.IsMatch(e.Text))
+            {
+                e.Handled = true;
+            }
+        }
+
+        public bool IsValidMail(string email)
+        {
+            try
+            {
+                var eMailValidator = new System.Net.Mail.MailAddress(email);
+
+                return email.LastIndexOf(".") > email.LastIndexOf("@");
+            }
+            catch
+            {
+                return false;
+            };
+        }
     }
 
     class RelayCommand<T> : ICommand

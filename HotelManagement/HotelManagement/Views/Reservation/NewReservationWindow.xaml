@@ -3,14 +3,15 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i = "http://schemas.microsoft.com/expression/2010/interactivity" 
+        xmlns:ei = "http://schemas.microsoft.com/expression/2010/interactions" 
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:HotelManagement.Views"
         xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
         mc:Ignorable="d"
         Name="windowNewReservation"
         Background="WhiteSmoke"
-        SizeToContent="WidthAndHeight"
-        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight" ResizeMode="NoResize"
         Title="Walk In / New Reservation">
     <Window.DataContext>
         <viewModels:NewReservationViewModel/>
@@ -72,7 +73,13 @@
                                     Style="{StaticResource MaterialDesignTextBox}"
                                     Text="{Binding Path=GuestInformation.Name}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
-                                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"/>
+                                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewTextInput">
+                                            <ei:CallMethodAction TargetObject="{Binding}" MethodName="AlphabetValidationTextBox"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
 
                                 <TextBlock
                                     Grid.Row="0" Grid.Column="3"
@@ -113,7 +120,13 @@
                                     Text="{Binding Path=GuestInformation.ID}"
                                     Style="{StaticResource MaterialDesignTextBox}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
-                                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"/>
+                                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewTextInput">
+                                            <ei:CallMethodAction TargetObject="{Binding}" MethodName="NumberValidationTextBox"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
 
                                 <TextBlock
                                     Grid.Row="4" Grid.Column="0"
@@ -139,7 +152,13 @@
                                     Text="{Binding Path=GuestInformation.Phone}"
                                     Style="{StaticResource MaterialDesignTextBox}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
-                                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"/>
+                                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewTextInput">
+                                            <ei:CallMethodAction TargetObject="{Binding}" MethodName="NumberValidationTextBox"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
 
                                 <TextBlock
                                     Grid.Row="6" Grid.Column="0"
@@ -419,7 +438,7 @@
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
-                                    
+
                                     <DataGridTextColumn 
                                         Header="Name" Width="150"
                                         Binding="{Binding Name}"
