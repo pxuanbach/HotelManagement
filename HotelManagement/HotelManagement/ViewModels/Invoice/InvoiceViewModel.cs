@@ -108,14 +108,14 @@ namespace HotelManagement.ViewModels
         #endregion
 
         #region Fees + Total Money
-        private int _earlyCheckinFee;
-        public int EarlyCheckinFee { get { return _earlyCheckinFee; } set { _earlyCheckinFee = value; OnPropertyChanged(); } }
+        private double _earlyCheckinFee;
+        public double EarlyCheckinFee { get { return _earlyCheckinFee; } set { _earlyCheckinFee = value; OnPropertyChanged(); } }
 
-        private int _lateCheckoutFee;
-        public int LateCheckoutFee { get { return _lateCheckoutFee; } set { _lateCheckoutFee = value; OnPropertyChanged(); } }
+        private double _lateCheckoutFee;
+        public double LateCheckoutFee { get { return _lateCheckoutFee; } set { _lateCheckoutFee = value; OnPropertyChanged(); } }
 
-        private int _surcharge;
-        public int Surcharge { get { return _surcharge; } set { _surcharge = value; OnPropertyChanged(); } }
+        private double _surcharge;
+        public double Surcharge { get { return _surcharge; } set { _surcharge = value; OnPropertyChanged(); } }
 
         private string _totalMoney;
         public string TotalMoney { get { return _totalMoney; } set { _totalMoney = value; OnPropertyChanged(); } }
@@ -295,7 +295,7 @@ namespace HotelManagement.ViewModels
 
         void LoadItemSelected(RESERVATION p)
         {
-            long roomTotalMoney = 0;
+            long sumRoomPrice = 0;
             long folioTotalMoney = 0;
             var mainGuest = DataProvider.Instance.DB.GUESTs.Where(x => x.id == p.main_guest).SingleOrDefault();
             List<GUEST_BOOKING> guestBookingList = 
@@ -319,7 +319,9 @@ namespace HotelManagement.ViewModels
                 RoomDisplayItem roomDisplayItem = new RoomDisplayItem(room.id, room.name, roomType.name);
                 Rooms.Add(roomDisplayItem);
 
-                roomTotalMoney = roomTotalMoney + (long)roomType.price * ((int)(p.departure.Value - p.arrival.Value).TotalDays);
+                //List room type with the same name
+                var roomTypeList = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == roomType.name).ToList();
+                sumRoomPrice = sumRoomPrice + GetExactRoomPriceOfReservation(roomTypeList, p.date_created.Value);
 
                 //Folio
                 List<FOLIO> folio = DataProvider.Instance.DB.FOLIOs.Where(x => x.room_booked_id == obj.id).ToList();
@@ -354,16 +356,60 @@ namespace HotelManagement.ViewModels
             GuestCount = guestBookingList.Count();
             RoomCount = roomBookedList.Count();
             FolioCount = Folio.Count();
-            RoomsTotalMoney = SeparateThousands(roomTotalMoney.ToString());
+
+            //Calculate money
+            long roomsTotalMoney = CalculateRoomsTotalMoney(sumRoomPrice, p.arrival.Value, p.departure.Value);
+            RoomsTotalMoney = SeparateThousands(roomsTotalMoney.ToString());
             FolioTotalMoney = SeparateThousands(folioTotalMoney.ToString());
-            TotalMoney = CalculateTotalMoney(roomTotalMoney, folioTotalMoney);
+
+            if (p.early_checkin.Value)
+            {
+                EarlyCheckinFee = DataProvider.Instance.DB.CHARGES.First().early_checkin_fee.Value;
+            }   
+            if (p.late_checkout.Value)
+            {
+                LateCheckoutFee = DataProvider.Instance.DB.CHARGES.First().late_checkout_fee.Value;
+            }
+            Surcharge = DataProvider.Instance.DB.CHARGES.First().surcharge.Value;
+
+            double totalMoney = CalculateTotalMoney(sumRoomPrice, roomsTotalMoney, folioTotalMoney);
+            TotalMoney = SeparateThousands(totalMoney.ToString());
         }
         #endregion
-
-        string CalculateTotalMoney(long roomTotalMoney, long folioTotalMoney)
+        
+        int GetExactRoomPriceOfReservation(List<ROOMTYPE> roomTypeList, DateTime dateCreated)
         {
-            long totalMoney = roomTotalMoney + folioTotalMoney;
-            return SeparateThousands(totalMoney.ToString());
+            List<ROOMTYPE> sortList = roomTypeList.OrderBy(x => x.id).ToList();
+            foreach (var item in sortList)
+            {
+                if (item.date_created <= dateCreated)
+                {
+                    if (item.date_updated.HasValue)
+                    {
+                        if (dateCreated <= item.date_updated)
+                        {
+                            return (int)item.price;
+                        }    
+                    } 
+                    else
+                    {
+                        return (int)item.price;
+                    }    
+                }    
+            }    
+            return 0;
+        }
+
+        long CalculateRoomsTotalMoney(long sumRoomPrice, DateTime arrival, DateTime departure)
+        {
+            return sumRoomPrice * (int)(departure - arrival).TotalDays;
+        }
+
+        double CalculateTotalMoney(long sumRoomPrice, long roomsTotalMoney, long folioTotalMoney)
+        {
+            double fee = sumRoomPrice * (EarlyCheckinFee + LateCheckoutFee)/100;
+            double totalMoney = (roomsTotalMoney + folioTotalMoney) * (100 + Surcharge)/100;
+            return totalMoney + fee;
         }
 
         void Search()

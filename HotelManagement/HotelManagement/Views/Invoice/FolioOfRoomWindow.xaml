@@ -189,7 +189,15 @@
         <!-- Total Money of Folio -->
         <Grid Grid.Row="2">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Room total:" FontSize="18" FontWeight="Bold" 
+                    Foreground="{StaticResource PrimaryHueDarkBrush}" 
+                    VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding RoomTotalMoney}" FontSize="18" Margin="4 8 20 8" VerticalAlignment="Center"/>
                 <TextBlock Text="Folio total:" FontSize="18" FontWeight="Bold" 
+                    Foreground="{StaticResource PrimaryHueDarkBrush}" 
+                    VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding FolioTotalMoney}" FontSize="18" Margin="4 8 20 8" VerticalAlignment="Center"/>
+                <TextBlock Text="Total:" FontSize="18" FontWeight="Bold" 
                     Foreground="{StaticResource PrimaryHueDarkBrush}" 
                     VerticalAlignment="Center"/>
                 <TextBlock Text="{Binding TotalMoney}" FontSize="18" Margin="4 8 10 8" VerticalAlignment="Center"/>
