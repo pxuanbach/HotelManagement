@@ -249,6 +249,7 @@ namespace HotelManagement.ViewModels
                 ID = reservation.id,
                 Arrival = (DateTime)reservation.arrival,
                 Departure = (DateTime)reservation.departure,
+                Total = (decimal)(from inv in db.INVOICEs where inv.reservation_id == ResID select inv).First().total_money,
             };
 
             GuestInformation = new GuestViewModel()

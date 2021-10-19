@@ -90,20 +90,6 @@ namespace HotelManagement.ViewModels
                 e.Handled = true;
             }
         }
-
-        public bool IsValidMail(string email)
-        {
-            try
-            {
-                var eMailValidator = new System.Net.Mail.MailAddress(email);
-
-                return email.LastIndexOf(".") > email.LastIndexOf("@");
-            }
-            catch
-            {
-                return false;
-            };
-        }
     }
 
     class RelayCommand<T> : ICommand

@@ -102,7 +102,9 @@ namespace HotelManagement.ViewModels
             foreach (var r in reservations)
             {
                 var res = r.First();
-                GUEST mainGuest = (from g in db.GUESTs where res.main_guest.Equals(g.id) select g).ToList()[0];
+                GUEST mainGuest = (from g in db.GUESTs where res.main_guest.Equals(g.id) select g).ToList().First();
+
+                decimal total = (decimal)(from inv in db.INVOICEs where inv.reservation_id == res.id select inv).First().total_money;
 
                 var obj = new ReservationItemViewModel()
                 {
@@ -113,7 +115,8 @@ namespace HotelManagement.ViewModels
                     DateCreated = (DateTime)res.date_created,
                     Arrival = (!res.arrival.HasValue) ? DateTime.Now : (DateTime)res.arrival,
                     Departure = (!res.departure.HasValue) ? DateTime.Now : (DateTime)res.departure,
-                    Pax = res.GUEST_BOOKING.Count
+                    Pax = res.GUEST_BOOKING.Count,
+                    Total = Decimal.Round(total),
                 };
 
                 Reservations.Add(obj);

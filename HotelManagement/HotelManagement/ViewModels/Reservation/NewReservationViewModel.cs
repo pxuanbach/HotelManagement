@@ -86,6 +86,7 @@ namespace HotelManagement.ViewModels
 
             BeASharer = false;
             StayInformation.Total = 0;
+            GuestInformation.Birthday = DateTime.Parse("01-01-2000");
             StayInformation.Arrival = DateTime.Today;
             StayInformation.Departure = DateTime.Today.AddDays(1);
         }
@@ -239,7 +240,7 @@ namespace HotelManagement.ViewModels
                         address = sharer.Address,
                     };
 
-                    if (!context.GUESTs.Any(g => g.id == newGuest.id))
+                    if (!context.GUESTs.Any(g => g.id == newGuest.id) && newGuest.id != mainGuest.id)
                     {
                         context.GUESTs.Add(newGuest);
                     }
@@ -251,6 +252,14 @@ namespace HotelManagement.ViewModels
                     };
                     context.GUEST_BOOKING.Add(guestBooking);
                 }
+
+                // Insert invoice
+                var invoice = new INVOICE()
+                {
+                    reservation_id = reservation.id,
+                    total_money = StayInformation.Total,
+                };
+                context.INVOICEs.Add(invoice);
 
                 context.SaveChanges();
             }
