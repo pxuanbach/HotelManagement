@@ -94,6 +94,7 @@
     <Compile Include="Models\FOLIO.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\FolioDisplayItem.cs" />
     <Compile Include="Models\GUEST.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -124,6 +125,7 @@
     <Compile Include="Models\ROOM.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\RoomDisplayItem.cs" />
     <Compile Include="Models\ROOMTYPE.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
@@ -148,6 +150,8 @@
     <Compile Include="ViewModels\DashBoardViewModel.cs" />
     <Compile Include="ViewModels\GuestsViewModel.cs" />
     <Compile Include="ViewModels\HashModule.cs" />
+    <Compile Include="ViewModels\Invoice\FolioOfRoomViewModel.cs" />
+    <Compile Include="ViewModels\Invoice\InvoiceViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\ReportsViewModel.cs" />
@@ -176,6 +180,12 @@
     </Compile>
     <Compile Include="Views\GuestsView.xaml.cs">
       <DependentUpon>GuestsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Invoice\FolioOfRoomWindow.xaml.cs">
+      <DependentUpon>FolioOfRoomWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Invoice\InvoiceView.xaml.cs">
+      <DependentUpon>InvoiceView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LoginWindow.xaml.cs">
       <DependentUpon>LoginWindow.xaml</DependentUpon>
@@ -219,6 +229,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\AddTypeWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Invoice\FolioOfRoomWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Invoice\InvoiceView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

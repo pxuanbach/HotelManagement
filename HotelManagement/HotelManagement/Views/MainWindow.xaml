@@ -23,6 +23,10 @@
                     <Setter Property="ContentTemplate" Value="{StaticResource GuestsViewTemplate}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" 
+                             Value="Invoice">
+                    <Setter Property="ContentTemplate" Value="{StaticResource InvoiceViewTemplate}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" 
                              Value="Reports">
                     <Setter Property="ContentTemplate" Value="{StaticResource ReportsViewTemplate}"/>
                 </DataTrigger>
