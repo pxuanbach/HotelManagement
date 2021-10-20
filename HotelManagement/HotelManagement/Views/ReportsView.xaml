@@ -18,7 +18,7 @@
             <materialDesign:PackIcon HorizontalAlignment="Center"
                                               Foreground="{StaticResource PrimaryDarkBrush}"
                                               Width="100" Height="100"
-                                              Kind="Receipt"/>
+                                              Kind="FileChart"/>
             <TextBlock FontSize="40" FontWeight="Bold" 
                        VerticalAlignment="Center" HorizontalAlignment="Center" 
                        Foreground="{StaticResource PrimaryDarkBrush}"
