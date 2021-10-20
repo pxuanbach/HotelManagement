@@ -50,7 +50,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _removeSharerCommand ?? (_removeSharerCommand = new RelayCommand<GuestViewModel>((p) => true, (p) => RemoveSelectedSharer(p)));
+                return _removeSharerCommand ?? (_removeSharerCommand = new RelayCommand<GuestViewModel>((p) => Sharers.Count > 1, (p) => RemoveSelectedSharer(p)));
             }
         }
 
@@ -162,8 +162,16 @@ namespace HotelManagement.ViewModels
             get
             {
                 if (!FilledGuestInformation) return false;
-                if (StayInformation.Pax == 0) return false;
+                if (Sharers.Count == 0) return false;
                 if (StayInformation.Rooms == 0) return false;
+                foreach (var row in Sharers)
+                {
+                    if (String.IsNullOrEmpty(row.Name) ||
+                        String.IsNullOrEmpty(row.ID) ||
+                        String.IsNullOrEmpty(row.Gender) ||
+                        String.IsNullOrEmpty(row.Address)) 
+                        return false;
+                }
                 return true;
             }
         }
@@ -200,22 +208,23 @@ namespace HotelManagement.ViewModels
                     status = Guaranteed ? "Confirmed" : "On Request",
                 };
                 context.RESERVATIONs.Add(reservation);
+                context.SaveChanges();
 
                 // Insert main guest
-                var mainGuest = new GUEST()
+                if (!context.GUESTs.Any(g => g.id == GuestInformation.ID))
                 {
-                    id = GuestInformation.ID,
-                    name = GuestInformation.Name,
-                    gender = GuestInformation.Gender,
-                    birthday = GuestInformation.Birthday,
-                    email = GuestInformation.Email,
-                    phone = GuestInformation.Phone,
-                    address = GuestInformation.Address,
-                };
-
-                if (!context.GUESTs.Any(g => g.id == mainGuest.id))
-                {
+                    var mainGuest = new GUEST()
+                    {
+                        id = GuestInformation.ID,
+                        name = GuestInformation.Name,
+                        gender = GuestInformation.Gender,
+                        birthday = GuestInformation.Birthday,
+                        email = GuestInformation.Email,
+                        phone = GuestInformation.Phone,
+                        address = GuestInformation.Address,
+                    };
                     context.GUESTs.Add(mainGuest);
+                    context.SaveChanges();
                 }
 
                 // Insert room_booked
@@ -227,30 +236,32 @@ namespace HotelManagement.ViewModels
                         room_id = selectedRoom.RoomID,
                     };
                     context.ROOM_BOOKED.Add(bookedBoom);
+                    context.SaveChanges();
                 }
 
                 // Insert sharers
                 foreach (var sharer in Sharers)
                 {
-                    var newGuest = new GUEST()
+                    if (!context.GUESTs.Any(g => g.id == sharer.ID))
                     {
-                        id = sharer.ID,
-                        name = sharer.Name,
-                        gender = sharer.Gender,
-                        address = sharer.Address,
-                    };
-
-                    if (!context.GUESTs.Any(g => g.id == newGuest.id) && newGuest.id != mainGuest.id)
-                    {
+                        var newGuest = new GUEST()
+                        {
+                            id = sharer.ID,
+                            name = sharer.Name,
+                            gender = sharer.Gender,
+                            address = sharer.Address,
+                        };
                         context.GUESTs.Add(newGuest);
+                        context.SaveChanges();
                     }
 
                     var guestBooking = new GUEST_BOOKING()
                     {
                         reservation_id = reservation.id,
-                        guest_id = newGuest.id,
+                        guest_id = sharer.ID,
                     };
                     context.GUEST_BOOKING.Add(guestBooking);
+                    context.SaveChanges();
                 }
 
                 // Insert invoice
@@ -260,7 +271,6 @@ namespace HotelManagement.ViewModels
                     total_money = StayInformation.Total,
                 };
                 context.INVOICEs.Add(invoice);
-
                 context.SaveChanges();
             }
 
@@ -372,6 +382,7 @@ namespace HotelManagement.ViewModels
     class ReservationViewModel : BaseViewModel
     {
         private int _id;
+        private string _status;
         private DateTime _date_created;
         private DateTime _arrival;
         private DateTime _departure;
@@ -381,6 +392,8 @@ namespace HotelManagement.ViewModels
         private decimal _total;
 
         public int ID { get { return _id; } set { _id = value; OnPropertyChanged(); } }
+
+        public string Status { get { return _status; } set { _status = value; OnPropertyChanged(); } }
 
         public DateTime DateCreated { get { return _date_created; } set { _date_created = value; OnPropertyChanged(); } }
 

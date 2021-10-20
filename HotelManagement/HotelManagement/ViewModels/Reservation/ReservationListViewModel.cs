@@ -102,9 +102,9 @@ namespace HotelManagement.ViewModels
             foreach (var r in reservations)
             {
                 var res = r.First();
-                GUEST mainGuest = (from g in db.GUESTs where res.main_guest.Equals(g.id) select g).ToList().First();
+                GUEST mainGuest = (from g in db.GUESTs where res.main_guest.Equals(g.id) select g).SingleOrDefault();
 
-                decimal total = (decimal)(from inv in db.INVOICEs where inv.reservation_id == res.id select inv).First().total_money;
+                decimal total = (decimal)(from inv in db.INVOICEs where inv.reservation_id == res.id select inv).SingleOrDefault().total_money;
 
                 var obj = new ReservationItemViewModel()
                 {

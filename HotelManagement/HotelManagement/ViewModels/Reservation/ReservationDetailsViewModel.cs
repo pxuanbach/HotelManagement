@@ -67,7 +67,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _removeSharerCommand ?? (_removeSharerCommand = new RelayCommand<GuestViewModel>((p) => true, (p) => RemoveSelectedSharer(p)));
+                return _removeSharerCommand ?? (_removeSharerCommand = new RelayCommand<GuestViewModel>((p) => Sharers.Count > 1, (p) => RemoveSelectedSharer(p)));
             }
         }
 
@@ -86,6 +86,15 @@ namespace HotelManagement.ViewModels
             get
             {
                 return _removeRoomCommand ?? (_removeRoomCommand = new RelayCommand<RoomViewModel>((p) => BookedRooms.Count > 1, (p) => RemoveSelectedRoom(p)));
+            }
+        }
+
+        private ICommand _saveDataCommand;
+        public ICommand SaveDataCommand
+        {
+            get
+            {
+                return _saveDataCommand ?? (_saveDataCommand = new RelayCommand<Window>((p) => CanSaveData, (p) => SaveDataChange(p)));
             }
         }
 
@@ -173,6 +182,15 @@ namespace HotelManagement.ViewModels
 
         public void RemoveSelectedSharer(GuestViewModel sharer)
         {
+            if (sharer.ID != null)
+            {
+                var db = new HotelManagementEntities();
+                var guest_booking = db.GUEST_BOOKING.SingleOrDefault(gb => gb.reservation_id == StayInformation.ID &&
+                gb.guest_id == sharer.ID);
+                db.GUEST_BOOKING.Remove(guest_booking);
+                db.SaveChanges();
+            }
+
             Sharers.Remove(sharer);
             if (sharer.ID == GuestInformation.ID) BeASharer = false;
         }
@@ -199,6 +217,10 @@ namespace HotelManagement.ViewModels
                     room_id = room.RoomID,
                 };
                 db.ROOM_BOOKED.Add(bookedBoom);
+
+                var invoice = db.INVOICEs.SingleOrDefault(inv => inv.reservation_id == StayInformation.ID);
+                invoice.total_money += room.Price;
+
             }
             db.SaveChanges();
             wd.Close();
@@ -207,13 +229,18 @@ namespace HotelManagement.ViewModels
         public void RemoveSelectedRoom(RoomViewModel room)
         {
             var db = new HotelManagementEntities();
-            var room_booked = db.ROOM_BOOKED.Where(rb => rb.reservation_id == StayInformation.ID &&
-            rb.room_id == room.RoomID).First();
-            if (room_booked.FOLIOs == null)
+            var room_booked = db.ROOM_BOOKED.SingleOrDefault(rb => rb.reservation_id == StayInformation.ID &&
+            rb.room_id == room.RoomID);
+            if (room_booked.FOLIOs.Count() == 0)
             {
                 db.ROOM_BOOKED.Remove(room_booked);
-                db.SaveChanges();
                 BookedRooms.Remove(room);
+
+                var invoice = db.INVOICEs.SingleOrDefault(inv => inv.reservation_id == StayInformation.ID);
+                invoice.total_money -= room.Price;
+
+                db.SaveChanges();
+
             }
             else MessageBox.Show("Cannot remove booked room which registed a folio!!!", "[ERROR]");
         }
@@ -222,9 +249,9 @@ namespace HotelManagement.ViewModels
         {
             var db = new HotelManagementEntities();
 
-            var reservation = (from res in db.RESERVATIONs where res.id == ResID select res).First();
+            var reservation = (from res in db.RESERVATIONs where res.id == ResID select res).SingleOrDefault();
 
-            var mainGuest = (from g in db.GUESTs where reservation.main_guest == g.id select g).First();
+            var mainGuest = (from g in db.GUESTs where reservation.main_guest == g.id select g).SingleOrDefault();
 
             var rooms = (from r in db.ROOMs
                          join rt in db.ROOMTYPEs on r.roomtype_id equals rt.id
@@ -249,7 +276,8 @@ namespace HotelManagement.ViewModels
                 ID = reservation.id,
                 Arrival = (DateTime)reservation.arrival,
                 Departure = (DateTime)reservation.departure,
-                Total = (decimal)(from inv in db.INVOICEs where inv.reservation_id == ResID select inv).First().total_money,
+                Total = (decimal)(from inv in db.INVOICEs where inv.reservation_id == ResID select inv).SingleOrDefault().total_money,
+                Status = reservation.status,
             };
 
             GuestInformation = new GuestViewModel()
@@ -290,6 +318,83 @@ namespace HotelManagement.ViewModels
             }
         }
 
+        public bool CanSaveData
+        {
+            get
+            {
+                if (!FilledGuestInformation) return false;
+                foreach (var row in Sharers)
+                {
+                    if (String.IsNullOrEmpty(row.Name) ||
+                        String.IsNullOrEmpty(row.ID) ||
+                        String.IsNullOrEmpty(row.Gender) ||
+                        String.IsNullOrEmpty(row.Address))
+                        return false;
+                }
+                return true;
+            }
+        }
+
+        void SaveDataChange(Window window)
+        {
+            using (var context = new HotelManagementEntities())
+            {
+                // Update main guest information
+                var main_guest = context.GUESTs.SingleOrDefault(mg => mg.id == GuestInformation.ID);
+                main_guest.name = GuestInformation.Name;
+                main_guest.gender = GuestInformation.Gender;
+                main_guest.birthday = GuestInformation.Birthday;
+                main_guest.email = GuestInformation.Email;
+                main_guest.phone = GuestInformation.Phone;
+                main_guest.address = GuestInformation.Address;
+                context.SaveChanges();
+
+                // Update reservation information
+                var reservation = context.RESERVATIONs.SingleOrDefault(res => res.id == StayInformation.ID);
+                reservation.arrival = StayInformation.Arrival;
+                reservation.departure = StayInformation.Departure;
+                context.SaveChanges();
+
+                // Update sharer information
+                foreach (var sharer in Sharers)
+                {
+                    var existing_guest = context.GUESTs.SingleOrDefault(g => g.id == sharer.ID);
+                    if (existing_guest == null)
+                    {
+                        var guest = new GUEST()
+                        {
+                            id = sharer.ID,
+                            name = sharer.Name,
+                            gender = sharer.Gender,
+                            address = sharer.Address,
+                        };
+                        context.GUESTs.Add(guest);
+                    }
+                    else
+                    {
+                        existing_guest.name = sharer.Name;
+                        existing_guest.gender = sharer.Gender;
+                        existing_guest.address = sharer.Address;
+                    }
+                    context.SaveChanges();
+
+                    if (!context.GUEST_BOOKING.Any(gb => gb.reservation_id == reservation.id && gb.guest_id == sharer.ID))
+                    {
+                        var guestBooking = new GUEST_BOOKING()
+                        {
+                            reservation_id = reservation.id,
+                            guest_id = sharer.ID,
+                        };
+                        context.GUEST_BOOKING.Add(guestBooking);
+                        context.SaveChanges();
+                    }
+                }
+            }
+
+            window.Close();
+        }
+
+        #region AddRoomWindow
         public bool? IsAllRoomsSelected
         {
             get
@@ -375,14 +480,19 @@ namespace HotelManagement.ViewModels
             {
                 if ((sender as RoomViewModel).IsSelected)
                 {
+                    //StayInformation.Rooms++;
+                    //StayInformation.Total += (sender as RoomViewModel).Price;
                     SelectedRooms.Add(sender as RoomViewModel);
                 }
                 else
                 {
+                    //StayInformation.Rooms--;
+                    //StayInformation.Total -= (sender as RoomViewModel).Price;
                     SelectedRooms.Remove(sender as RoomViewModel);
                 }
                 OnPropertyChanged(nameof(IsAllRoomsSelected));
             }
         }
+        #endregion
     }
 }

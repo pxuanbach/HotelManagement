@@ -243,11 +243,11 @@
                                 <!--Gauranteed-->
                                 <TextBlock Grid.Row="4" Grid.Column="0"
                                     Margin="0,0,10,0" VerticalAlignment="Center"
-                                    Text="Guaranteed" FontSize="16"/>
+                                    Text="Status" FontSize="16"/>
 
-                                <CheckBox 
+                                <TextBlock 
                                     Grid.Row="4" Grid.Column="2" Height="26"
-                                    IsChecked="{Binding Guaranteed}"/>
+                                    Text="{Binding StayInformation.Status}"/>
 
                                 <!--Stays-->
                                 <TextBlock 
@@ -305,7 +305,8 @@
                                 
                                 <TextBlock Margin="5" Text="Booked Room" FontSize="18"/>
 
-                                <Button Grid.Column="2" Command="{Binding AddRoomCommand}">
+                                <Button Grid.Column="2"
+                                        Command="{Binding AddRoomCommand}">
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Kind="Add" VerticalAlignment="Center"/>
                                         <TextBlock Text="Add Room"/>
@@ -583,7 +584,7 @@
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
                         <Button 
                             Margin="15,0,0,0"
-                            Content="Reserve" Command="{Binding ReserveCommand}"
+                            Content="Save" Command="{Binding SaveDataCommand}"
                             CommandParameter="{Binding ElementName=windowReservationDetails}"/>
                         
                         <Button 
