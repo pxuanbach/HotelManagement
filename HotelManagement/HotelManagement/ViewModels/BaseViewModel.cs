@@ -81,6 +81,15 @@ namespace HotelManagement.ViewModels
                 e.Handled = true;
             }
         }
+
+        public void AlphabetValidationTextBox(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^a-zA-Z]+");
+            if (regex.IsMatch(e.Text))
+            {
+                e.Handled = true;
+            }
+        }
     }
 
     class RelayCommand<T> : ICommand
