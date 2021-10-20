@@ -98,8 +98,11 @@
             <DataTrigger Binding="{Binding}" Value="Rooms">
                 <Setter TargetName="MenuItemIcon" Property="Kind" Value="Home"/>
             </DataTrigger>
-            <DataTrigger Binding="{Binding}" Value="Reports">
+            <DataTrigger Binding="{Binding}" Value="Invoice">
                 <Setter TargetName="MenuItemIcon" Property="Kind" Value="Receipt"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding}" Value="Reports">
+                <Setter TargetName="MenuItemIcon" Property="Kind" Value="FileChart"/>
             </DataTrigger>
             <DataTrigger Binding="{Binding}" Value="Accounts">
                 <Setter TargetName="MenuItemIcon" Property="Kind" Value="Account"/>
@@ -117,6 +120,7 @@
         <system:String>Calendar</system:String>
         <system:String>Guests</system:String>
         <system:String>Rooms</system:String>
+        <system:String>Invoice</system:String>
         <system:String>Reports</system:String>
         <system:String>Accounts</system:String>
         <system:String>Services</system:String>
@@ -133,6 +137,9 @@
     </DataTemplate>
     <DataTemplate x:Key="GuestsViewTemplate" DataType="{x:Type viewModels:GuestsViewModel}">
         <views:GuestsView/>
+    </DataTemplate>
+    <DataTemplate x:Key="InvoiceViewTemplate" DataType="{x:Type viewModels:InvoiceViewModel}">
+        <views:InvoiceView/>
     </DataTemplate>
     <DataTemplate x:Key="ReportsViewTemplate" DataType="{x:Type viewModels:ReportsViewModel}">
         <views:ReportsView/>

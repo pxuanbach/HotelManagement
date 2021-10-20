@@ -23,6 +23,15 @@ namespace HotelManagement.ViewModels
                 return _newReservationCommand ?? (_newReservationCommand = new RelayCommand<object>((p) => true, (p) => OpenNewReservationWindow()));
             }
         }
+
+        private ICommand _reservationDetailsCommand;
+        public ICommand ReservationDetailsCommand
+        {
+            get
+            {
+                return _reservationDetailsCommand ?? (_reservationDetailsCommand = new RelayCommand<ReservationItemViewModel>((p) => true, (p) => OpenReservationDetailsWindow(p.ID)));
+            }
+        }
         public ReservationListViewModel()
         {
             Reservations = new ObservableCollection<ReservationItemViewModel>();
@@ -41,6 +50,13 @@ namespace HotelManagement.ViewModels
         public void OpenNewReservationWindow()
         {
             var wd = new NewReservationWindow();
+            wd.Show();
+        }
+
+        public void OpenReservationDetailsWindow(int ResID)
+        {
+            var wd = new ReservationDetailsWindow();
+            wd.DataContext = new ReservationDetailsViewModel(ResID);
             wd.Show();
         }
 
@@ -86,7 +102,9 @@ namespace HotelManagement.ViewModels
             foreach (var r in reservations)
             {
                 var res = r.First();
-                GUEST mainGuest = (from g in db.GUESTs where res.main_guest.Equals(g.id) select g).ToList()[0];
+                GUEST mainGuest = (from g in db.GUESTs where res.main_guest.Equals(g.id) select g).SingleOrDefault();
+
+                decimal total = (decimal)(from inv in db.INVOICEs where inv.reservation_id == res.id select inv).SingleOrDefault().total_money;
 
                 var obj = new ReservationItemViewModel()
                 {
@@ -97,7 +115,8 @@ namespace HotelManagement.ViewModels
                     DateCreated = (DateTime)res.date_created,
                     Arrival = (!res.arrival.HasValue) ? DateTime.Now : (DateTime)res.arrival,
                     Departure = (!res.departure.HasValue) ? DateTime.Now : (DateTime)res.departure,
-                    Pax = res.GUEST_BOOKING.Count
+                    Pax = res.GUEST_BOOKING.Count,
+                    Total = Decimal.Round(total),
                 };
 
                 Reservations.Add(obj);
