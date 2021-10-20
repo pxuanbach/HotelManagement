@@ -51,12 +51,19 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <ListBox x:Name="NavigationMenuListBox" Width="200"
+        <ListBox x:Name="NavigationMenuListBox" Width="50"
                  Style="{StaticResource NavigationListBoxStyle}"
                  ItemContainerStyle="{DynamicResource NavigationListBoxItemStyle}"
                  ItemTemplate="{DynamicResource NavigationDataTemplate}"
                  ItemsSource="{StaticResource NavigationMenuItems}"/>
-
-        <ContentControl Grid.Column="1" Style="{StaticResource NavigationContentStyle}"/>
+        
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Background="{StaticResource PrimaryDarkBrush}"></Grid>
+            <ContentControl Grid.Row="1" Style="{StaticResource NavigationContentStyle}"/>
+        </Grid>
     </Grid>
 </Window>

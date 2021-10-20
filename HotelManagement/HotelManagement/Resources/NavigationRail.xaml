@@ -80,6 +80,9 @@
         <materialDesign:PackIcon x:Name="MenuItemIcon" VerticalAlignment="Center" 
                                               HorizontalAlignment="Center" Margin="12"/>
         <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding}" Value="Menu">
+                <Setter TargetName="MenuItemIcon" Property="Kind" Value="Menu"/>
+            </DataTrigger>
             <DataTrigger Binding="{Binding}" Value="DashBoard">
                 <Setter TargetName="MenuItemIcon" Property="Kind" Value="ViewDashBoard"/>
             </DataTrigger>
@@ -111,6 +114,7 @@
     </DataTemplate>
 
     <x:Array x:Key="NavigationMenuItems" Type="system:String">
+        <system:String>Menu</system:String>
         <system:String>DashBoard</system:String>
         <system:String>Booking</system:String>
         <system:String>Calendar</system:String>
