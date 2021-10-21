@@ -533,18 +533,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-
-                    <StackPanel Grid.Column="0" Orientation="Horizontal">
-                        <TextBlock 
-                            Margin="0,0,15,0"
-                            Text="Total" FontSize="22" FontWeight="Bold"/>
-                        
-                        <TextBlock 
-                            Text="{Binding StayInformation.Total, Mode=OneWay, StringFormat={}{0:c}, ConverterCulture='vi-VN'}" 
-                            FontSize="22" FontWeight="Bold"
-                            Foreground="{StaticResource PrimaryHueMidBrush}"/>
-                    </StackPanel>
-
+                    
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
                         <Button 
                             Content="Reserve" Command="{Binding ReserveCommand}"

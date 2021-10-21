@@ -14,6 +14,9 @@
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
         Title="Reservation Details">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -178,7 +181,7 @@
                                     materialDesign:TextFieldAssist.HasClearButton="True"
                                     materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"/>
 
-                                <Button 
+                                <Button Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibilityConverter}}"
                                     Grid.Row="6" Grid.Column="4" Height="24" 
                                     Content="Be a sharer" Padding="3" FontSize="14"
                                     VerticalAlignment="Bottom"
@@ -276,17 +279,6 @@
                                     Grid.Row="4" Grid.Column="6"
                                     Text="{Binding StayInformation.Rooms}" FontSize="16"/>
                             </Grid>
-
-                            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <TextBlock 
-                                    Margin="0,0,15,0"
-                                    Text="Total" FontSize="22" FontWeight="Bold"/>
-
-                                <TextBlock 
-                                    Text="{Binding StayInformation.Total, Mode=OneWay, StringFormat={}{0:c}, ConverterCulture='vi-VN'}" 
-                                    FontSize="22" FontWeight="Bold"
-                                    Foreground="{StaticResource PrimaryHueMidBrush}"/>
-                            </StackPanel>
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -305,7 +297,7 @@
                                 
                                 <TextBlock Margin="5" Text="Booked Room" FontSize="18"/>
 
-                                <Button Grid.Column="2"
+                                <Button Grid.Column="2" Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibilityConverter}}"
                                         Command="{Binding AddRoomCommand}">
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Kind="Add" VerticalAlignment="Center"/>
@@ -435,7 +427,8 @@
 
                                 <TextBlock Grid.Column="0" Margin="5" Text="Sharer" FontSize="18"/>
 
-                                <Button Grid.Column="2" Command="{Binding AddSharerCommand}">
+                                <Button Grid.Column="2" Command="{Binding AddSharerCommand}"
+                                        Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibilityConverter}}">
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Kind="Add" VerticalAlignment="Center"/>
                                         <TextBlock Text="Add Sharer"/>
@@ -573,7 +566,7 @@
                             Margin="10,0,0,0"
                             Text="Read Only" FontSize="16" FontWeight="Bold"/>
 
-                        <ToggleButton
+                        <ToggleButton x:Name="swEdit" 
                             Margin="15,0,15,0" Command="{Binding CanEditCommand}"
                             Style="{StaticResource MaterialDesignSwitchToggleButton}"/>
 
@@ -588,6 +581,7 @@
                             CommandParameter="{Binding ElementName=windowReservationDetails}"/>
                         
                         <Button 
+                            Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibilityConverter}}"
                             Command="{Binding CancelCommand}"
                             CommandParameter="{Binding ElementName=windowReservationDetails}"
                             Margin="15,0,0,0" Content="Cancel" BorderThickness="1.5"

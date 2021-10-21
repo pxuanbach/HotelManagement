@@ -217,10 +217,6 @@ namespace HotelManagement.ViewModels
                     room_id = room.RoomID,
                 };
                 db.ROOM_BOOKED.Add(bookedBoom);
-
-                var invoice = db.INVOICEs.SingleOrDefault(inv => inv.reservation_id == StayInformation.ID);
-                invoice.total_money += room.Price;
-
             }
             db.SaveChanges();
             wd.Close();
@@ -235,9 +231,6 @@ namespace HotelManagement.ViewModels
             {
                 db.ROOM_BOOKED.Remove(room_booked);
                 BookedRooms.Remove(room);
-
-                var invoice = db.INVOICEs.SingleOrDefault(inv => inv.reservation_id == StayInformation.ID);
-                invoice.total_money -= room.Price;
 
                 db.SaveChanges();
 
@@ -276,7 +269,6 @@ namespace HotelManagement.ViewModels
                 ID = reservation.id,
                 Arrival = (DateTime)reservation.arrival,
                 Departure = (DateTime)reservation.departure,
-                Total = (decimal)(from inv in db.INVOICEs where inv.reservation_id == ResID select inv).SingleOrDefault().total_money,
                 Status = reservation.status,
             };
 
@@ -298,7 +290,7 @@ namespace HotelManagement.ViewModels
                     RoomID = room.RoomID,
                     RoomName = room.RoomName,
                     RoomType = room.TypeName,
-                    Price = Decimal.Round((decimal)room.Price),
+                    Price = SeparateThousands(((long)room.Price).ToString()),
                 };
                 BookedRooms.Add(obj);
             }
@@ -465,7 +457,7 @@ namespace HotelManagement.ViewModels
                     RoomType = room.TypeName,
                     RoomName = room.RoomName,
                     RoomTypeID = room.TypeID,
-                    Price = Decimal.Round((decimal)room.Price),
+                    Price = SeparateThousands(room.Price.ToString()),
                 };
 
                 AvailableRooms.Add(obj);
@@ -480,14 +472,10 @@ namespace HotelManagement.ViewModels
             {
                 if ((sender as RoomViewModel).IsSelected)
                 {
-                    //StayInformation.Rooms++;
-                    //StayInformation.Total += (sender as RoomViewModel).Price;
                     SelectedRooms.Add(sender as RoomViewModel);
                 }
                 else
                 {
-                    //StayInformation.Rooms--;
-                    //StayInformation.Total -= (sender as RoomViewModel).Price;
                     SelectedRooms.Remove(sender as RoomViewModel);
                 }
                 OnPropertyChanged(nameof(IsAllRoomsSelected));
