@@ -170,31 +170,7 @@
                 CanUserResizeColumns="False" IsReadOnly="False"
                 CanUserAddRows="False" AutoGenerateColumns="False"
                 HeadersVisibility="All">
-                <DataGrid.Resources>
-                    <viewModels:BindingProxy
-                        x:Key="DataContextProxy"
-                        Data="{Binding}" />
-                </DataGrid.Resources>
-
                 <DataGrid.Columns>
-                    <DataGridCheckBoxColumn
-                        Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" 
-                        ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
-                        EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}">
-                        <DataGridCheckBoxColumn.Header>
-                            <Border Background="Transparent">
-                                <CheckBox
-                                    IsChecked="{Binding Data.IsAllReservationsSelected, Source={StaticResource DataContextProxy}}"/>
-                            </Border>
-                        </DataGridCheckBoxColumn.Header>
-
-                        <DataGridCheckBoxColumn.HeaderStyle>
-                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
-                                <Setter Property="HorizontalContentAlignment" Value="Center" />
-                            </Style>
-                        </DataGridCheckBoxColumn.HeaderStyle>
-                    </DataGridCheckBoxColumn>
-
                     <DataGridTextColumn
                         Header="Status" Binding="{Binding Status}" 
                         IsReadOnly="True">
@@ -316,26 +292,6 @@
                     </DataGridTextColumn>
 
                     <DataGridTextColumn
-                        Header="Total" Binding="{Binding Total}"
-                        IsReadOnly="True">
-                        <DataGridTextColumn.HeaderStyle>
-                            <Style TargetType="{x:Type DataGridColumnHeader}"
-                                   BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                <Setter Property="HorizontalAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.HeaderStyle>
-
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="{x:Type TextBlock}"
-                                   BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                <Setter Property="HorizontalAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
-
-                    <DataGridTextColumn
                         Header="Create date" Binding="{Binding DateCreated}"
                         IsReadOnly="True">
                         <DataGridTextColumn.HeaderStyle>
@@ -358,23 +314,17 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Width="40" Padding="0"
-                                        Style="{StaticResource MaterialDesignOutlinedButton}"
-                                        BorderThickness="1.5"
-                                        Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.ReservationDetailsCommand}"
-                                        CommandParameter="{Binding}">
-                                    <materialDesign:PackIcon Kind="Edit" Foreground="{StaticResource PrimaryHueMidBrush}"/>
-                                </Button>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-
-                    <DataGridTemplateColumn>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Width="40" Padding="0">
-                                    <materialDesign:PackIcon Kind="Delete"/>
-                                </Button>
+                                <materialDesign:PopupBox>
+                                    <ListBox ItemsSource="{Binding Options}">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <ContentControl>
+                                                    <Button Content="{Binding Content}" Command="{Binding Command}"/>
+                                                </ContentControl>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </materialDesign:PopupBox>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>

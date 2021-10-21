@@ -1,11 +1,9 @@
 ﻿using HotelManagement.Models;
 using HotelManagement.Views;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 
@@ -24,65 +22,16 @@ namespace HotelManagement.ViewModels
             }
         }
 
-        private ICommand _reservationDetailsCommand;
-        public ICommand ReservationDetailsCommand
-        {
-            get
-            {
-                return _reservationDetailsCommand ?? (_reservationDetailsCommand = new RelayCommand<ReservationItemViewModel>((p) => true, (p) => OpenReservationDetailsWindow(p.ID)));
-            }
-        }
         public ReservationListViewModel()
         {
             Reservations = new ObservableCollection<ReservationItemViewModel>();
             LoadAllReservations();
-
-            foreach (var model in Reservations)
-            {
-                model.PropertyChanged += (sender, args) =>
-                {
-                    if (args.PropertyName == nameof(ReservationItemViewModel.IsSelected))
-                        OnPropertyChanged(nameof(IsAllReservationsSelected));
-                };
-            }
         }
 
         public void OpenNewReservationWindow()
         {
             var wd = new NewReservationWindow();
             wd.Show();
-        }
-
-        public void OpenReservationDetailsWindow(int ResID)
-        {
-            var wd = new ReservationDetailsWindow();
-            wd.DataContext = new ReservationDetailsViewModel(ResID);
-            wd.Show();
-        }
-
-        public bool? IsAllReservationsSelected
-        {
-            get
-            {
-                var selected = Reservations.Select(item => item.IsSelected).Distinct().ToList();
-                return selected.Count == 1 ? selected.Single() : (bool?)null;
-            }
-            set
-            {
-                if (value.HasValue)
-                {
-                    SelectAll(value.Value, Reservations);
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private static void SelectAll(bool select, IEnumerable<ReservationItemViewModel> models)
-        {
-            foreach (var model in models)
-            {
-                model.IsSelected = select;
-            }
         }
 
         private void LoadAllReservations()
@@ -104,8 +53,6 @@ namespace HotelManagement.ViewModels
                 var res = r.First();
                 GUEST mainGuest = (from g in db.GUESTs where res.main_guest.Equals(g.id) select g).SingleOrDefault();
 
-                decimal total = (decimal)(from inv in db.INVOICEs where inv.reservation_id == res.id select inv).SingleOrDefault().total_money;
-
                 var obj = new ReservationItemViewModel()
                 {
                     ID = res.id,
@@ -116,7 +63,6 @@ namespace HotelManagement.ViewModels
                     Arrival = (!res.arrival.HasValue) ? DateTime.Now : (DateTime)res.arrival,
                     Departure = (!res.departure.HasValue) ? DateTime.Now : (DateTime)res.departure,
                     Pax = res.GUEST_BOOKING.Count,
-                    Total = Decimal.Round(total),
                 };
 
                 Reservations.Add(obj);
@@ -126,7 +72,6 @@ namespace HotelManagement.ViewModels
 
     class ReservationItemViewModel : BaseViewModel
     {
-        private bool _isSelected;
         private int _id;
         private string _status;
         private string _guest;
@@ -135,9 +80,6 @@ namespace HotelManagement.ViewModels
         private DateTime _departure;
         private int _rooms;
         private int _pax;
-        private decimal _total;
-
-        public bool IsSelected { get { return _isSelected; } set { _isSelected = value; OnPropertyChanged(); } }
 
         public int ID { get { return _id; } set { _id = value; OnPropertyChanged(); } }
 
@@ -149,12 +91,69 @@ namespace HotelManagement.ViewModels
 
         public DateTime DateCreated { get { return _date_created; } set { _date_created = value; OnPropertyChanged(); } }
 
-        public DateTime Arrival { get { return _arrival; } set { _arrival = value; OnPropertyChanged("Arrival"); } }
+        public DateTime Arrival { get { return _arrival; } set { _arrival = value; OnPropertyChanged(); } }
 
         public DateTime Departure { get { return _departure; } set { _departure = value; OnPropertyChanged(); } }
 
         public int Pax { get { return _pax; } set { _pax = value; OnPropertyChanged(); } }
 
-        public decimal Total { get { return _total; } set { _total = value; OnPropertyChanged(); } }
+        public ObservableCollection<Option> Options { get; set; }
+
+        private ICommand _detailsCommand;
+        public ICommand DetailsCommand
+        {
+            get
+            {
+                return _detailsCommand ?? (_detailsCommand = new RelayCommand<object>((p) => true, (p) => OpenReservationDetailsWindow()));
+            }
+        }
+
+        private ICommand _command;
+        public ICommand Command
+        {
+            get
+            {
+                return _command ?? (_command = new RelayCommand<object>((p) => true, (p) => { MessageBox.Show("PHAI TOI TOI DAM CHO MAY NHAT!!!"); }));
+            }
+        }
+
+        public void OpenReservationDetailsWindow()
+        {
+            var wd = new ReservationDetailsWindow();
+            wd.DataContext = new ReservationDetailsViewModel(ID);
+            wd.Show();
+        }
+
+        public ReservationItemViewModel()
+        {
+            Options = new ObservableCollection<Option>();
+            var option1 = new Option()
+            {
+                Content = "Details",
+                Command = DetailsCommand,
+            };
+            Options.Add(option1);
+            var option2 = new Option()
+            {
+                Content = "Check In",
+                Command = Command,
+            };
+            Options.Add(option2);
+            var option3 = new Option()
+            {
+                Content = "Check Out",
+                Command = Command,
+            };
+            Options.Add(option3);
+        }
+    }
+
+    class Option : BaseViewModel
+    {
+        private string _content;
+        private ICommand _command;
+
+        public string Content { get { return _content; } set { _content = value; OnPropertyChanged(); } }
+        public ICommand Command { get { return _command; } set { _command = value; OnPropertyChanged(); } }
     }
 }
