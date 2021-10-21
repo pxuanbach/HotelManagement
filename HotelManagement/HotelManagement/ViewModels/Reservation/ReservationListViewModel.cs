@@ -97,6 +97,7 @@ namespace HotelManagement.ViewModels
 
         public int Pax { get { return _pax; } set { _pax = value; OnPropertyChanged(); } }
 
+        #region Option Popup
         public ObservableCollection<Option> Options { get; set; }
 
         private ICommand _detailsCommand;
@@ -124,7 +125,7 @@ namespace HotelManagement.ViewModels
             wd.Show();
         }
 
-        public ReservationItemViewModel()
+        private void InitializePopup()
         {
             Options = new ObservableCollection<Option>();
             var option1 = new Option()
@@ -145,6 +146,12 @@ namespace HotelManagement.ViewModels
                 Command = Command,
             };
             Options.Add(option3);
+        }
+        #endregion
+
+        public ReservationItemViewModel()
+        {
+            InitializePopup();
         }
     }
 

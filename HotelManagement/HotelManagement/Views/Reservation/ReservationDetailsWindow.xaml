@@ -297,7 +297,8 @@
                                 
                                 <TextBlock Margin="5" Text="Booked Room" FontSize="18"/>
 
-                                <Button Grid.Column="2" Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibilityConverter}}"
+                                <Button Grid.Column="2"
+                                        Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibilityConverter}}"
                                         Command="{Binding AddRoomCommand}">
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Kind="Add" VerticalAlignment="Center"/>
@@ -576,15 +577,16 @@
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
                         <Button 
-                            Margin="15,0,0,0"
+                            Margin="15,0,0,0" Width="70"
+                            Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibilityConverter}}"
                             Content="Save" Command="{Binding SaveDataCommand}"
                             CommandParameter="{Binding ElementName=windowReservationDetails}"/>
                         
                         <Button 
-                            Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Margin="15,0,0,0" Width="70"
                             Command="{Binding CancelCommand}"
                             CommandParameter="{Binding ElementName=windowReservationDetails}"
-                            Margin="15,0,0,0" Content="Cancel" BorderThickness="1.5"
+                            Content="Cancel" BorderThickness="1.5"
                             Style="{StaticResource MaterialDesignOutlinedButton}"/>
                     </StackPanel>
                 </Grid>
