@@ -249,8 +249,8 @@
                                     Text="Status" FontSize="16"/>
 
                                 <TextBlock 
-                                    Grid.Row="4" Grid.Column="2" Height="26"
-                                    Text="{Binding StayInformation.Status}"/>
+                                    Grid.Row="4" Grid.Column="2"
+                                    Text="{Binding StayInformation.Status}" FontSize="16"/>
 
                                 <!--Stays-->
                                 <TextBlock 

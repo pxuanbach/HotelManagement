@@ -457,7 +457,7 @@ namespace HotelManagement.ViewModels
                     RoomType = room.TypeName,
                     RoomName = room.RoomName,
                     RoomTypeID = room.TypeID,
-                    Price = SeparateThousands(room.Price.ToString()),
+                    Price = SeparateThousands(((long)room.Price).ToString()),
                 };
 
                 AvailableRooms.Add(obj);

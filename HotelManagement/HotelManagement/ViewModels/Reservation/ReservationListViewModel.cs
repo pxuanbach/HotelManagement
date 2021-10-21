@@ -40,17 +40,10 @@ namespace HotelManagement.ViewModels
 
             var db = new HotelManagementEntities();
 
-            var reservations = (from res in db.RESERVATIONs 
-                                join rb in db.ROOM_BOOKED on res.id equals rb.reservation_id
-                                join r in db.ROOMs on rb.room_id equals r.id
-                                join rt in db.ROOMTYPEs on r.roomtype_id equals rt.id
-                                where res.date_created >= rt.date_created && (rt.date_updated == null || res.date_created <= rt.date_updated)
-                                group res by res.id into g
-                                select g).ToList();
+            var reservations = (from res in db.RESERVATIONs select res).ToList();
 
-            foreach (var r in reservations)
+            foreach (var res in reservations)
             {
-                var res = r.First();
                 GUEST mainGuest = (from g in db.GUESTs where res.main_guest.Equals(g.id) select g).SingleOrDefault();
 
                 var obj = new ReservationItemViewModel()
