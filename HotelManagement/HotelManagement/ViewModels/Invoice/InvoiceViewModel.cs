@@ -295,7 +295,9 @@ namespace HotelManagement.ViewModels
                 return true;
             }, (p) =>
             {
-
+                string path = @"invoice.pdf";
+                ExportInvoice export = new ExportInvoice();
+                export.Export(path);
             });
         }
 
