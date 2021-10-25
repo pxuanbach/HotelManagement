@@ -158,6 +158,7 @@
     <Compile Include="ViewModels\ReportsViewModel.cs" />
     <Compile Include="ViewModels\Reservation\BindingProxy.cs" />
     <Compile Include="ViewModels\Reservation\NewReservationViewModel.cs" />
+    <Compile Include="ViewModels\Reservation\PageNavigationViewModel.cs" />
     <Compile Include="ViewModels\Reservation\ReservationDetailsViewModel.cs" />
     <Compile Include="ViewModels\Reservation\ReservationListViewModel.cs" />
     <Compile Include="ViewModels\RoomsViewModels.cs" />

@@ -184,7 +184,6 @@ namespace HotelManagement.ViewModels
         public void ReserveLikeASharer()
         {
             Sharers.Add(GuestInformation);
-            Console.WriteLine(Sharers.Count);
             BeASharer = true;
         }
 
@@ -312,6 +311,8 @@ namespace HotelManagement.ViewModels
                            from rs in result.DefaultIfEmpty()
                            join res in db.RESERVATIONs on rs.reservation_id equals res.id into result1
                            from rs1 in result1.DefaultIfEmpty()
+                           where rt.date_created <= DateTime.Today && (rt.date_updated == null || rt.date_updated >= DateTime.Today) &&
+                           r.out_of_service == false && r.dirty == false
                            select new
                            {
                                 RoomID = r.id,
@@ -322,21 +323,20 @@ namespace HotelManagement.ViewModels
                                 Arrival = rs1.arrival,
                                 Departure = rs1.departure,
                                 Price = rt.price,
-                                RT_DateCreated = rt.date_created,
-                                RT_DateUpdated = rt.date_updated,
-                                OOS = r.out_of_service,
                            };
 
             var excepts = from r in allrooms where !(r.Arrival >= StayInformation.Departure || r.Departure <= StayInformation.Arrival) select r;
 
-            var rooms = (from r in allrooms
-                         where !excepts.Any(exc => exc.RoomID == r.RoomID) || r.ResID == 0 &&
-                         r.RT_DateCreated <= DateTime.Today && (r.RT_DateUpdated == null || r.RT_DateUpdated >= DateTime.Today) &&
-                         r.OOS == false
-                         select r).ToList();
+            // Thieu truong hop cancelled res va on request res
 
-            foreach (var room in rooms)
+            var rooms = (from r in allrooms
+                         where !excepts.Any(exc => exc.RoomID == r.RoomID) || r.ResID == 0 
+                         group r by r.RoomID into rs
+                         select rs).ToList();
+
+            foreach (var r in rooms)
             {
+                var room = r.FirstOrDefault();
                 var obj = new RoomViewModel()
                 {
                     RoomID = room.RoomID,
@@ -345,14 +345,11 @@ namespace HotelManagement.ViewModels
                     RoomTypeID = room.TypeID,
                     Price = SeparateThousands(((long)room.Price).ToString()),
                 };
-                //Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}", room.RoomID, room.RoomName, room.ResID, room.Arrival, room.Departure);
 
                 AvailableRooms.Add(obj);
 
                 AvailableRooms.Last().PropertyChanged += NewReservationViewModel_PropertyChanged;
             }
-
-            //Console.WriteLine(AvailableRooms.Count);
         }
 
         private void NewReservationViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

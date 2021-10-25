@@ -11,6 +11,7 @@ namespace HotelManagement.ViewModels
 {
     class ReservationListViewModel : BaseViewModel
     {
+        public PageNavigationViewModel PageNavigationViewModel { get; set; }
         public ObservableCollection<ReservationItemViewModel> Reservations { get; set; }
 
         private ICommand _newReservationCommand;
@@ -24,8 +25,25 @@ namespace HotelManagement.ViewModels
 
         public ReservationListViewModel()
         {
+            PageNavigationViewModel = new PageNavigationViewModel();
+            PageNavigationViewModel.PageSize = 2;
+
+            var db = new HotelManagementEntities();
+            PageNavigationViewModel.SumRecords = db.RESERVATIONs.Count();
+
             Reservations = new ObservableCollection<ReservationItemViewModel>();
-            LoadAllReservations();
+
+            PageNavigationViewModel.PropertyChanged += PageNavigationViewModel_PropertyChanged;
+            PageNavigationViewModel.CurrentPage = 1;
+        }
+
+        private void PageNavigationViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(PageNavigationViewModel.CurrentPage))
+            {
+                Console.WriteLine(PageNavigationViewModel.PageTitle);
+                LoadAllReservations();
+            }
         }
 
         public void OpenNewReservationWindow()
@@ -40,7 +58,13 @@ namespace HotelManagement.ViewModels
 
             var db = new HotelManagementEntities();
 
-            var reservations = (from res in db.RESERVATIONs select res).ToList();
+            int selectedRecords = PageNavigationViewModel.SelectedRecords;
+            int exceptRecords = PageNavigationViewModel.ExceptRecords;
+
+            Console.WriteLine("Selected: {0}, Except: {1}", selectedRecords, exceptRecords);
+
+            var reservations = (from res in db.RESERVATIONs select res).Take(selectedRecords).ToList();
+            reservations.RemoveRange(0, exceptRecords);
 
             foreach (var res in reservations)
             {
@@ -53,10 +77,14 @@ namespace HotelManagement.ViewModels
                     Rooms = res.ROOM_BOOKED.Count,
                     Guest = mainGuest.name,
                     DateCreated = (DateTime)res.date_created,
-                    Arrival = (!res.arrival.HasValue) ? DateTime.Now : (DateTime)res.arrival,
-                    Departure = (!res.departure.HasValue) ? DateTime.Now : (DateTime)res.departure,
+                    Arrival = (DateTime)res.arrival,
+                    Departure = (DateTime)res.departure,
                     Pax = res.GUEST_BOOKING.Count,
                 };
+
+                Console.WriteLine(obj.ID);
+
+                obj.InitializePopup();
 
                 Reservations.Add(obj);
             }
@@ -65,6 +93,7 @@ namespace HotelManagement.ViewModels
 
     class ReservationItemViewModel : BaseViewModel
     {
+        #region Property
         private int _id;
         private string _status;
         private string _guest;
@@ -89,6 +118,7 @@ namespace HotelManagement.ViewModels
         public DateTime Departure { get { return _departure; } set { _departure = value; OnPropertyChanged(); } }
 
         public int Pax { get { return _pax; } set { _pax = value; OnPropertyChanged(); } }
+        #endregion
 
         #region Option Popup
         public ObservableCollection<Option> Options { get; set; }
@@ -102,50 +132,125 @@ namespace HotelManagement.ViewModels
             }
         }
 
-        private ICommand _command;
-        public ICommand Command
+        private ICommand _checkinCommand;
+        public ICommand CheckinCommand
         {
             get
             {
-                return _command ?? (_command = new RelayCommand<object>((p) => true, (p) => { MessageBox.Show("PHAI TOI TOI DAM CHO MAY NHAT!!!"); }));
+                return _checkinCommand ?? (_checkinCommand = new RelayCommand<object>((p) => true, (p) => CheckIn()));
             }
         }
 
-        public void OpenReservationDetailsWindow()
+        private ICommand _cancelResCommand;
+        public ICommand CancelResCommand
+        {
+            get
+            {
+                return _cancelResCommand ?? (_cancelResCommand = new RelayCommand<object>((p) => true, (p) => CancelRes()));
+            }
+        }
+
+        private ICommand _checkoutCommand;
+        public ICommand CheckoutCommand
+        {
+            get
+            {
+                return _checkoutCommand ?? (_checkoutCommand = new RelayCommand<object>((p) => true, (p) => CheckOut()));
+            }
+        }
+
+        private ICommand _confirmGuaranteeCommand;
+        public ICommand ConfirmGuaranteeCommand
+        {
+            get
+            {
+                return _confirmGuaranteeCommand ?? (_confirmGuaranteeCommand = new RelayCommand<object>((p) => true, (p) => ConfirmGuarantee()));
+            }
+        }
+
+        private void OpenReservationDetailsWindow()
         {
             var wd = new ReservationDetailsWindow();
             wd.DataContext = new ReservationDetailsViewModel(ID);
             wd.Show();
         }
 
-        private void InitializePopup()
+        private void CheckIn()
+        {
+            var db = new HotelManagementEntities();
+            db.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Operational";
+            db.SaveChanges();
+        }
+
+        private void CancelRes()
+        {
+            var db = new HotelManagementEntities();
+            db.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Cancelled";
+            db.SaveChanges();
+        }
+
+        private void CheckOut()
+        {
+            var db = new HotelManagementEntities();
+            db.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Completed";
+            db.SaveChanges();
+        }
+
+        private void ConfirmGuarantee()
+        {
+            var db = new HotelManagementEntities();
+            db.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Confirmed";
+            db.SaveChanges();
+        }
+
+        public void InitializePopup()
         {
             Options = new ObservableCollection<Option>();
-            var option1 = new Option()
+            var option = new Option()
             {
-                Content = "Details",
+                Content = "Edit details",
                 Command = DetailsCommand,
             };
-            Options.Add(option1);
-            var option2 = new Option()
+            Options.Add(option);
+
+            if (Status == "On Request")
             {
-                Content = "Check In",
-                Command = Command,
-            };
-            Options.Add(option2);
-            var option3 = new Option()
+                option = new Option()
+                {
+                    Content = "Confirm guarantee",
+                    Command = ConfirmGuaranteeCommand,
+                };
+                Options.Add(option);
+            }
+
+            if (Status == "On Request" || Status == "Confirmed" || Status == "No Show")
             {
-                Content = "Check Out",
-                Command = Command,
-            };
-            Options.Add(option3);
+                option = new Option()
+                {
+                    Content = "Check in",
+                    Command = CheckinCommand,
+                };
+                Options.Add(option);
+
+                option = new Option()
+                {
+                    Content = "Cancel reservation",
+                    Command = CancelResCommand,
+                };
+                Options.Add(option);
+            }
+            
+            if (Status == "Operational")
+            {
+                option = new Option()
+                {
+                    Content = "Check out",
+                    Command = CheckoutCommand,
+                };
+                Options.Add(option);
+            }           
         }
         #endregion
-
-        public ReservationItemViewModel()
-        {
-            InitializePopup();
-        }
     }
 
     class Option : BaseViewModel

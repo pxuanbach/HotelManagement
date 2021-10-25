@@ -17,6 +17,8 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Margin="10,20,0,5">
@@ -164,7 +166,7 @@
             </Grid>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="0,5,0,0" Height="600">
+        <Grid Grid.Row="2" Margin="0,5,0,0" Height="570">
             <DataGrid
                 ItemsSource="{Binding Reservations}" 
                 CanUserResizeColumns="False" IsReadOnly="False"
@@ -345,7 +347,10 @@
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
                                                 <ContentControl>
-                                                    <Button Content="{Binding Content}" Command="{Binding Command}"/>
+                                                    <Button 
+                                                        Height="22" FontSize="12" 
+                                                        Style="{StaticResource MaterialDesignToolButton}"
+                                                        Content="{Binding Content}" Command="{Binding Command}"/>
                                                 </ContentControl>
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>
@@ -363,6 +368,46 @@
                     </Style>
                 </DataGrid.CellStyle>
             </DataGrid>
+        </Grid>
+
+        <Grid Grid.Row="4" Margin="0,5,0,10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button 
+                    Margin="5,0,5,0"
+                    Command="{Binding PageNavigationViewModel.FirstPageCommand}"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    materialDesign:ButtonAssist.CornerRadius="15">
+                    <materialDesign:PackIcon Kind="FirstPage" VerticalAlignment="Center"/>
+                </Button>
+
+                <Button 
+                    Margin="5,0,5,0" 
+                    Command="{Binding PageNavigationViewModel.PreviousPageCommand}"
+                    materialDesign:ButtonAssist.CornerRadius="15">
+                    <materialDesign:PackIcon Kind="ArrowLeft"/>
+                </Button>
+
+                <Button
+                    Margin="5,0,5,0" 
+                    Content="{Binding PageNavigationViewModel.PageTitle}"
+                    Style="{StaticResource MaterialDesignOutlinedDarkButton}"
+                    BorderThickness="1.5" materialDesign:ButtonAssist.CornerRadius="15">
+                </Button>
+
+                <Button 
+                    Margin="5,0,5,0" 
+                    Command="{Binding PageNavigationViewModel.NextPageCommand}"
+                    materialDesign:ButtonAssist.CornerRadius="15">
+                    <materialDesign:PackIcon Kind="ArrowRight"/>
+                </Button>
+
+                <Button 
+                    Margin="5,0,5,0" 
+                    Command="{Binding PageNavigationViewModel.LastPageCommand}"
+                    materialDesign:ButtonAssist.CornerRadius="15">
+                    <materialDesign:PackIcon Kind="LastPage"/>
+                </Button>
+            </StackPanel>
         </Grid>
     </Grid>
 </UserControl>
