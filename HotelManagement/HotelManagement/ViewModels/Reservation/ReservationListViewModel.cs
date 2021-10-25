@@ -41,7 +41,6 @@ namespace HotelManagement.ViewModels
         {
             if (e.PropertyName == nameof(PageNavigationViewModel.CurrentPage))
             {
-                Console.WriteLine(PageNavigationViewModel.PageTitle);
                 LoadAllReservations();
             }
         }
@@ -61,8 +60,6 @@ namespace HotelManagement.ViewModels
             int selectedRecords = PageNavigationViewModel.SelectedRecords;
             int exceptRecords = PageNavigationViewModel.ExceptRecords;
 
-            Console.WriteLine("Selected: {0}, Except: {1}", selectedRecords, exceptRecords);
-
             var reservations = (from res in db.RESERVATIONs select res).Take(selectedRecords).ToList();
             reservations.RemoveRange(0, exceptRecords);
 
@@ -81,8 +78,6 @@ namespace HotelManagement.ViewModels
                     Departure = (DateTime)res.departure,
                     Pax = res.GUEST_BOOKING.Count,
                 };
-
-                Console.WriteLine(obj.ID);
 
                 obj.InitializePopup();
 

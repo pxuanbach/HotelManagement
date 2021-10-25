@@ -9,6 +9,7 @@ namespace HotelManagement.ViewModels
 {
     class PageNavigationViewModel : BaseViewModel
     {
+        // Show current page and max page
         private string _pageTitle;
         public string PageTitle { get { return _pageTitle; } set { _pageTitle = value; OnPropertyChanged(); } }
 
@@ -18,12 +19,14 @@ namespace HotelManagement.ViewModels
         private int _maxPage;
         public int MaxPage { get { return _maxPage; } set { _maxPage = value; OnPropertyChanged(); } }
 
+        // Number of records per page
         private int _pageSize;
         public int PageSize { get { return _pageSize; } set { _pageSize = value; UpdateMaxPage(); OnPropertyChanged(); } }
 
         private int _sumRecords;
         public int SumRecords { get { return _sumRecords; } set { _sumRecords = value; UpdateMaxPage(); OnPropertyChanged(); } }
 
+        // Example: Get records from 11 to 20 by selecting top 20 records, then removing top 10 records
         private int _selectedRecords;
         public int SelectedRecords { get { return _selectedRecords; } set { _selectedRecords = value; OnPropertyChanged(); } }
 
