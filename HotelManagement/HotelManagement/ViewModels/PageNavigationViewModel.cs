@@ -14,14 +14,14 @@ namespace HotelManagement.ViewModels
         public string PageTitle { get { return _pageTitle; } set { _pageTitle = value; OnPropertyChanged(); } }
 
         private int _currentPage;
-        public int CurrentPage { get { return _currentPage; } set { _currentPage = value; UpdateRecords(); OnPropertyChanged(); } }
+        public int CurrentPage { get { return _currentPage; } set { _currentPage = value; UpdateRecords(); UpdateTitle(); OnPropertyChanged(); } }
 
         private int _maxPage;
-        public int MaxPage { get { return _maxPage; } set { _maxPage = value; OnPropertyChanged(); } }
+        public int MaxPage { get { return _maxPage; } set { _maxPage = value; UpdateTitle(); OnPropertyChanged(); } }
 
         // Number of records per page
         private int _pageSize;
-        public int PageSize { get { return _pageSize; } set { _pageSize = value; UpdateMaxPage(); OnPropertyChanged(); } }
+        public int PageSize { get { return _pageSize; } set { _pageSize = value; UpdateMaxPage(); UpdateRecords(); UpdateTitle(); OnPropertyChanged(); } }
 
         private int _sumRecords;
         public int SumRecords { get { return _sumRecords; } set { _sumRecords = value; UpdateMaxPage(); OnPropertyChanged(); } }
@@ -42,6 +42,10 @@ namespace HotelManagement.ViewModels
         {
             SelectedRecords = PageSize * CurrentPage;
             ExceptRecords = (CurrentPage - 1) * PageSize;
+        }
+
+        private void UpdateTitle()
+        {
             PageTitle = string.Format("{0} / {1}", CurrentPage, MaxPage);
         }
 

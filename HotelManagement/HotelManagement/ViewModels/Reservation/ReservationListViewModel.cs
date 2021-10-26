@@ -25,13 +25,12 @@ namespace HotelManagement.ViewModels
 
         public ReservationListViewModel()
         {
+            Reservations = new ObservableCollection<ReservationItemViewModel>();
+
             PageNavigationViewModel = new PageNavigationViewModel();
             PageNavigationViewModel.PageSize = 2;
-
             var db = new HotelManagementEntities();
             PageNavigationViewModel.SumRecords = db.RESERVATIONs.Count();
-
-            Reservations = new ObservableCollection<ReservationItemViewModel>();
 
             PageNavigationViewModel.PropertyChanged += PageNavigationViewModel_PropertyChanged;
             PageNavigationViewModel.CurrentPage = 1;

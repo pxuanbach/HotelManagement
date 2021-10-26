@@ -169,6 +169,7 @@
         <Grid Grid.Row="2" Margin="0,5,0,0" Height="570">
             <DataGrid
                 ItemsSource="{Binding Reservations}" 
+                VerticalScrollBarVisibility="Disabled"
                 CanUserResizeColumns="False" IsReadOnly="False"
                 CanUserAddRows="False" AutoGenerateColumns="False"
                 HeadersVisibility="All">
