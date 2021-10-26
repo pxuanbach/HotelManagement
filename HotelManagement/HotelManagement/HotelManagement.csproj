@@ -157,6 +157,7 @@
     <Compile Include="ViewModels\DashBoardViewModel.cs" />
     <Compile Include="ViewModels\GuestsViewModel.cs" />
     <Compile Include="ViewModels\HashModule.cs" />
+    <Compile Include="ViewModels\Invoice\CalculatorInvoice.cs" />
     <Compile Include="ViewModels\Invoice\ExportInvoice.cs" />
     <Compile Include="ViewModels\Invoice\FolioOfRoomViewModel.cs" />
     <Compile Include="ViewModels\Invoice\InvoiceViewModel.cs" />
