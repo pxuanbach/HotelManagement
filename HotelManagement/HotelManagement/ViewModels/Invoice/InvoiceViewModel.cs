@@ -4,10 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -218,7 +220,7 @@ namespace HotelManagement.ViewModels
                 LoadReservations();
             });
 
-            ListviewSelectionChangedCommand = new RelayCommand<ListView>((p) =>
+            ListviewSelectionChangedCommand = new RelayCommand<System.Windows.Controls.ListView>((p) =>
             {
                 return !p.Items.IsEmpty;
             }, (p) =>
@@ -227,7 +229,7 @@ namespace HotelManagement.ViewModels
                 LoadItemSelected((RESERVATION)p.SelectedItem);
             });
 
-            ClearDetailCommand = new RelayCommand<ListView>((p) =>
+            ClearDetailCommand = new RelayCommand<System.Windows.Controls.ListView>((p) =>
             {
                 return true;
             }, (p) =>
@@ -266,7 +268,7 @@ namespace HotelManagement.ViewModels
                 IsOpenDialog = false;
             });
 
-            CheckOutCommand = new RelayCommand<ListView>((p) =>
+            CheckOutCommand = new RelayCommand<System.Windows.Controls.ListView>((p) =>
             {
                 if (StatusSelected != "Operational")
                 {
@@ -285,7 +287,7 @@ namespace HotelManagement.ViewModels
                 LoadReservations();
             });
 
-            ExportCommand = new RelayCommand<ListView>((p) =>
+            ExportCommand = new RelayCommand<System.Windows.Controls.ListView>((p) =>
             {
                 if (p != null)
                 {
@@ -295,9 +297,7 @@ namespace HotelManagement.ViewModels
                 return true;
             }, (p) =>
             {
-                string path = @"invoice.pdf";
-                ExportInvoice export = new ExportInvoice();
-                export.Export(path, (RESERVATION)p.SelectedItem);
+                ExportPdf((RESERVATION)p.SelectedItem);
             });
         }
 
@@ -382,8 +382,6 @@ namespace HotelManagement.ViewModels
 
         void LoadItemSelected(RESERVATION p)
         {
-            long sumRoomPrice = 0;
-            long folioTotalMoney = 0;
             var mainGuest = DataProvider.Instance.DB.GUESTs.Where(x => x.id == p.main_guest).SingleOrDefault();
             List<GUEST_BOOKING> guestBookingList = 
                 DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == p.id).ToList();
@@ -406,13 +404,10 @@ namespace HotelManagement.ViewModels
 
                 //List room type with the same name
                 var roomTypeList = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == roomType.name).ToList();
-                int exactRoomPrice = GetExactRoomPriceOfReservation(roomTypeList, p.date_created.Value);
+                int exactRoomPrice = CalculatorInvoice.ExactRoomPrice(roomTypeList, p.date_created.Value);
 
-                RoomDisplayItem roomDisplayItem = new RoomDisplayItem(
-                    room.id, room.name, roomType.name);
+                RoomDisplayItem roomDisplayItem = new RoomDisplayItem(room.id, room.name, roomType.name);
                 Rooms.Add(roomDisplayItem);
-
-                sumRoomPrice = sumRoomPrice + exactRoomPrice;
 
                 //Folio
                 List<FOLIO> folio = DataProvider.Instance.DB.FOLIOs.Where(x => x.room_booked_id == obj.id).ToList();
@@ -425,14 +420,10 @@ namespace HotelManagement.ViewModels
                     {
                         FolioDisplayItem folioDisplayItem = new FolioDisplayItem(service.id, service.name, item.amount.Value);
                         Folio.Add(folioDisplayItem);
-
-                        folioTotalMoney = folioTotalMoney + (long)service.price.Value * item.amount.Value;
                     }
                     else
                     {
                         folioItem.Amount += (int)item.amount;
-
-                        folioTotalMoney = folioTotalMoney + (int)service.price.Value * item.amount.Value;
                     }
                 }
             }
@@ -449,14 +440,12 @@ namespace HotelManagement.ViewModels
             FolioCount = Folio.Count();
 
             //Calculate money
-            long roomsTotalMoney = CalculateRoomsTotalMoney(sumRoomPrice, p.arrival.Value, p.departure.Value);
-            RoomsTotalMoney = SeparateThousands(roomsTotalMoney.ToString());
-            FolioTotalMoney = SeparateThousands(folioTotalMoney.ToString());
+            RoomsTotalMoney = SeparateThousands(CalculatorInvoice.RoomsTotalMoney(p).ToString());
+            FolioTotalMoney = SeparateThousands(CalculatorInvoice.FolioTotalMoney(p).ToString());
 
             LoadFeeByStatus(p);
 
-            TotalMoneyNumber = CalculateTotalMoney(sumRoomPrice, roomsTotalMoney, folioTotalMoney);
-            TotalMoney = SeparateThousands(TotalMoneyNumber.ToString());
+            TotalMoney = SeparateThousands(CalculatorInvoice.TotalMoneyWithFee(p).ToString());
         }
 
         void LoadFeeByStatus(RESERVATION p)
@@ -484,41 +473,6 @@ namespace HotelManagement.ViewModels
             }
         }
         #endregion
-        
-        int GetExactRoomPriceOfReservation(List<ROOMTYPE> roomTypeList, DateTime dateCreated)
-        {
-            List<ROOMTYPE> sortList = roomTypeList.OrderBy(x => x.id).ToList();
-            foreach (var item in sortList)
-            {
-                if (item.date_created <= dateCreated)
-                {
-                    if (item.date_updated.HasValue)
-                    {
-                        if (dateCreated <= item.date_updated)
-                        {
-                            return (int)item.price;
-                        }    
-                    } 
-                    else
-                    {
-                        return (int)item.price;
-                    }    
-                }    
-            }    
-            return 0;
-        }
-
-        long CalculateRoomsTotalMoney(long sumRoomPrice, DateTime arrival, DateTime departure)
-        {
-            return sumRoomPrice * (int)(departure - arrival).TotalDays;
-        }
-
-        long CalculateTotalMoney(long sumRoomPrice, long roomsTotalMoney, long folioTotalMoney)
-        {
-            double fee = sumRoomPrice * (EarlyCheckinFee + LateCheckoutFee)/100;
-            double totalMoney = (roomsTotalMoney + folioTotalMoney) * (100 + Surcharge)/100;
-            return (long)(totalMoney + fee);
-        }
 
         void Search()
         {
@@ -563,6 +517,35 @@ namespace HotelManagement.ViewModels
             };
             DataProvider.Instance.DB.INVOICEs.Add(invoice);
             DataProvider.Instance.DB.SaveChanges();
+        }
+
+        void ExportPdf(RESERVATION p)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "PDF (*.pdf)|*.pdf";
+            sfd.FileName = "invoice.pdf";
+            bool fileError = false;
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                if (File.Exists(sfd.FileName))
+                {
+                    try
+                    {
+                        File.Delete(sfd.FileName);
+                    }
+                    catch (IOException ex)
+                    {
+                        fileError = true;
+                        MessageBox.Show("Unable to write data to the path. Description:" + ex.Message);
+                    }
+                }
+                if (!fileError)
+                {
+                    ExportInvoice export = new ExportInvoice();
+                    export.Export(sfd.FileName, p);
+                }
+            } 
         }
     }
 }
