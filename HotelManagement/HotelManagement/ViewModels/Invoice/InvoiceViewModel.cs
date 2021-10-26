@@ -297,7 +297,7 @@ namespace HotelManagement.ViewModels
             {
                 string path = @"invoice.pdf";
                 ExportInvoice export = new ExportInvoice();
-                export.Export(path);
+                export.Export(path, (RESERVATION)p.SelectedItem);
             });
         }
 
@@ -403,12 +403,16 @@ namespace HotelManagement.ViewModels
                 //Rooms
                 var room = DataProvider.Instance.DB.ROOMs.SingleOrDefault(x => x.id == obj.room_id);
                 var roomType = DataProvider.Instance.DB.ROOMTYPEs.SingleOrDefault(x => x.id == room.roomtype_id);
-                RoomDisplayItem roomDisplayItem = new RoomDisplayItem(room.id, room.name, roomType.name);
-                Rooms.Add(roomDisplayItem);
 
                 //List room type with the same name
                 var roomTypeList = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == roomType.name).ToList();
-                sumRoomPrice = sumRoomPrice + GetExactRoomPriceOfReservation(roomTypeList, p.date_created.Value);
+                int exactRoomPrice = GetExactRoomPriceOfReservation(roomTypeList, p.date_created.Value);
+
+                RoomDisplayItem roomDisplayItem = new RoomDisplayItem(
+                    room.id, room.name, roomType.name);
+                Rooms.Add(roomDisplayItem);
+
+                sumRoomPrice = sumRoomPrice + exactRoomPrice;
 
                 //Folio
                 List<FOLIO> folio = DataProvider.Instance.DB.FOLIOs.Where(x => x.room_booked_id == obj.id).ToList();
@@ -428,7 +432,7 @@ namespace HotelManagement.ViewModels
                     {
                         folioItem.Amount += (int)item.amount;
 
-                        folioTotalMoney = folioTotalMoney + (long)service.price.Value * item.amount.Value;
+                        folioTotalMoney = folioTotalMoney + (int)service.price.Value * item.amount.Value;
                     }
                 }
             }

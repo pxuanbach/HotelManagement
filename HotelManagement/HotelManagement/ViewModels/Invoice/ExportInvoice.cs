@@ -1,4 +1,5 @@
-﻿using iTextSharp.text;
+﻿using HotelManagement.Models;
+using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace HotelManagement.ViewModels
 {
-    class ExportInvoice
+    class ExportInvoice : BaseViewModel
     {
         public static string tahoma_TFF = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), "tahoma.ttf");
 
@@ -25,7 +26,7 @@ namespace HotelManagement.ViewModels
         public Font f15B = new Font(bf, 15, Font.BOLD);
         public Font f15W = new Font(bf, 15, Font.NORMAL, BaseColor.WHITE);
 
-        public void Export(string filePath)
+        public void Export(string filePath, RESERVATION reservation)
         {
             using (FileStream stream = new FileStream(filePath, FileMode.Create))
             {
@@ -35,11 +36,11 @@ namespace HotelManagement.ViewModels
 
                 FormatHeader(pdfDoc);
 
-                FormatMainGuestInformation(pdfDoc);
+                FormatMainGuestInformation(pdfDoc, reservation);
 
-                FormatInvoiceInformation(pdfDoc);
+                FormatInvoiceInformation(pdfDoc, reservation);
 
-                FormatListRoom_Folio(pdfDoc);
+                FormatListRoom_Folio(pdfDoc, reservation);
 
                 pdfDoc.Close();
                 stream.Close();
@@ -74,46 +75,50 @@ namespace HotelManagement.ViewModels
             pdfDoc.Add(new Phrase("                         ", f11));
         }
 
-        public void FormatMainGuestInformation(Document pdfDoc)
+        public void FormatMainGuestInformation(Document pdfDoc, RESERVATION reservation)
         {
+            var mainGuest = DataProvider.Instance.DB.GUESTs.Where(x => x.id == reservation.main_guest).SingleOrDefault();
+
             Paragraph invoiceFor = new Paragraph();
             invoiceFor.Add(Chunk.TABBING);
             invoiceFor.Add(new Chunk("Invoice For: ", f11G));
             invoiceFor.Add(Chunk.TABBING);
-            invoiceFor.Add(new Chunk("Pham Xuan Bach", f11B));
-            invoiceFor.Add(Chunk.TABBING);
-            invoiceFor.Add(Chunk.TABBING);
-            invoiceFor.Add(Chunk.TABBING);
-            invoiceFor.Add(Chunk.TABBING);
-            invoiceFor.Add(new Chunk("ID Card: ", f11G));
-            invoiceFor.Add(new Chunk("2345678910", f11));
+            invoiceFor.Add(new Chunk(mainGuest.name, f11B));
 
-            Paragraph phoneEmail = new Paragraph();
-            phoneEmail.Add(Chunk.TABBING);
-            phoneEmail.Add(new Chunk("Phone: ", f11G));
-            phoneEmail.Add(Chunk.TABBING);
-            phoneEmail.Add(new Chunk("0123456789", f11));
-            phoneEmail.Add(Chunk.TABBING);
-            phoneEmail.Add(Chunk.TABBING);
-            phoneEmail.Add(Chunk.TABBING);
-            phoneEmail.Add(Chunk.TABBING);
-            phoneEmail.Add(Chunk.TABBING);
-            phoneEmail.Add(new Chunk("Email: ", f11G));
-            phoneEmail.Add(Chunk.TABBING);
-            phoneEmail.Add(new Chunk("pxuanbach1412@gmail.com", f11));
+            Paragraph idAndPhone = new Paragraph();
+            idAndPhone.Add(Chunk.TABBING);
+            idAndPhone.Add(new Chunk("ID Card: ", f11G));
+            idAndPhone.Add(Chunk.TABBING);
+            idAndPhone.Add(new Chunk(mainGuest.id, f11));
+            idAndPhone.Add(Chunk.TABBING);
+            idAndPhone.Add(Chunk.TABBING);
+            idAndPhone.Add(Chunk.TABBING);
+            idAndPhone.Add(Chunk.TABBING);
+            idAndPhone.Add(Chunk.TABBING);
+            idAndPhone.Add(new Chunk("Phone: ", f11G));
+            idAndPhone.Add(Chunk.TABBING);
+            idAndPhone.Add(new Chunk(mainGuest.phone, f11));
+
+            Paragraph email = new Paragraph();
+            email.Add(Chunk.TABBING);
+            email.Add(new Chunk("Email: ", f11G));
+            email.Add(Chunk.TABBING);
+            email.Add(Chunk.TABBING);
+            email.Add(new Chunk(mainGuest.email, f11));
 
             pdfDoc.Add(invoiceFor);
-            pdfDoc.Add(phoneEmail);
+            pdfDoc.Add(idAndPhone);
+            pdfDoc.Add(email);
             pdfDoc.Add(new Phrase("                         ", f11));
         }
 
-        public void FormatInvoiceInformation(Document pdfDoc)
+        public void FormatInvoiceInformation(Document pdfDoc, RESERVATION reservation)
         {
             Paragraph invoiceId = new Paragraph();
             invoiceId.Add(Chunk.TABBING);
             invoiceId.Add(new Chunk("Invoice Id: ", f11G));
             invoiceId.Add(Chunk.TABBING);
-            invoiceId.Add(new Chunk("101", f15B));
+            invoiceId.Add(new Chunk(reservation.id.ToString(), f15B));
             invoiceId.Add(Chunk.TABBING);
             invoiceId.Add(Chunk.TABBING);
             invoiceId.Add(Chunk.TABBING);
@@ -129,15 +134,16 @@ namespace HotelManagement.ViewModels
             timeStay.Add(Chunk.TABBING);
             timeStay.Add(new Chunk("Arrival: ", f11G));
             timeStay.Add(Chunk.TABBING);
-            timeStay.Add(new Chunk(DateTime.Now.ToString(), f11));
+            timeStay.Add(new Chunk(reservation.arrival.Value.ToString(), f11));
             timeStay.Add(Chunk.TABBING);
             timeStay.Add(Chunk.TABBING);
             timeStay.Add(Chunk.TABBING);
             timeStay.Add(Chunk.TABBING);
             timeStay.Add(new Chunk("Departure: ", f11G));
             timeStay.Add(Chunk.TABBING);
-            timeStay.Add(new Chunk(DateTime.Now.ToString(), f11));
+            timeStay.Add(new Chunk(reservation.departure.Value.ToString(), f11));
 
+            int days = (int)(reservation.departure.Value - reservation.arrival.Value).TotalDays;
             Paragraph totalDays = new Paragraph();
             totalDays.Add(Chunk.TABBING);
             totalDays.Add(Chunk.TABBING);
@@ -149,7 +155,7 @@ namespace HotelManagement.ViewModels
             totalDays.Add(Chunk.TABBING);
             totalDays.Add(Chunk.TABBING);
             totalDays.Add(new Chunk("Total No. of days: ", f11G));
-            totalDays.Add(new Chunk("25", f11));
+            totalDays.Add(new Chunk(days.ToString(), f11));
 
             pdfDoc.Add(invoiceId);
             pdfDoc.Add(timeStay);
@@ -157,9 +163,9 @@ namespace HotelManagement.ViewModels
             pdfDoc.Add(Saperator());
         }
 
-        public void FormatListRoom_Folio(Document pdfDoc)
+        public void FormatListRoom_Folio(Document pdfDoc, RESERVATION reservation)
         {
-            float[] widths = new float[] { 1f, 3f, 1f, 1f, 1f, 1f }; //length = num of columns
+            float[] widths = new float[] { 1f, 3f, 0.7f, 1f, 1f, 1f }; //length = num of columns
             PdfPTable roomTable = new PdfPTable(widths);
             roomTable.WidthPercentage = 100;
             roomTable.HorizontalAlignment = Element.ALIGN_CENTER;
@@ -176,7 +182,58 @@ namespace HotelManagement.ViewModels
             roomTable.AddCell(CellCenterFormat("Amount", f11W, 1, 1, true));
             roomTable.AddCell(CellCenterFormat("Price", f11W, 1, 1, true));
 
+            //Data
+            List<ROOM_BOOKED> roomBookedList =
+                DataProvider.Instance.DB.ROOM_BOOKED.Where(x => x.reservation_id == reservation.id).ToList();
+            //Load Rooms + Folio
+            foreach (ROOM_BOOKED obj in roomBookedList)
+            {
+                if (obj.FOLIOs.Count > 0)
+                {
+                    for (int i = 0; i < obj.FOLIOs.Count; i++)
+                    {
+                        if (i == 0)
+                        {
+                            roomTable.AddCell(CellLeftFormat(obj.ROOM.name + "\n\n" + obj.ROOM.ROOMTYPE.name, f11, obj.FOLIOs.Count));
+                        }    
+
+                        //folio
+                        roomTable.AddCell(CellLeftFormat("Dịch vụ tập thể hình theo ngày", f11));
+                        roomTable.AddCell(CellCenterFormat("2", f11));
+                        roomTable.AddCell(CellRightFormat("120,000", f11));
+
+                        if (i == 0)
+                        {
+                            //List room type with the same name
+                            var roomTypeList = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == obj.ROOM.ROOMTYPE.name).ToList();
+                            int exactRoomPrice = GetExactRoomPriceOfReservation(roomTypeList, reservation.date_created.Value);
+
+                            roomTable.AddCell(CellRightFormat(SeparateThousands(exactRoomPrice.ToString()), f11, obj.FOLIOs.Count));
+                            roomTable.AddCell(CellRightFormat("2,630,000", f11, obj.FOLIOs.Count));
+                        }
+                    }
+                }
+                else
+                {
+                    roomTable.AddCell(CellLeftFormat(obj.ROOM.name + "\n\n" + obj.ROOM.ROOMTYPE.name, f11, 1));
+
+                    //folio
+                    roomTable.AddCell(CellLeftFormat("", f11));
+                    roomTable.AddCell(CellCenterFormat("0", f11));
+                    roomTable.AddCell(CellRightFormat("0", f11));
+
+                    //List room type with the same name
+                    var roomTypeList = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == obj.ROOM.ROOMTYPE.name).ToList();
+                    int exactRoomPrice = GetExactRoomPriceOfReservation(roomTypeList, reservation.date_created.Value);
+
+                    roomTable.AddCell(CellRightFormat(SeparateThousands(exactRoomPrice.ToString()), f11, 1));
+                    roomTable.AddCell(CellRightFormat("2,630,000", f11, 1));
+                }    
+                
+            }
+
             //Datatable
+            /*
             for (int i = 0; i < 3; i++)
             {
                 roomTable.AddCell(CellLeftFormat("B03\n\nDeluxe (DLX)", f11, 3));
@@ -185,8 +242,7 @@ namespace HotelManagement.ViewModels
                 roomTable.AddCell(CellCenterFormat("2", f11));
                 roomTable.AddCell(CellRightFormat("120,000", f11));
 
-                roomTable.AddCell(CellRightFormat("750,000", f11, 3));
-                roomTable.AddCell(CellRightFormat("2,630,000", f11, 3));
+                
 
                 roomTable.AddCell(CellLeftFormat("Nước lọc", f11));
                 roomTable.AddCell(CellCenterFormat("5", f11));
@@ -197,6 +253,7 @@ namespace HotelManagement.ViewModels
                 roomTable.AddCell(CellRightFormat("40,000", f11));
 
             }
+            */
 
             pdfDoc.Add(roomTable);
         }
@@ -250,6 +307,29 @@ namespace HotelManagement.ViewModels
                 cell.BackgroundColor = BaseColor.GRAY;
 
             return cell;
+        }
+
+        int GetExactRoomPriceOfReservation(List<ROOMTYPE> roomTypeList, DateTime dateCreated)
+        {
+            List<ROOMTYPE> sortList = roomTypeList.OrderBy(x => x.id).ToList();
+            foreach (var item in sortList)
+            {
+                if (item.date_created <= dateCreated)
+                {
+                    if (item.date_updated.HasValue)
+                    {
+                        if (dateCreated <= item.date_updated)
+                        {
+                            return (int)item.price;
+                        }
+                    }
+                    else
+                    {
+                        return (int)item.price;
+                    }
+                }
+            }
+            return 0;
         }
         #endregion
     }
