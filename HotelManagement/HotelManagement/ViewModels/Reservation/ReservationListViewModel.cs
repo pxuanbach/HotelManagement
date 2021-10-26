@@ -144,15 +144,6 @@ namespace HotelManagement.ViewModels
             }
         }
 
-        private ICommand _checkoutCommand;
-        public ICommand CheckoutCommand
-        {
-            get
-            {
-                return _checkoutCommand ?? (_checkoutCommand = new RelayCommand<object>((p) => true, (p) => CheckOut()));
-            }
-        }
-
         private ICommand _confirmGuaranteeCommand;
         public ICommand ConfirmGuaranteeCommand
         {
@@ -180,13 +171,6 @@ namespace HotelManagement.ViewModels
         {
             var db = new HotelManagementEntities();
             db.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Cancelled";
-            db.SaveChanges();
-        }
-
-        private void CheckOut()
-        {
-            var db = new HotelManagementEntities();
-            db.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Completed";
             db.SaveChanges();
         }
 
@@ -232,17 +216,7 @@ namespace HotelManagement.ViewModels
                     Command = CancelResCommand,
                 };
                 Options.Add(option);
-            }
-            
-            if (Status == "Operational")
-            {
-                option = new Option()
-                {
-                    Content = "Check out",
-                    Command = CheckoutCommand,
-                };
-                Options.Add(option);
-            }           
+            }      
         }
         #endregion
     }
