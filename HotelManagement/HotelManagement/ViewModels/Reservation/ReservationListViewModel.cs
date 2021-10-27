@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 
@@ -13,6 +12,10 @@ namespace HotelManagement.ViewModels
 {
     class ReservationListViewModel : BaseViewModel
     {
+        public IEnumerable<string> ResStatusList => new[] { "All", "On Request", "Confirmed", "Operational", "No Show", "Completed", "Cancelled" };
+        private string _selectedStatus;
+        public string SelectedStatus { get { return _selectedStatus; } set { _selectedStatus = value; LoadReservations(); OnPropertyChanged(); } }
+        public PageNavigationViewModel PageNavigationViewModel { get; set; }
         public ObservableCollection<ReservationItemViewModel> Reservations { get; set; }
 
         private ICommand _newReservationCommand;
@@ -24,87 +27,48 @@ namespace HotelManagement.ViewModels
             }
         }
 
-        private ICommand _reservationDetailsCommand;
-        public ICommand ReservationDetailsCommand
-        {
-            get
-            {
-                return _reservationDetailsCommand ?? (_reservationDetailsCommand = new RelayCommand<ReservationItemViewModel>((p) => true, (p) => OpenReservationDetailsWindow(p.ID)));
-            }
-        }
         public ReservationListViewModel()
         {
             Reservations = new ObservableCollection<ReservationItemViewModel>();
-            LoadAllReservations();
 
-            foreach (var model in Reservations)
+            PageNavigationViewModel = new PageNavigationViewModel();
+            PageNavigationViewModel.PageSize = 2;
+            var db = new HotelManagementEntities();
+
+            PageNavigationViewModel.PropertyChanged += PageNavigationViewModel_PropertyChanged;
+            PageNavigationViewModel.CurrentPage = 1;
+        }
+
+        private void PageNavigationViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(PageNavigationViewModel.CurrentPage))
             {
-                model.PropertyChanged += (sender, args) =>
-                {
-                    if (args.PropertyName == nameof(ReservationItemViewModel.IsSelected))
-                        OnPropertyChanged(nameof(IsAllReservationsSelected));
-                };
+                LoadReservations();
             }
         }
 
-        public void OpenNewReservationWindow()
+        private void OpenNewReservationWindow()
         {
             var wd = new NewReservationWindow();
             wd.Show();
         }
 
-        public void OpenReservationDetailsWindow(int ResID)
-        {
-            var wd = new ReservationDetailsWindow();
-            wd.DataContext = new ReservationDetailsViewModel(ResID);
-            wd.Show();
-        }
-
-        public bool? IsAllReservationsSelected
-        {
-            get
-            {
-                var selected = Reservations.Select(item => item.IsSelected).Distinct().ToList();
-                return selected.Count == 1 ? selected.Single() : (bool?)null;
-            }
-            set
-            {
-                if (value.HasValue)
-                {
-                    SelectAll(value.Value, Reservations);
-                    OnPropertyChanged();
-                }
-            }
-        }
-
-        private static void SelectAll(bool select, IEnumerable<ReservationItemViewModel> models)
-        {
-            foreach (var model in models)
-            {
-                model.IsSelected = select;
-            }
-        }
-
-        private void LoadAllReservations()
+        private void LoadReservations()
         {
             if (Reservations.Count > 0) Reservations.Clear();
 
             var db = new HotelManagementEntities();
 
-            var reservations = (from res in db.RESERVATIONs 
-                                join rb in db.ROOM_BOOKED on res.id equals rb.reservation_id
-                                join r in db.ROOMs on rb.room_id equals r.id
-                                join rt in db.ROOMTYPEs on r.roomtype_id equals rt.id
-                                where res.date_created >= rt.date_created && (rt.date_updated == null || res.date_created <= rt.date_updated)
-                                group res by res.id into g
-                                select g).ToList();
+            int selectedRecords = PageNavigationViewModel.SelectedRecords;
+            int exceptRecords = PageNavigationViewModel.ExceptRecords;
 
-            foreach (var r in reservations)
+            var allReservations = db.RESERVATIONs;
+            PageNavigationViewModel.SumRecords = allReservations.Count();
+            var resCurrentPage = allReservations.OrderBy(res => res.id).Take(selectedRecords).Skip(exceptRecords);
+
+            foreach (var res in resCurrentPage)
             {
-                var res = r.First();
-                GUEST mainGuest = (from g in db.GUESTs where res.main_guest.Equals(g.id) select g).SingleOrDefault();
-
-                decimal total = (decimal)(from inv in db.INVOICEs where inv.reservation_id == res.id select inv).SingleOrDefault().total_money;
+                GUEST mainGuest = db.GUESTs.Where(g => g.id == res.main_guest).SingleOrDefault();
 
                 var obj = new ReservationItemViewModel()
                 {
@@ -113,11 +77,12 @@ namespace HotelManagement.ViewModels
                     Rooms = res.ROOM_BOOKED.Count,
                     Guest = mainGuest.name,
                     DateCreated = (DateTime)res.date_created,
-                    Arrival = (!res.arrival.HasValue) ? DateTime.Now : (DateTime)res.arrival,
-                    Departure = (!res.departure.HasValue) ? DateTime.Now : (DateTime)res.departure,
+                    Arrival = (DateTime)res.arrival,
+                    Departure = (DateTime)res.departure,
                     Pax = res.GUEST_BOOKING.Count,
-                    Total = Decimal.Round(total),
                 };
+
+                obj.InitializePopup();
 
                 Reservations.Add(obj);
             }
@@ -126,7 +91,7 @@ namespace HotelManagement.ViewModels
 
     class ReservationItemViewModel : BaseViewModel
     {
-        private bool _isSelected;
+        #region Property
         private int _id;
         private string _status;
         private string _guest;
@@ -135,9 +100,6 @@ namespace HotelManagement.ViewModels
         private DateTime _departure;
         private int _rooms;
         private int _pax;
-        private decimal _total;
-
-        public bool IsSelected { get { return _isSelected; } set { _isSelected = value; OnPropertyChanged(); } }
 
         public int ID { get { return _id; } set { _id = value; OnPropertyChanged(); } }
 
@@ -149,12 +111,126 @@ namespace HotelManagement.ViewModels
 
         public DateTime DateCreated { get { return _date_created; } set { _date_created = value; OnPropertyChanged(); } }
 
-        public DateTime Arrival { get { return _arrival; } set { _arrival = value; OnPropertyChanged("Arrival"); } }
+        public DateTime Arrival { get { return _arrival; } set { _arrival = value; OnPropertyChanged(); } }
 
         public DateTime Departure { get { return _departure; } set { _departure = value; OnPropertyChanged(); } }
 
         public int Pax { get { return _pax; } set { _pax = value; OnPropertyChanged(); } }
+        #endregion
 
-        public decimal Total { get { return _total; } set { _total = value; OnPropertyChanged(); } }
+        #region Option Popup
+        public ObservableCollection<Option> Options { get; set; }
+
+        private ICommand _detailsCommand;
+        public ICommand DetailsCommand
+        {
+            get
+            {
+                return _detailsCommand ?? (_detailsCommand = new RelayCommand<object>((p) => true, (p) => OpenReservationDetailsWindow()));
+            }
+        }
+
+        private ICommand _checkinCommand;
+        public ICommand CheckinCommand
+        {
+            get
+            {
+                return _checkinCommand ?? (_checkinCommand = new RelayCommand<object>((p) => true, (p) => CheckIn()));
+            }
+        }
+
+        private ICommand _cancelResCommand;
+        public ICommand CancelResCommand
+        {
+            get
+            {
+                return _cancelResCommand ?? (_cancelResCommand = new RelayCommand<object>((p) => true, (p) => CancelRes()));
+            }
+        }
+
+        private ICommand _confirmGuaranteeCommand;
+        public ICommand ConfirmGuaranteeCommand
+        {
+            get
+            {
+                return _confirmGuaranteeCommand ?? (_confirmGuaranteeCommand = new RelayCommand<object>((p) => true, (p) => ConfirmGuarantee()));
+            }
+        }
+
+        private void OpenReservationDetailsWindow()
+        {
+            var wd = new ReservationDetailsWindow();
+            wd.DataContext = new ReservationDetailsViewModel(ID);
+            wd.Show();
+        }
+
+        private void CheckIn()
+        {
+            var db = new HotelManagementEntities();
+            db.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Operational";
+            db.SaveChanges();
+        }
+
+        private void CancelRes()
+        {
+            var db = new HotelManagementEntities();
+            db.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Cancelled";
+            db.SaveChanges();
+        }
+
+        private void ConfirmGuarantee()
+        {
+            var db = new HotelManagementEntities();
+            db.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Confirmed";
+            db.SaveChanges();
+        }
+
+        public void InitializePopup()
+        {
+            Options = new ObservableCollection<Option>();
+            var option = new Option()
+            {
+                Content = "Edit details",
+                Command = DetailsCommand,
+            };
+            Options.Add(option);
+
+            if (Status == "On Request")
+            {
+                option = new Option()
+                {
+                    Content = "Confirm guarantee",
+                    Command = ConfirmGuaranteeCommand,
+                };
+                Options.Add(option);
+            }
+
+            if (Status == "On Request" || Status == "Confirmed" || Status == "No Show")
+            {
+                option = new Option()
+                {
+                    Content = "Check in",
+                    Command = CheckinCommand,
+                };
+                Options.Add(option);
+
+                option = new Option()
+                {
+                    Content = "Cancel reservation",
+                    Command = CancelResCommand,
+                };
+                Options.Add(option);
+            }      
+        }
+        #endregion
+    }
+
+    class Option : BaseViewModel
+    {
+        private string _content;
+        private ICommand _command;
+
+        public string Content { get { return _content; } set { _content = value; OnPropertyChanged(); } }
+        public ICommand Command { get { return _command; } set { _command = value; OnPropertyChanged(); } }
     }
 }
