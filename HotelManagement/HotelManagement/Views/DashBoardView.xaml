@@ -224,7 +224,7 @@
                                                         <RowDefinition Height="*"/>
                                                     </Grid.RowDefinitions>
                                                     <Grid Grid.Row="0" >
-                                                        <TextBlock VerticalAlignment="Center"
+                                                        <TextBlock x:Name="txbGuest" VerticalAlignment="Center"
                                                                    FontWeight="Bold"
                                                                    FontSize="16"
                                                                    Foreground="#8B5AFF"

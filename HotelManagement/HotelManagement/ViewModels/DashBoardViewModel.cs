@@ -48,6 +48,17 @@ namespace HotelManagement.ViewModels
             }
         }
 
+        private ObservableCollection<RESERVATION> itemReserGuest = new ObservableCollection<RESERVATION>();
+        public ObservableCollection<RESERVATION> ItemReserGuest
+        {
+            get => itemReserGuest;
+            set
+            {
+                itemReserGuest = value;
+                OnPropertyChanged();
+            }
+        }
+
         private ObservableCollection<ROOM> itemROOMsToday = new ObservableCollection<ROOM>();
         public ObservableCollection<ROOM> ItemROOMsToday
         {
@@ -88,7 +99,8 @@ namespace HotelManagement.ViewModels
             this.DashBoardView = dashBoardView;
             this.DashBoardView.txbCheckinAmount.Text = ItemReservationsCheckin.Count().ToString();
             this.DashBoardView.txbCheckoutAmount.Text = ItemReservationsCheckout.Count().ToString();
-            this.DashBoardView.txbRoomUsed.Text = (ItemROOMsAvaiToday.Count()-1).ToString() + " of " + ItemROOMsToday.Count().ToString();
+            this.DashBoardView.txbRoomUsed.Text = ItemROOMsAvaiToday.Count().ToString() + " of " + ItemROOMsToday.Count().ToString();
+            this.DashBoardView.txbGuest.Text = ItemReserGuest.Count.ToString();
         }
 
         private void LoadRESERVATIONs()
@@ -104,6 +116,11 @@ namespace HotelManagement.ViewModels
             foreach (var res in rESERVATIONsCheckout)
             {
                 ItemReservationsCheckout.Add(res);
+            }
+            List<RESERVATION> rESERVATIONs = GetRESERVATIONs();
+            foreach (var res in rESERVATIONs)
+            {
+                ItemReserGuest.Add(res);
             }
         }
 
@@ -126,7 +143,8 @@ namespace HotelManagement.ViewModels
                         {
                             case "Completed":
                             case "Cancelled":
-                                ItemROOMsAvaiToday.Add(res);
+                                if (ItemROOMsAvaiToday.IndexOf(res) == -1)
+                                    ItemROOMsAvaiToday.Add(res);
                                 break;
                             default:
                                 break;
@@ -135,7 +153,8 @@ namespace HotelManagement.ViewModels
                     }
                     else
                     {
-                        ItemROOMsAvaiToday.Add(res);
+                        if (ItemROOMsAvaiToday.IndexOf(res) == -1)
+                            ItemROOMsAvaiToday.Add(res);
                     }
                 }
             }
@@ -245,6 +264,12 @@ namespace HotelManagement.ViewModels
         {
             List<RESERVATION> res = new List<RESERVATION>();
             res = DataProvider.Instance.DB.RESERVATIONs.Where(x => x.departure == DateTime.Now).ToList();
+            return res;
+        }
+        private List<RESERVATION> GetRESERVATIONs()
+        {
+            List<RESERVATION> res = new List<RESERVATION>();
+            res = DataProvider.Instance.DB.RESERVATIONs.Where(x => x.departure >= DateTime.Now).ToList();
             return res;
         }
         private List<ROOM> GetROOMs()
