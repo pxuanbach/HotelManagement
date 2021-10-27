@@ -57,19 +57,12 @@ namespace HotelManagement.ViewModels
                 x => x.reservation_id == reservation.id && x.room_id == RoomId);
             var folio = DataProvider.Instance.DB.FOLIOs.Where(x => x.room_booked_id == roomBooked.id).ToList();
 
-            //List room type with the same name
-            var roomTypeList = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == roomType.name).ToList();
-
-            long folioTotalMoney = 0;
             foreach (var item in folio)
             {
                 var service = DataProvider.Instance.DB.SERVICEs.SingleOrDefault(x => x.id == item.service_id);
                 FolioDisplayItem folioDisplayItem = new FolioDisplayItem(
-                    service.id, service.name, item.amount.Value, SeparateThousands(Convert.ToInt32(service.price.Value).ToString()));
+                    service.id, service.name, item.amount.Value, SeparateThousands(((int)service.price).ToString()));
                 Folio.Add(folioDisplayItem);
-
-                //sum folio total money
-                folioTotalMoney = folioTotalMoney + (int)service.price.Value * item.amount.Value;
             }
 
             FolioCount = folio.Count();
@@ -78,12 +71,13 @@ namespace HotelManagement.ViewModels
             RoomName = room.name;
             Notes = room.notes;
             RoomType = roomType.name;
-            Price = SeparateThousands(GetExactRoomPriceOfReservation(roomTypeList, reservation.date_created.Value).ToString());
+            Price = SeparateThousands(
+                CalculatorInvoice.ExactRoomPrice(RoomId, reservation.date_created.Value).ToString());
             MaxGuest = roomType.max_guest.Value;
             long roomTotalMoney = (long)roomType.price.Value * (int)(Departure - Arrival).TotalDays;
-            RoomTotalMoney = SeparateThousands(roomTotalMoney.ToString());
-            FolioTotalMoney = SeparateThousands(folioTotalMoney.ToString());
-            TotalMoney = SeparateThousands((roomTotalMoney + folioTotalMoney).ToString());
+            RoomTotalMoney = SeparateThousands(CalculatorInvoice.RoomsTotalMoney(reservation).ToString());
+            FolioTotalMoney = SeparateThousands(CalculatorInvoice.FolioTotalMoney(reservation).ToString());
+            TotalMoney = SeparateThousands(CalculatorInvoice.TotalMoneyNoFee(reservation).ToString());
         }
 
         int GetExactRoomPriceOfReservation(List<ROOMTYPE> roomTypeList, DateTime dateCreated)
