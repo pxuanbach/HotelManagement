@@ -14,6 +14,9 @@
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
         Title="Reservation Details">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -68,7 +71,7 @@
 
                                 <TextBox
                                     Grid.Row="0" Grid.Column="1"
-                                    FontSize="14" Width="230"
+                                    FontSize="14" Width="230" Margin="0,3,0,3"
                                     Text="{Binding Path=GuestInformation.ID}"
                                     Style="{StaticResource MaterialDesignTextBox}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
@@ -87,7 +90,7 @@
                                     Text="Gender" FontSize="16"/>
 
                                 <ComboBox
-                                    Grid.Row="0" Grid.Column="4" Width="100"
+                                    Grid.Row="0" Grid.Column="4" Width="100" Margin="0,3,0,3"
                                     Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                                     materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"
                                     materialDesign:ColorZoneAssist.Mode="SecondaryLight"
@@ -105,7 +108,7 @@
 
                                 <TextBox
                                     Grid.Row="2" Grid.Column="1"
-                                    FontSize="14" Width="230"
+                                    FontSize="14" Width="230" Margin="0,3,0,3"
                                     Style="{StaticResource MaterialDesignTextBox}"
                                     Text="{Binding Path=GuestInformation.Name}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
@@ -138,7 +141,7 @@
 
                                 <TextBox 
                                     Grid.Row="4" Grid.Column="1"
-                                    FontSize="14" Width="230" 
+                                    FontSize="14" Width="230" Margin="0,3,0,3"
                                     Text="{Binding Path=GuestInformation.Email}"
                                     Style="{StaticResource MaterialDesignTextBox}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
@@ -152,7 +155,7 @@
 
                                 <TextBox 
                                     Grid.Row="4" Grid.Column="4"
-                                    FontSize="14" Width="100"
+                                    FontSize="14" Width="100" Margin="0,3,0,3"
                                     Text="{Binding Path=GuestInformation.Phone}"
                                     Style="{StaticResource MaterialDesignTextBox}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
@@ -172,13 +175,13 @@
 
                                 <TextBox
                                     Grid.Row="6" Grid.Column="1"
-                                    FontSize="14" Width="230"
+                                    FontSize="14" Width="230" Margin="0,3,0,3"
                                     Text="{Binding Path=GuestInformation.Address}"
                                     Style="{StaticResource MaterialDesignTextBox}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
                                     materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"/>
 
-                                <Button 
+                                <Button Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibilityConverter}}"
                                     Grid.Row="6" Grid.Column="4" Height="24" 
                                     Content="Be a sharer" Padding="3" FontSize="14"
                                     VerticalAlignment="Bottom"
@@ -223,7 +226,7 @@
 
                                 <DatePicker
                                     Grid.Column="2" Width="90"
-                                    Margin="0,0,20,0" FontSize="14"
+                                    Margin="0,3,20,3" FontSize="14"
                                     SelectedDate="{Binding Path=StayInformation.Arrival, UpdateSourceTrigger=PropertyChanged}"
                                     materialDesign:HintAssist.Hint="Pick a date"
                                     materialDesign:HintAssist.IsFloating="False"/>
@@ -235,7 +238,7 @@
 
                                 <DatePicker 
                                     Grid.Row="2" Grid.Column="2" 
-                                    Width="90" Margin="0,0,20,0" FontSize="14"
+                                    Width="90" Margin="0,3,20,3" FontSize="14"
                                     SelectedDate="{Binding Path=StayInformation.Departure, UpdateSourceTrigger=PropertyChanged}"
                                     materialDesign:HintAssist.Hint="Pick a date"
                                     materialDesign:HintAssist.IsFloating="False"/>
@@ -246,8 +249,38 @@
                                     Text="Status" FontSize="16"/>
 
                                 <TextBlock 
-                                    Grid.Row="4" Grid.Column="2" Height="26"
-                                    Text="{Binding StayInformation.Status}"/>
+                                    Grid.Row="4" Grid.Column="2" Margin="0,3,0,3"
+                                    Text="{Binding StayInformation.Status}" FontSize="16">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <Trigger Property="Text" Value="On Request">
+                                                    <Setter Property="Foreground" Value="DarkOrange"/>
+                                                </Trigger>
+
+                                                <Trigger Property="Text" Value="Confirmed">
+                                                    <Setter Property="Foreground" Value="Yellow"/>
+                                                </Trigger>
+
+                                                <Trigger Property="Text" Value="Operational">
+                                                    <Setter Property="Foreground" Value="DeepSkyBlue"/>
+                                                </Trigger>
+
+                                                <Trigger Property="Text" Value="Cancelled">
+                                                    <Setter Property="Foreground" Value="Red"/>
+                                                </Trigger>
+
+                                                <Trigger Property="Text" Value="No Show">
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                </Trigger>
+
+                                                <Trigger Property="Text" Value="Completed">
+                                                    <Setter Property="Foreground" Value="LightGreen"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
 
                                 <!--Stays-->
                                 <TextBlock 
@@ -276,17 +309,6 @@
                                     Grid.Row="4" Grid.Column="6"
                                     Text="{Binding StayInformation.Rooms}" FontSize="16"/>
                             </Grid>
-
-                            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <TextBlock 
-                                    Margin="0,0,15,0"
-                                    Text="Total" FontSize="22" FontWeight="Bold"/>
-
-                                <TextBlock 
-                                    Text="{Binding StayInformation.Total, Mode=OneWay, StringFormat={}{0:c}, ConverterCulture='vi-VN'}" 
-                                    FontSize="22" FontWeight="Bold"
-                                    Foreground="{StaticResource PrimaryHueMidBrush}"/>
-                            </StackPanel>
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -306,6 +328,7 @@
                                 <TextBlock Margin="5" Text="Booked Room" FontSize="18"/>
 
                                 <Button Grid.Column="2"
+                                        Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibilityConverter}}"
                                         Command="{Binding AddRoomCommand}">
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Kind="Add" VerticalAlignment="Center"/>
@@ -435,7 +458,8 @@
 
                                 <TextBlock Grid.Column="0" Margin="5" Text="Sharer" FontSize="18"/>
 
-                                <Button Grid.Column="2" Command="{Binding AddSharerCommand}">
+                                <Button Grid.Column="2" Command="{Binding AddSharerCommand}"
+                                        Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibilityConverter}}">
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Kind="Add" VerticalAlignment="Center"/>
                                         <TextBlock Text="Add Sharer"/>
@@ -573,7 +597,7 @@
                             Margin="10,0,0,0"
                             Text="Read Only" FontSize="16" FontWeight="Bold"/>
 
-                        <ToggleButton
+                        <ToggleButton x:Name="swEdit" 
                             Margin="15,0,15,0" Command="{Binding CanEditCommand}"
                             Style="{StaticResource MaterialDesignSwitchToggleButton}"/>
 
@@ -583,14 +607,16 @@
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
                         <Button 
-                            Margin="15,0,0,0"
+                            Margin="15,0,0,0" Width="80"
+                            Visibility="{Binding CanEdit, Converter={StaticResource BoolToVisibilityConverter}}"
                             Content="Save" Command="{Binding SaveDataCommand}"
                             CommandParameter="{Binding ElementName=windowReservationDetails}"/>
                         
                         <Button 
+                            Margin="15,0,0,0" Width="80"
                             Command="{Binding CancelCommand}"
                             CommandParameter="{Binding ElementName=windowReservationDetails}"
-                            Margin="15,0,0,0" Content="Cancel" BorderThickness="1.5"
+                            Content="Cancel" BorderThickness="1.5"
                             Style="{StaticResource MaterialDesignOutlinedButton}"/>
                     </StackPanel>
                 </Grid>

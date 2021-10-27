@@ -83,12 +83,17 @@ namespace HotelManagement.ViewModels
 
             StayInformation.PropertyChanged += StayInformation_PropertyChanged;
             Sharers.CollectionChanged += Sharers_CollectionChanged;
+            SelectedRooms.CollectionChanged += SelectedRooms_CollectionChanged;
 
             BeASharer = false;
-            StayInformation.Total = 0;
             GuestInformation.Birthday = DateTime.Parse("01-01-2000");
             StayInformation.Arrival = DateTime.Today;
             StayInformation.Departure = DateTime.Today.AddDays(1);
+        }
+
+        private void SelectedRooms_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            StayInformation.Rooms = SelectedRooms.Count;
         }
 
         private void StayInformation_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -198,18 +203,6 @@ namespace HotelManagement.ViewModels
         {
             using (var context = new HotelManagementEntities())
             {
-                // Insert reservation
-                var reservation = new RESERVATION()
-                {
-                    date_created = DateTime.Today,
-                    arrival = StayInformation.Arrival,
-                    departure = StayInformation.Departure,
-                    main_guest = GuestInformation.ID,
-                    status = Guaranteed ? "Confirmed" : "On Request",
-                };
-                context.RESERVATIONs.Add(reservation);
-                context.SaveChanges();
-
                 // Insert main guest
                 if (!context.GUESTs.Any(g => g.id == GuestInformation.ID))
                 {
@@ -226,6 +219,18 @@ namespace HotelManagement.ViewModels
                     context.GUESTs.Add(mainGuest);
                     context.SaveChanges();
                 }
+
+                // Insert reservation
+                var reservation = new RESERVATION()
+                {
+                    date_created = DateTime.Today,
+                    arrival = StayInformation.Arrival,
+                    departure = StayInformation.Departure,
+                    main_guest = GuestInformation.ID,
+                    status = Guaranteed ? "Confirmed" : "On Request",
+                };
+                context.RESERVATIONs.Add(reservation);
+                context.SaveChanges();
 
                 // Insert room_booked
                 foreach (var selectedRoom in SelectedRooms)
@@ -263,15 +268,6 @@ namespace HotelManagement.ViewModels
                     context.GUEST_BOOKING.Add(guestBooking);
                     context.SaveChanges();
                 }
-
-                // Insert invoice
-                var invoice = new INVOICE()
-                {
-                    reservation_id = reservation.id,
-                    total_money = StayInformation.Total,
-                };
-                context.INVOICEs.Add(invoice);
-                context.SaveChanges();
             }
 
             window.Close();
@@ -315,6 +311,8 @@ namespace HotelManagement.ViewModels
                            from rs in result.DefaultIfEmpty()
                            join res in db.RESERVATIONs on rs.reservation_id equals res.id into result1
                            from rs1 in result1.DefaultIfEmpty()
+                           where rt.date_created <= DateTime.Today && (rt.date_updated == null || rt.date_updated >= DateTime.Today) &&
+                           r.out_of_service == false && r.dirty == false
                            select new
                            {
                                 RoomID = r.id,
@@ -325,37 +323,33 @@ namespace HotelManagement.ViewModels
                                 Arrival = rs1.arrival,
                                 Departure = rs1.departure,
                                 Price = rt.price,
-                                RT_DateCreated = rt.date_created,
-                                RT_DateUpdated = rt.date_updated,
-                                OOS = r.out_of_service,
                            };
 
             var excepts = from r in allrooms where !(r.Arrival >= StayInformation.Departure || r.Departure <= StayInformation.Arrival) select r;
 
-            var rooms = (from r in allrooms
-                         where !excepts.Any(exc => exc.RoomID == r.RoomID) || r.ResID == 0 &&
-                         r.RT_DateCreated <= DateTime.Today && (r.RT_DateUpdated == null || r.RT_DateUpdated >= DateTime.Today) &&
-                         r.OOS == false
-                         select r).ToList();
+            // Thieu truong hop cancelled res va on request res
 
-            foreach (var room in rooms)
+            var rooms = (from r in allrooms
+                         where !excepts.Any(exc => exc.RoomID == r.RoomID) || r.ResID == 0 
+                         group r by r.RoomID into rs
+                         select rs).ToList();
+
+            foreach (var r in rooms)
             {
+                var room = r.FirstOrDefault();
                 var obj = new RoomViewModel()
                 {
                     RoomID = room.RoomID,
                     RoomType = room.TypeName,
                     RoomName = room.RoomName,
                     RoomTypeID = room.TypeID,
-                    Price = Decimal.Round((decimal)room.Price),
+                    Price = SeparateThousands(((long)room.Price).ToString()),
                 };
-                //Console.WriteLine("{0}\t{1}\t{2}\t{3}\t{4}", room.RoomID, room.RoomName, room.ResID, room.Arrival, room.Departure);
 
                 AvailableRooms.Add(obj);
 
                 AvailableRooms.Last().PropertyChanged += NewReservationViewModel_PropertyChanged;
             }
-
-            //Console.WriteLine(AvailableRooms.Count);
         }
 
         private void NewReservationViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -364,14 +358,10 @@ namespace HotelManagement.ViewModels
             {
                 if ((sender as RoomViewModel).IsSelected)
                 {
-                    StayInformation.Rooms++;
-                    StayInformation.Total += (sender as RoomViewModel).Price;
                     SelectedRooms.Add(sender as RoomViewModel);
                 }
                 else
                 {
-                    StayInformation.Rooms--;
-                    StayInformation.Total -= (sender as RoomViewModel).Price;
                     SelectedRooms.Remove(sender as RoomViewModel);
                 }
                 OnPropertyChanged(nameof(IsAllRoomsSelected));
@@ -389,7 +379,6 @@ namespace HotelManagement.ViewModels
         private int _stays;
         private int _rooms;
         private int _pax;
-        private decimal _total;
 
         public int ID { get { return _id; } set { _id = value; OnPropertyChanged(); } }
 
@@ -406,8 +395,6 @@ namespace HotelManagement.ViewModels
         public int Rooms { get { return _rooms; } set { _rooms = value; OnPropertyChanged(); } }
 
         public int Pax { get { return _pax; } set { _pax = value; OnPropertyChanged(); } }
-
-        public decimal Total { get { return _total; } set { _total = value; OnPropertyChanged(); } }
     }
 
     class GuestViewModel : BaseViewModel
@@ -442,7 +429,7 @@ namespace HotelManagement.ViewModels
         int _roomtype_id;
         string _roomType;
         string _roomName;
-        decimal _price;
+        string _price;
 
         public bool IsSelected { get { return _isSelected; } set { _isSelected = value; OnPropertyChanged(); } }
 
@@ -454,6 +441,6 @@ namespace HotelManagement.ViewModels
 
         public string RoomName { get { return _roomName; } set { _roomName = value; OnPropertyChanged(); } }
 
-        public decimal Price { get { return _price; } set { _price = value; OnPropertyChanged(); } }
+        public string Price { get { return _price; } set { _price = value; OnPropertyChanged(); } }
     }
 }

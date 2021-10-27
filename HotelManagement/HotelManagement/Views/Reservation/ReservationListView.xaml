@@ -17,6 +17,8 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0" Margin="10,20,0,5">
@@ -31,40 +33,6 @@
                 <TextBlock Margin="0,0,30,0" Grid.Column="0"
                     VerticalAlignment="Center" Foreground="{StaticResource PrimaryHueDarkBrush}"
                     Text="Reservation List" FontSize="24" FontWeight="Bold"/>
-
-                <ListBox Grid.Column="1"
-                    Style="{StaticResource MaterialDesignChoiceChipPrimaryListBox}"
-                    x:Name="RadioButtonGroupChoiceChipPrimary">
-                    <ListBoxItem IsSelected="True" Content="ALL" />
-
-                    <ListBoxItem>
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="AirplaneLanding"/>
-                            <TextBlock Margin="5,0,0,0" Text="ARRIVAL" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ListBoxItem>
-
-                    <ListBoxItem>
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="AirplaneTakeoff" />
-                            <TextBlock Margin="5,0,0,0" Text="DEPARTURE" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ListBoxItem>
-
-                    <ListBoxItem>
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="BookCheck" />
-                            <TextBlock Margin="5,0,0,0" Text="COMPLETED" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ListBoxItem>
-
-                    <ListBoxItem>
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="BookCancel" />
-                            <TextBlock Margin="5,0,0,0" Text="CANCELED" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ListBoxItem>
-                </ListBox>
 
                 <Button Grid.Column="3"
                     Content="New Reservation" 
@@ -118,9 +86,11 @@
                     Orientation="Horizontal">
                     <TextBlock
                         Margin="0,0,20,0" VerticalAlignment="Center"
-                        Text="Room Type" FontSize="16" FontWeight="Bold"/>
+                        Text="Res Status" FontSize="16" FontWeight="Bold"/>
 
                     <ComboBox
+                        ItemsSource="{Binding ResStatusList}"
+                        SelectedItem="{Binding SelectedStatus}"
                         Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         materialDesign:TextFieldAssist.HasClearButton="True"
                         materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"
@@ -128,23 +98,7 @@
                         materialDesign:HintAssist.Hint="--Select--"
                         materialDesign:HintAssist.IsFloating="False"
                         FontSize="14" VerticalContentAlignment="Center"
-                        MinWidth="128">
-                        <ComboBoxItem Content="STD" />
-                        <ComboBoxItem Content="DBL" />
-                        <ComboBoxItem Content="DMX" />
-                    </ComboBox>
-                </StackPanel>
-            </Grid>
-
-            <!--Filter Res Status "OnRequest" and "Confirmed"-->
-            <Grid Grid.Column="3">
-                <StackPanel
-                    Orientation="Horizontal">
-                    <TextBlock
-                        Margin="0,0,10,0" VerticalAlignment="Center"
-                        Text="Guaranteed" FontSize="16" FontWeight="Bold"/>
-
-                    <CheckBox/>
+                        Width="128"/>
                 </StackPanel>
             </Grid>
 
@@ -164,37 +118,14 @@
             </Grid>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="0,5,0,0" Height="600">
+        <Grid Grid.Row="2" Margin="0,5,0,0" Height="570">
             <DataGrid
                 ItemsSource="{Binding Reservations}" 
+                VerticalScrollBarVisibility="Disabled"
                 CanUserResizeColumns="False" IsReadOnly="False"
                 CanUserAddRows="False" AutoGenerateColumns="False"
                 HeadersVisibility="All">
-                <DataGrid.Resources>
-                    <viewModels:BindingProxy
-                        x:Key="DataContextProxy"
-                        Data="{Binding}" />
-                </DataGrid.Resources>
-
                 <DataGrid.Columns>
-                    <DataGridCheckBoxColumn
-                        Binding="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged}" 
-                        ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
-                        EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}">
-                        <DataGridCheckBoxColumn.Header>
-                            <Border Background="Transparent">
-                                <CheckBox
-                                    IsChecked="{Binding Data.IsAllReservationsSelected, Source={StaticResource DataContextProxy}}"/>
-                            </Border>
-                        </DataGridCheckBoxColumn.Header>
-
-                        <DataGridCheckBoxColumn.HeaderStyle>
-                            <Style TargetType="{x:Type DataGridColumnHeader}" BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
-                                <Setter Property="HorizontalContentAlignment" Value="Center" />
-                            </Style>
-                        </DataGridCheckBoxColumn.HeaderStyle>
-                    </DataGridCheckBoxColumn>
-
                     <DataGridTextColumn
                         Header="Status" Binding="{Binding Status}" 
                         IsReadOnly="True">
@@ -211,26 +142,32 @@
                                    BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
                                 <Setter Property="VerticalAlignment" Value="Center"/>
                                 <Setter Property="HorizontalAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.ElementStyle>
-                    </DataGridTextColumn>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Style.Triggers>
+                                    <Trigger Property="Text" Value="On Request">
+                                        <Setter Property="Foreground" Value="DarkOrange"/>
+                                    </Trigger>
 
-                    <DataGridTextColumn
-                        Header="Rooms" Binding="{Binding Rooms}"
-                        IsReadOnly="True">
-                        <DataGridTextColumn.HeaderStyle>
-                            <Style TargetType="{x:Type DataGridColumnHeader}"
-                                   BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                <Setter Property="HorizontalAlignment" Value="Center"/>
-                            </Style>
-                        </DataGridTextColumn.HeaderStyle>
+                                    <Trigger Property="Text" Value="Confirmed">
+                                        <Setter Property="Foreground" Value="Yellow"/>
+                                    </Trigger>
 
-                        <DataGridTextColumn.ElementStyle>
-                            <Style TargetType="{x:Type TextBlock}"
-                                   BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
-                                <Setter Property="VerticalAlignment" Value="Center"/>
-                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Trigger Property="Text" Value="Operational">
+                                        <Setter Property="Foreground" Value="DeepSkyBlue"/>
+                                    </Trigger>
+
+                                    <Trigger Property="Text" Value="Cancelled">
+                                        <Setter Property="Foreground" Value="Red"/>
+                                    </Trigger>
+
+                                    <Trigger Property="Text" Value="No Show">
+                                        <Setter Property="Foreground" Value="Gray"/>
+                                    </Trigger>
+
+                                    <Trigger Property="Text" Value="Completed">
+                                        <Setter Property="Foreground" Value="LightGreen"/>
+                                    </Trigger>
+                                </Style.Triggers>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
@@ -296,7 +233,7 @@
                     </DataGridTextColumn>
 
                     <DataGridTextColumn
-                        Header="Pax" Binding="{Binding Pax}"
+                        Header="Rooms" Binding="{Binding Rooms}"
                         IsReadOnly="True">
                         <DataGridTextColumn.HeaderStyle>
                             <Style TargetType="{x:Type DataGridColumnHeader}"
@@ -316,7 +253,7 @@
                     </DataGridTextColumn>
 
                     <DataGridTextColumn
-                        Header="Total" Binding="{Binding Total}"
+                        Header="Pax" Binding="{Binding Pax}"
                         IsReadOnly="True">
                         <DataGridTextColumn.HeaderStyle>
                             <Style TargetType="{x:Type DataGridColumnHeader}"
@@ -358,23 +295,20 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Width="40" Padding="0"
-                                        Style="{StaticResource MaterialDesignOutlinedButton}"
-                                        BorderThickness="1.5"
-                                        Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.ReservationDetailsCommand}"
-                                        CommandParameter="{Binding}">
-                                    <materialDesign:PackIcon Kind="Edit" Foreground="{StaticResource PrimaryHueMidBrush}"/>
-                                </Button>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-
-                    <DataGridTemplateColumn>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Width="40" Padding="0">
-                                    <materialDesign:PackIcon Kind="Delete"/>
-                                </Button>
+                                <materialDesign:PopupBox>
+                                    <ListBox ItemsSource="{Binding Options}">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <ContentControl>
+                                                    <Button 
+                                                        Height="22" FontSize="12" 
+                                                        Style="{StaticResource MaterialDesignToolButton}"
+                                                        Content="{Binding Content}" Command="{Binding Command}"/>
+                                                </ContentControl>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </materialDesign:PopupBox>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -387,6 +321,10 @@
                     </Style>
                 </DataGrid.CellStyle>
             </DataGrid>
+        </Grid>
+
+        <Grid Grid.Row="4" Margin="0,5,0,10">
+            <local:PageNavigationView/>
         </Grid>
     </Grid>
 </UserControl>

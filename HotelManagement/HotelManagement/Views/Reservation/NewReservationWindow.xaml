@@ -62,6 +62,44 @@
                                     <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
 
+                                <!--ID No.-->
+                                <TextBlock
+                                    Grid.Row="0" Grid.Column="0"
+                                    Margin="0,0,32,0" VerticalAlignment="Center"
+                                    Text="ID No." FontSize="16"/>
+
+                                <TextBox
+                                    Grid.Row="0" Grid.Column="1"
+                                    FontSize="14" Width="230" Margin="0,3,0,3"
+                                    Text="{Binding Path=GuestInformation.ID}"
+                                    Style="{StaticResource MaterialDesignTextBox}"
+                                    materialDesign:TextFieldAssist.HasClearButton="True"
+                                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}">
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="PreviewTextInput">
+                                            <ei:CallMethodAction TargetObject="{Binding}" MethodName="NumberValidationTextBox"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </TextBox>
+
+                                <!--Gender-->
+                                <TextBlock
+                                    Grid.Row="0" Grid.Column="3"
+                                    Margin="20,0,0,0" VerticalAlignment="Center"
+                                    Text="Gender" FontSize="16"/>
+
+                                <ComboBox
+                                    Grid.Row="0" Grid.Column="4" Width="100" Margin="0,3,0,3"
+                                    Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"
+                                    materialDesign:ColorZoneAssist.Mode="SecondaryLight"
+                                    materialDesign:HintAssist.IsFloating="False"
+                                    FontSize="14" VerticalContentAlignment="Center"
+                                    SelectedValue="{Binding GuestInformation.Gender}"
+                                    ItemsSource="{Binding Gender}">
+                                </ComboBox>
+
+                                <!--Name-->
                                 <TextBlock
                                     Grid.Row="2" Grid.Column="0"
                                     Margin="0,0,20,0" VerticalAlignment="Center"
@@ -69,7 +107,7 @@
 
                                 <TextBox 
                                     Grid.Row="2" Grid.Column="1"
-                                    FontSize="14" Width="230"
+                                    FontSize="14" Width="230" Margin="0,3,0,3"
                                     Style="{StaticResource MaterialDesignTextBox}"
                                     Text="{Binding Path=GuestInformation.Name}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
@@ -81,22 +119,7 @@
                                     </i:Interaction.Triggers>
                                 </TextBox>
 
-                                <TextBlock
-                                    Grid.Row="0" Grid.Column="3"
-                                    Margin="20,0,0,0" VerticalAlignment="Center"
-                                    Text="Gender" FontSize="16"/>
-
-                                <ComboBox
-                                    Grid.Row="0" Grid.Column="4" Width="100"
-                                    Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"
-                                    materialDesign:ColorZoneAssist.Mode="SecondaryLight"
-                                    materialDesign:HintAssist.IsFloating="False"
-                                    FontSize="14" VerticalContentAlignment="Center"
-                                    SelectedValue="{Binding GuestInformation.Gender}"
-                                    ItemsSource="{Binding Gender}">
-                                </ComboBox>
-
+                                <!--Birthday-->
                                 <TextBlock
                                     Grid.Row="2" Grid.Column="3"
                                     Margin="20,0,10,0" VerticalAlignment="Center"
@@ -109,25 +132,7 @@
                                     materialDesign:HintAssist.Hint="Pick a date"
                                     materialDesign:HintAssist.IsFloating="False"/>
 
-                                <TextBlock
-                                    Grid.Row="0" Grid.Column="0"
-                                    Margin="0,0,32,0" VerticalAlignment="Center"
-                                    Text="ID No." FontSize="16"/>
-
-                                <TextBox
-                                    Grid.Row="0" Grid.Column="1"
-                                    FontSize="14" Width="230"
-                                    Text="{Binding Path=GuestInformation.ID}"
-                                    Style="{StaticResource MaterialDesignTextBox}"
-                                    materialDesign:TextFieldAssist.HasClearButton="True"
-                                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="PreviewTextInput">
-                                            <ei:CallMethodAction TargetObject="{Binding}" MethodName="NumberValidationTextBox"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </TextBox>
-
+                                <!--Email-->
                                 <TextBlock
                                     Grid.Row="4" Grid.Column="0"
                                     Margin="0,0,20,0" VerticalAlignment="Center"
@@ -135,12 +140,13 @@
 
                                 <TextBox 
                                     Grid.Row="4" Grid.Column="1"
-                                    FontSize="14" Width="230" 
+                                    FontSize="14" Width="230" Margin="0,3,0,3"
                                     Text="{Binding Path=GuestInformation.Email}"
                                     Style="{StaticResource MaterialDesignTextBox}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
                                     materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"/>
 
+                                <!--Phone-->
                                 <TextBlock
                                     Grid.Row="4" Grid.Column="3"
                                     Margin="20,0,0,0" VerticalAlignment="Center"
@@ -148,7 +154,7 @@
 
                                 <TextBox 
                                     Grid.Row="4" Grid.Column="4"
-                                    FontSize="14" Width="100"
+                                    FontSize="14" Width="100" Margin="0,3,0,3"
                                     Text="{Binding Path=GuestInformation.Phone}"
                                     Style="{StaticResource MaterialDesignTextBox}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
@@ -160,6 +166,7 @@
                                     </i:Interaction.Triggers>
                                 </TextBox>
 
+                                <!--Address-->
                                 <TextBlock
                                     Grid.Row="6" Grid.Column="0"
                                     Margin="0,0,20,0" VerticalAlignment="Center"
@@ -167,7 +174,7 @@
 
                                 <TextBox
                                     Grid.Row="6" Grid.Column="1"
-                                    FontSize="14" Width="230"
+                                    FontSize="14" Width="230" Margin="0,3,0,3"
                                     Text="{Binding Path=GuestInformation.Address}"
                                     Style="{StaticResource MaterialDesignTextBox}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
@@ -216,8 +223,8 @@
                                     Text="Arrival" FontSize="16"/>
 
                                 <DatePicker
-                                    Grid.Column="2" Width="90"
-                                    Margin="0,0,20,0" FontSize="14"
+                                    Grid.Column="2" Width="90" 
+                                    Margin="0,3,20,3" FontSize="14"
                                     SelectedDate="{Binding Path=StayInformation.Arrival, UpdateSourceTrigger=PropertyChanged}"
                                     materialDesign:HintAssist.Hint="Pick a date"
                                     materialDesign:HintAssist.IsFloating="False"/>
@@ -229,7 +236,7 @@
 
                                 <DatePicker 
                                     Grid.Row="2" Grid.Column="2" 
-                                    Width="90" Margin="0,0,20,0" FontSize="14"
+                                    Width="90" Margin="0,3,20,3" FontSize="14"
                                     SelectedDate="{Binding Path=StayInformation.Departure, UpdateSourceTrigger=PropertyChanged}"
                                     materialDesign:HintAssist.Hint="Pick a date"
                                     materialDesign:HintAssist.IsFloating="False"/>
@@ -240,7 +247,7 @@
                                     Text="Guaranteed" FontSize="16"/>
 
                                 <CheckBox 
-                                    Grid.Row="4" Grid.Column="2" Height="26"
+                                    Grid.Row="4" Grid.Column="2" Height="26" Margin="0,3,0,3"
                                     IsChecked="{Binding Guaranteed}"/>
 
                                 <!--Stays-->
@@ -533,18 +540,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
-
-                    <StackPanel Grid.Column="0" Orientation="Horizontal">
-                        <TextBlock 
-                            Margin="0,0,15,0"
-                            Text="Total" FontSize="22" FontWeight="Bold"/>
-                        
-                        <TextBlock 
-                            Text="{Binding StayInformation.Total, Mode=OneWay, StringFormat={}{0:c}, ConverterCulture='vi-VN'}" 
-                            FontSize="22" FontWeight="Bold"
-                            Foreground="{StaticResource PrimaryHueMidBrush}"/>
-                    </StackPanel>
-
+                    
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
                         <Button 
                             Content="Reserve" Command="{Binding ReserveCommand}"
