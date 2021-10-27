@@ -6,23 +6,368 @@
              xmlns:local="clr-namespace:HotelManagement.Views"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="750" d:DesignWidth="1200" Background="WhiteSmoke"
+             x:Name="dashBoardView">
     <UserControl.DataContext>
         <viewModels:DashBoardViewModel/>
     </UserControl.DataContext>
     <Grid>
-        <StackPanel Orientation="Vertical"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
-            <materialDesign:PackIcon HorizontalAlignment="Center"
-                                              Foreground="{StaticResource PrimaryDarkBrush}"
-                                              Width="100" Height="100"
-                                              Kind="ViewDashboard"/>
-            <TextBlock FontSize="40" FontWeight="Bold" 
-                       VerticalAlignment="Center" HorizontalAlignment="Center" 
-                       Foreground="{StaticResource PrimaryDarkBrush}"
-                       Text="{Binding Title}"/>
-        </StackPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="700"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="480"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="0">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="Loaded">
+                            <i:InvokeCommandAction Command="{Binding InitTodayStatusCommand}"
+                                                   CommandParameter="{Binding ElementName=dashBoardView}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                    <materialDesign:Card
+                        Margin="5 5 5 5" UniformCornerRadius="10" Padding="10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <TextBlock
+                                    FontWeight="Bold">
+                                    Today's status
+                                </TextBlock>
+                                <Rectangle Height="1" Fill="Black"/>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0">
+                                        <materialDesign:Card
+                                            Margin="5 5 5 5"
+                                            UniformCornerRadius="10"
+                                            BorderThickness="1"
+                                            Background="#B0FF57">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="50"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid Grid.Column="0">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid Grid.Row="0" >
+                                                        <TextBlock x:Name="txbCheckinAmount"
+                                                                   VerticalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   FontSize="16"
+                                                                   Foreground="#32CB00"
+                                                                   Margin="10">8</TextBlock>
+                                                    </Grid>
+                                                    <Grid Grid.Row="1">
+                                                        <TextBlock VerticalAlignment="Center"
+                                                                   FontWeight="Normal"
+                                                                   FontSize="16"
+                                                                   Foreground="#32CB00"
+                                                                   Margin="10">Check in</TextBlock>
+                                                    </Grid>
+                                                </Grid>
+                                                <Grid Grid.Column="1">
+                                                    <materialDesign:Card Height="30" Width="30"
+                                                                         UniformCornerRadius="5"
+                                                                         Background="#32CB00">
+                                                        <materialDesign:PackIcon Kind="Import"
+                                                                             Width="20" Height="20" 
+                                                                             Background="#32CB00"
+                                                                             Foreground="White"
+                                                                             VerticalAlignment="Center"
+                                                                             HorizontalAlignment="Center"/>
+                                                    </materialDesign:Card>
+                                                </Grid>
+                                            </Grid>
+                                        </materialDesign:Card>
+                                    </Grid>
+                                    <Grid Grid.Column="1">
+                                        <materialDesign:Card
+                                            Margin="5 5 5 5"
+                                            UniformCornerRadius="10"
+                                            BorderThickness="1"
+                                            Background="#FFDDC1">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="50"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid Grid.Column="0">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid Grid.Row="0" >
+                                                        <TextBlock x:Name="txbCheckoutAmount" 
+                                                                   VerticalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   FontSize="16"
+                                                                   Foreground="#FE4E46"
+                                                                   Margin="10">8</TextBlock>
+                                                    </Grid>
+                                                    <Grid Grid.Row="1">
+                                                        <TextBlock VerticalAlignment="Center"
+                                                                   FontWeight="Normal"
+                                                                   FontSize="16"
+                                                                   Foreground="#FE4E46"
+                                                                   Margin="10">Check out</TextBlock>
+                                                    </Grid>
+                                                </Grid>
+                                                <Grid Grid.Column="1">
+                                                    <materialDesign:Card Height="30" Width="30"
+                                                                         UniformCornerRadius="5"
+                                                                         Background="#FE4E46">
+                                                        <materialDesign:PackIcon Kind="Export"
+                                                                             Width="20" Height="20" 
+                                                                             Background="#FE4E46"
+                                                                             Foreground="White"
+                                                                             VerticalAlignment="Center"
+                                                                             HorizontalAlignment="Center"/>
+                                                    </materialDesign:Card>
+                                                </Grid>
+                                            </Grid>
+                                        </materialDesign:Card>
+                                    </Grid>
+                                </Grid>
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid Grid.Column="0">
+                                        <materialDesign:Card
+                                            Margin="5 5 5 5"
+                                            UniformCornerRadius="10"
+                                            BorderThickness="1"
+                                            Background="#FFECB3">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="50"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid Grid.Column="0">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid Grid.Row="0" >
+                                                        <TextBlock x:Name="txbRoomUsed" VerticalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   FontSize="16"
+                                                                   Foreground="Black"
+                                                                   Margin="10">8</TextBlock>
+                                                    </Grid>
+                                                    <Grid Grid.Row="1">
+                                                        <TextBlock VerticalAlignment="Center"
+                                                                   FontWeight="Normal"
+                                                                   FontSize="16"
+                                                                   Foreground="Black"
+                                                                   Margin="10">Available</TextBlock>
+                                                    </Grid>
+                                                </Grid>
+                                                <Grid Grid.Column="1">
+                                                    <materialDesign:Card Height="30" Width="30"
+                                                                         UniformCornerRadius="5"
+                                                                         Background="#FF6F00">
+                                                    <materialDesign:PackIcon Kind="BedQueen"
+                                                                             Width="20" Height="20" 
+                                                                             Background="#FF6F00"
+                                                                             Foreground="White"
+                                                                             Margin="0"
+                                                                             VerticalAlignment="Center"
+                                                                             HorizontalAlignment="Center"/>
+                                                    </materialDesign:Card>
+                                                </Grid>
+                                            </Grid>
+                                        </materialDesign:Card>
+                                    </Grid>
+                                    <Grid Grid.Column="1">
+                                        <materialDesign:Card
+                                            Margin="5 5 5 5"
+                                            UniformCornerRadius="10"
+                                            BorderThickness="1"
+                                            Background="#9FA8DA">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="50"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid Grid.Column="0">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="*"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid Grid.Row="0" >
+                                                        <TextBlock VerticalAlignment="Center"
+                                                                   FontWeight="Bold"
+                                                                   FontSize="16"
+                                                                   Foreground="#8B5AFF"
+                                                                   Margin="10">8</TextBlock>
+                                                    </Grid>
+                                                    <Grid Grid.Row="1">
+                                                        <TextBlock VerticalAlignment="Center"
+                                                                   FontWeight="Normal"
+                                                                   FontSize="16"
+                                                                   Foreground="#8B5AFF"
+                                                                   Margin="10">Total Guest</TextBlock>
+                                                    </Grid>
+                                                </Grid>
+                                                <Grid Grid.Column="1">
+                                                    <materialDesign:Card Height="30" Width="30"
+                                                                         UniformCornerRadius="5"
+                                                                         Background="#8B5AFF">
+                                                        <materialDesign:PackIcon Kind="Account"
+                                                                             Width="20" Height="20" 
+                                                                             Background="#8B5AFF"
+                                                                             Foreground="White"
+                                                                             VerticalAlignment="Center"
+                                                                             HorizontalAlignment="Center"/>
+                                                    </materialDesign:Card>
+                                                </Grid>
+                                            </Grid>
+                                        </materialDesign:Card>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </materialDesign:Card>
+                </Grid>
+                <Grid Grid.Column="1">
+                    <materialDesign:Card
+                        Margin="5 5 5 5" UniformCornerRadius="10" Padding="10">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <!--<RowDefinition Height="50"/>-->
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <!--<Grid Grid.Row="0">
+                                <TextBlock
+                                    FontWeight="Bold">
+                                    Price
+                                </TextBlock>
+                                <Rectangle Height="1" Fill="Black"/>
+                            </Grid>-->
+                            <Grid Grid.Row="1">
+                                <DataGrid x:Name="dataGridRoomTypes"
+                                          ItemsSource="{Binding ItemRoomTypes, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                          CanUserResizeColumns="False"
+                                          IsReadOnly="True"
+                                          CanUserAddRows="False"
+                                          AutoGenerateColumns="False"
+                                          BorderThickness="1"
+                                          Margin="3 3 3 3"
+                                          BorderBrush="{StaticResource PrimaryDarkBrush}">
+                                    <DataGrid.Columns>
+                                        <materialDesign:DataGridTextColumn
+                                            Header="RoomType" Binding="{Binding name}" 
+                                            IsReadOnly="True">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                    BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}"
+                                                    BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </materialDesign:DataGridTextColumn>
+
+                                        <materialDesign:DataGridTextColumn
+                                            Header="Price" Binding="{Binding price}" 
+                                            IsReadOnly="True">
+                                            <DataGridTextColumn.HeaderStyle>
+                                                <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                    BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                </Style>
+                                            </DataGridTextColumn.HeaderStyle>
+
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="{x:Type TextBlock}"
+                                                    BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </materialDesign:DataGridTextColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </Grid>
+                    </materialDesign:Card>
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="1">
+                <materialDesign:Card
+                    Margin="5 5 5 5" Padding="20"
+                    UniformCornerRadius="10">
+                    <lvc:CartesianChart>
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis>
+                                <lvc:Axis.Separator>
+                                    <lvc:Separator Step="1"/>
+                                </lvc:Axis.Separator>
+                            </lvc:Axis>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis>
+
+                            </lvc:Axis>
+                        </lvc:CartesianChart.AxisY>
+                    </lvc:CartesianChart>
+                </materialDesign:Card>
+            </Grid>
+        </Grid>
+        <Grid Grid.Column="1">
+            <materialDesign:Card Margin="5 5 5 5"
+                                 UniformCornerRadius="10"
+                                 Padding="10">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Loaded">
+                        <i:InvokeCommandAction Command="{Binding InitRoomStatusCommand}"
+                                               CommandParameter="{Binding ElementName=dashBoardView}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <StackPanel>
+                    <TextBlock FontWeight="Bold">Room's status</TextBlock>
+                    <Rectangle Margin="0 10" Height="1" Fill="Black"/>
+                    <StackPanel x:Name="stackRoomStatus" 
+                        Margin="0 15 0 0"></StackPanel>
+                </StackPanel>
+            </materialDesign:Card>
+        </Grid>
     </Grid>
 </UserControl>

@@ -15,7 +15,7 @@ namespace HotelManagement.ViewModels
     class ServicesViewModel : BaseViewModel
     {
         public string Title { get; } = "Service";
-        #region ItemS ource
+        #region Item Source
         private ObservableCollection<SERVICE> itemSourceServices = new ObservableCollection<SERVICE>();
         public ObservableCollection<SERVICE> ItemSourceServices
         {
