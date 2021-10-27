@@ -1,6 +1,7 @@
 ﻿using HotelManagement.Models;
 using HotelManagement.Views;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
@@ -11,6 +12,9 @@ namespace HotelManagement.ViewModels
 {
     class ReservationListViewModel : BaseViewModel
     {
+        public IEnumerable<string> ResStatusList => new[] { "All", "On Request", "Confirmed", "Operational", "No Show", "Completed", "Cancelled" };
+        private string _selectedStatus;
+        public string SelectedStatus { get { return _selectedStatus; } set { _selectedStatus = value; LoadReservations(); OnPropertyChanged(); } }
         public PageNavigationViewModel PageNavigationViewModel { get; set; }
         public ObservableCollection<ReservationItemViewModel> Reservations { get; set; }
 
@@ -30,7 +34,6 @@ namespace HotelManagement.ViewModels
             PageNavigationViewModel = new PageNavigationViewModel();
             PageNavigationViewModel.PageSize = 2;
             var db = new HotelManagementEntities();
-            PageNavigationViewModel.SumRecords = db.RESERVATIONs.Count();
 
             PageNavigationViewModel.PropertyChanged += PageNavigationViewModel_PropertyChanged;
             PageNavigationViewModel.CurrentPage = 1;
@@ -40,17 +43,17 @@ namespace HotelManagement.ViewModels
         {
             if (e.PropertyName == nameof(PageNavigationViewModel.CurrentPage))
             {
-                LoadAllReservations();
+                LoadReservations();
             }
         }
 
-        public void OpenNewReservationWindow()
+        private void OpenNewReservationWindow()
         {
             var wd = new NewReservationWindow();
             wd.Show();
         }
 
-        private void LoadAllReservations()
+        private void LoadReservations()
         {
             if (Reservations.Count > 0) Reservations.Clear();
 
@@ -59,12 +62,13 @@ namespace HotelManagement.ViewModels
             int selectedRecords = PageNavigationViewModel.SelectedRecords;
             int exceptRecords = PageNavigationViewModel.ExceptRecords;
 
-            var reservations = (from res in db.RESERVATIONs select res).Take(selectedRecords).ToList();
-            reservations.RemoveRange(0, exceptRecords);
+            var allReservations = db.RESERVATIONs;
+            PageNavigationViewModel.SumRecords = allReservations.Count();
+            var resCurrentPage = allReservations.OrderBy(res => res.id).Take(selectedRecords).Skip(exceptRecords);
 
-            foreach (var res in reservations)
+            foreach (var res in resCurrentPage)
             {
-                GUEST mainGuest = (from g in db.GUESTs where res.main_guest.Equals(g.id) select g).SingleOrDefault();
+                GUEST mainGuest = db.GUESTs.Where(g => g.id == res.main_guest).SingleOrDefault();
 
                 var obj = new ReservationItemViewModel()
                 {

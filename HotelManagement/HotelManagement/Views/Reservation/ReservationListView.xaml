@@ -34,40 +34,6 @@
                     VerticalAlignment="Center" Foreground="{StaticResource PrimaryHueDarkBrush}"
                     Text="Reservation List" FontSize="24" FontWeight="Bold"/>
 
-                <ListBox Grid.Column="1"
-                    Style="{StaticResource MaterialDesignChoiceChipPrimaryListBox}"
-                    x:Name="RadioButtonGroupChoiceChipPrimary">
-                    <ListBoxItem IsSelected="True" Content="ALL" />
-
-                    <ListBoxItem x:Name="ArrivalChip">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="AirplaneLanding"/>
-                            <TextBlock Margin="5,0,0,0" Text="ARRIVAL" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ListBoxItem>
-
-                    <ListBoxItem>
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="AirplaneTakeoff" />
-                            <TextBlock Margin="5,0,0,0" Text="DEPARTURE" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ListBoxItem>
-
-                    <ListBoxItem>
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="BookCheck" />
-                            <TextBlock Margin="5,0,0,0" Text="COMPLETED" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ListBoxItem>
-
-                    <ListBoxItem>
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="BookCancel" />
-                            <TextBlock Margin="5,0,0,0" Text="CANCELED" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ListBoxItem>
-                </ListBox>
-
                 <Button Grid.Column="3"
                     Content="New Reservation" 
                     Command="{Binding NewReservationCommand}"
@@ -120,9 +86,11 @@
                     Orientation="Horizontal">
                     <TextBlock
                         Margin="0,0,20,0" VerticalAlignment="Center"
-                        Text="Room Type" FontSize="16" FontWeight="Bold"/>
+                        Text="Res Status" FontSize="16" FontWeight="Bold"/>
 
                     <ComboBox
+                        ItemsSource="{Binding ResStatusList}"
+                        SelectedItem="{Binding SelectedStatus}"
                         Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         materialDesign:TextFieldAssist.HasClearButton="True"
                         materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"
@@ -130,23 +98,7 @@
                         materialDesign:HintAssist.Hint="--Select--"
                         materialDesign:HintAssist.IsFloating="False"
                         FontSize="14" VerticalContentAlignment="Center"
-                        MinWidth="128">
-                        <ComboBoxItem Content="STD" />
-                        <ComboBoxItem Content="DBL" />
-                        <ComboBoxItem Content="DMX" />
-                    </ComboBox>
-                </StackPanel>
-            </Grid>
-
-            <!--Filter Res Status "OnRequest" and "Confirmed"-->
-            <Grid Grid.Column="3">
-                <StackPanel
-                    Orientation="Horizontal">
-                    <TextBlock
-                        Margin="0,0,10,0" VerticalAlignment="Center"
-                        Text="Guaranteed" FontSize="16" FontWeight="Bold"/>
-
-                    <CheckBox/>
+                        Width="128"/>
                 </StackPanel>
             </Grid>
 
