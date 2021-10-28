@@ -56,6 +56,9 @@ namespace HotelManagement.ViewModels
             var roomBooked = DataProvider.Instance.DB.ROOM_BOOKED.SingleOrDefault(
                 x => x.reservation_id == reservation.id && x.room_id == RoomId);
             var folio = DataProvider.Instance.DB.FOLIOs.Where(x => x.room_booked_id == roomBooked.id).ToList();
+            int exactRoomPrice = CalculatorInvoice.ExactRoomPrice(RoomId, reservation.date_created.Value);
+            long roomTotalMoney = CalculatorInvoice.RoomTotalMoney(RoomId, reservation);
+            long folioTotalMoney = CalculatorInvoice.FolioTotalOfRoom(folio.ToArray());
 
             foreach (var item in folio)
             {
@@ -71,36 +74,12 @@ namespace HotelManagement.ViewModels
             RoomName = room.name;
             Notes = room.notes;
             RoomType = roomType.name;
-            Price = SeparateThousands(
-                CalculatorInvoice.ExactRoomPrice(RoomId, reservation.date_created.Value).ToString());
+            Price = SeparateThousands(exactRoomPrice.ToString());
             MaxGuest = roomType.max_guest.Value;
-            long roomTotalMoney = (long)roomType.price.Value * (int)(Departure - Arrival).TotalDays;
-            RoomTotalMoney = SeparateThousands(CalculatorInvoice.RoomsTotalMoney(reservation).ToString());
-            FolioTotalMoney = SeparateThousands(CalculatorInvoice.FolioTotalMoney(reservation).ToString());
-            TotalMoney = SeparateThousands(CalculatorInvoice.TotalMoneyNoFee(reservation).ToString());
-        }
 
-        int GetExactRoomPriceOfReservation(List<ROOMTYPE> roomTypeList, DateTime dateCreated)
-        {
-            List<ROOMTYPE> sortList = roomTypeList.OrderBy(x => x.id).ToList();
-            foreach (var item in sortList)
-            {
-                if (item.date_created <= dateCreated)
-                {
-                    if (item.date_updated.HasValue)
-                    {
-                        if (dateCreated <= item.date_updated)
-                        {
-                            return (int)item.price;
-                        }
-                    }
-                    else
-                    {
-                        return (int)item.price;
-                    }
-                }
-            }
-            return 0;
+            RoomTotalMoney = SeparateThousands(roomTotalMoney.ToString());
+            FolioTotalMoney = SeparateThousands(folioTotalMoney.ToString());
+            TotalMoney = SeparateThousands((roomTotalMoney + folioTotalMoney).ToString());
         }
     }
 }
