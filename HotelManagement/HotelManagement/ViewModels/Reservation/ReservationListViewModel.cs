@@ -207,12 +207,16 @@ namespace HotelManagement.ViewModels
 
             if (Status == "On Request" || Status == "Confirmed" || Status == "No Show")
             {
-                option = new Option()
+                if ((Status != "No Show") && (Arrival == DateTime.Today) ||
+                    (Status == "No Show"))
                 {
-                    Content = "Check in",
-                    Command = CheckinCommand,
-                };
-                Options.Add(option);
+                    option = new Option()
+                    {
+                        Content = "Check in",
+                        Command = CheckinCommand,
+                    };
+                    Options.Add(option);
+                }
 
                 option = new Option()
                 {
