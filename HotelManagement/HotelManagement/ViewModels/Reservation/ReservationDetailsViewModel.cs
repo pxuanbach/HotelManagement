@@ -40,7 +40,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _canEditCommand ?? (_canEditCommand = new RelayCommand<object>((p) => true, (p) => { CanEdit = !CanEdit; }));
+                return _canEditCommand ?? (_canEditCommand = new RelayCommand<object>((p) => StayInformation.Status != "Completed", (p) => { CanEdit = !CanEdit; }));
             }
         }
 
