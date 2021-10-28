@@ -242,13 +242,42 @@
                                     materialDesign:HintAssist.IsFloating="False"/>
 
                                 <!--Gauranteed-->
-                                <TextBlock Grid.Row="4" Grid.Column="0"
+                                <TextBlock 
+                                    Grid.Row="4" Grid.Column="0"    
                                     Margin="0,0,10,0" VerticalAlignment="Center"
-                                    Text="Guaranteed" FontSize="16"/>
+                                    Text="Guaranteed" FontSize="16">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding BeWalkIn}" Value="True">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding BeWalkIn}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
 
                                 <CheckBox 
                                     Grid.Row="4" Grid.Column="2" Height="26" Margin="0,3,0,3"
-                                    IsChecked="{Binding Guaranteed}"/>
+                                    IsChecked="{Binding Guaranteed}">
+                                    <CheckBox.Style>
+                                        <Style TargetType="CheckBox" BasedOn="{StaticResource MaterialDesignCheckBox}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding BeWalkIn}" Value="True">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding BeWalkIn}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </CheckBox.Style>
+                                </CheckBox>
 
                                 <!--Stays-->
                                 <TextBlock 
@@ -277,6 +306,26 @@
                                     Grid.Row="4" Grid.Column="6"
                                     Text="{Binding StayInformation.Rooms}" FontSize="16"/>
                             </Grid>
+
+                            <TextBlock
+                                Margin="0,5,0,0"
+                                Foreground="{StaticResource PrimaryHueDarkBrush}" 
+                                Text="Early check-in fee is added!"
+                                FontSize="12" FontStyle="Italic">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding StayInformation.EarlyCheckin}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding StayInformation.EarlyCheckin}" Value="False">
+                                                <Setter Property="Visibility" Value="Hidden"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -543,8 +592,22 @@
                     
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
                         <Button 
-                            Content="Reserve" Command="{Binding ReserveCommand}"
-                            CommandParameter="{Binding ElementName=windowNewReservation}"/>
+                            Command="{Binding ReserveCommand}"
+                            CommandParameter="{Binding ElementName=windowNewReservation}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedDarkButton}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BeWalkIn}" Value="False">
+                                            <Setter Property="Content" Value="Reserve"/>
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding BeWalkIn}" Value="True">
+                                            <Setter Property="Content" Value="Walk In"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                         
                         <Button 
                             Command="{Binding CancelCommand}"

@@ -217,6 +217,8 @@
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
 
                                 <!--Arrival Date-->
@@ -281,6 +283,42 @@
                                         </Style>
                                     </TextBlock.Style>
                                 </TextBlock>
+
+                                <TextBlock
+                                    Grid.Row="6" Grid.Column="0" Margin="0,5,0,5"
+                                    Text="Early Check-in" FontSize="16">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding StayInformation.EarlyCheckin}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding StayInformation.EarlyCheckin}" Value="False">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+
+                                <materialDesign:PackIcon
+                                    Grid.Row="6" Grid.Column="2"
+                                    Kind="CheckBoxOutline" VerticalAlignment="Center">
+                                    <materialDesign:PackIcon.Style>
+                                        <Style TargetType="materialDesign:PackIcon">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding StayInformation.EarlyCheckin}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding StayInformation.EarlyCheckin}" Value="False">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </materialDesign:PackIcon.Style>
+                                </materialDesign:PackIcon>
 
                                 <!--Stays-->
                                 <TextBlock 

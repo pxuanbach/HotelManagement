@@ -270,6 +270,7 @@ namespace HotelManagement.ViewModels
                 Arrival = (DateTime)reservation.arrival,
                 Departure = (DateTime)reservation.departure,
                 Status = reservation.status,
+                EarlyCheckin = (bool)reservation.early_checkin,
             };
 
             GuestInformation = new GuestViewModel()

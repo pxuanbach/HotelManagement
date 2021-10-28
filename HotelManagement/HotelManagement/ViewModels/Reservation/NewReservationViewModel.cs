@@ -20,6 +20,9 @@ namespace HotelManagement.ViewModels
 
         public ObservableCollection<GuestViewModel> Sharers { get; set; }
 
+        private bool _beWalkIn;
+        public bool BeWalkIn { get { return _beWalkIn; } set { _beWalkIn = value; OnPropertyChanged(); } }
+
         public bool BeASharer { get; set; }
 
         public bool Guaranteed { get; set; }
@@ -98,20 +101,51 @@ namespace HotelManagement.ViewModels
 
         private void StayInformation_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(ReservationViewModel.Arrival) ||
-                e.PropertyName == nameof(ReservationViewModel.Departure))
+            var StayInfo = sender as ReservationViewModel;
+            if (e.PropertyName == nameof(ReservationViewModel.Arrival))
             {
-                var StayInfo = sender as ReservationViewModel;
                 if (StayInfo.Arrival < DateTime.Today)
                     StayInformation.Arrival = DateTime.Today;
+
+                if (StayInfo.Arrival == DateTime.Today)
+                {
+                    BeWalkIn = true;
+                    StayInformation.Status = "Operational";
+                    if (DateTime.Now.TimeOfDay < new TimeSpan(12, 0, 0))
+                        StayInformation.EarlyCheckin = true;
+                    else StayInformation.EarlyCheckin = false;
+                }
+                else
+                {
+                    BeWalkIn = false;
+                    if (Guaranteed) StayInformation.Status = "Confirmed";
+                    else StayInformation.Status = "On Request";
+                }
+
+                if (StayInfo.Departure != DateTime.Parse("01-01-0001"))
+                {
+                    if ((int)(StayInfo.Departure - StayInfo.Arrival).TotalDays < 1)
+                        StayInformation.Arrival = DateTime.Today;
+
+                    StayInformation.Stays = (int)(StayInformation.Departure - StayInformation.Arrival).TotalDays;
+                }
+
+                LoadAvailableRooms();
+            }
+
+            if (e.PropertyName == nameof(ReservationViewModel.Departure))
+            {
                 if (StayInfo.Departure < DateTime.Today.AddDays(1))
                     StayInformation.Departure = DateTime.Today.AddDays(1);
-                if ((int)(StayInfo.Departure - StayInfo.Arrival).TotalDays < 1)
+                
+                if (StayInfo.Arrival != DateTime.Parse("01-01-0001"))
                 {
-                    if (e.PropertyName == nameof(ReservationViewModel.Arrival)) StayInformation.Arrival = DateTime.Today;
-                    if (e.PropertyName == nameof(ReservationViewModel.Departure)) StayInformation.Departure = DateTime.Today.AddDays(1);
+                    if ((int)(StayInfo.Departure - StayInfo.Arrival).TotalDays < 1)
+                        StayInformation.Departure = DateTime.Today.AddDays(1);
+
+                    StayInformation.Stays = (int)(StayInformation.Departure - StayInformation.Arrival).TotalDays;
                 }
-                StayInformation.Stays = (int)(StayInformation.Departure - StayInformation.Arrival).TotalDays;
+                    
                 LoadAvailableRooms();
             }
         }
@@ -227,7 +261,9 @@ namespace HotelManagement.ViewModels
                     arrival = StayInformation.Arrival,
                     departure = StayInformation.Departure,
                     main_guest = GuestInformation.ID,
-                    status = Guaranteed ? "Confirmed" : "On Request",
+                    status = StayInformation.Status,
+                    early_checkin = StayInformation.EarlyCheckin,
+                    late_checkout = false,
                 };
                 context.RESERVATIONs.Add(reservation);
                 context.SaveChanges();
@@ -376,6 +412,8 @@ namespace HotelManagement.ViewModels
         private DateTime _date_created;
         private DateTime _arrival;
         private DateTime _departure;
+        private bool _early_checkin;
+
         private int _stays;
         private int _rooms;
         private int _pax;
@@ -389,6 +427,8 @@ namespace HotelManagement.ViewModels
         public DateTime Arrival { get { return _arrival; } set { _arrival = value; OnPropertyChanged(); } }
 
         public DateTime Departure { get { return _departure; } set { _departure = value; OnPropertyChanged(); } }
+
+        public bool EarlyCheckin { get { return _early_checkin; } set { _early_checkin = value; OnPropertyChanged(); } }
 
         public int Stays { get { return _stays; } set { _stays = value; OnPropertyChanged(); } }
 
