@@ -124,7 +124,46 @@ namespace HotelManagement.ViewModels
             BookedRooms = new ObservableCollection<RoomViewModel>();
             SelectedRooms = new ObservableCollection<RoomViewModel>();
 
+            Sharers.CollectionChanged += Sharers_CollectionChanged;
+            BookedRooms.CollectionChanged += BookedRooms_CollectionChanged;
+
             LoadReservationDetails(ResID);
+        }
+
+        private void StayInformation_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            var StayInfo = sender as ReservationViewModel;
+            if (e.PropertyName == nameof(ReservationViewModel.Arrival))
+            {
+                if (StayInfo.Departure != DateTime.Parse("01-01-0001"))
+                {
+                    if ((int)(StayInfo.Departure - StayInfo.Arrival).TotalDays < 1)
+                        StayInformation.Arrival = StayInformation.Departure.AddDays(-1);
+
+                    StayInformation.Stays = (int)(StayInformation.Departure - StayInformation.Arrival).TotalDays;
+                }
+            }
+
+            if (e.PropertyName == nameof(ReservationViewModel.Departure))
+            {
+                if (StayInfo.Arrival != DateTime.Parse("01-01-0001"))
+                {
+                    if ((int)(StayInfo.Departure - StayInfo.Arrival).TotalDays < 1)
+                        StayInformation.Departure = StayInformation.Arrival.AddDays(1);
+
+                    StayInformation.Stays = (int)(StayInformation.Departure - StayInformation.Arrival).TotalDays;
+                }
+            }
+        }
+
+        private void Sharers_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            StayInformation.Pax = Sharers.Count;
+        }
+
+        private void BookedRooms_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            StayInformation.Rooms = BookedRooms.Count;
         }
 
         public bool FilledGuestInformation
@@ -264,14 +303,13 @@ namespace HotelManagement.ViewModels
                            where gb.reservation_id == ResID
                            select g).ToList();
 
-            StayInformation = new ReservationViewModel()
-            {
-                ID = reservation.id,
-                Arrival = (DateTime)reservation.arrival,
-                Departure = (DateTime)reservation.departure,
-                Status = reservation.status,
-                EarlyCheckin = (bool)reservation.early_checkin,
-            };
+            StayInformation = new ReservationViewModel();
+            StayInformation.PropertyChanged += StayInformation_PropertyChanged;
+            StayInformation.ID = reservation.id;
+            StayInformation.Arrival = (DateTime)reservation.arrival;
+            StayInformation.Departure = (DateTime)reservation.departure;
+            StayInformation.Status = reservation.status;
+            StayInformation.EarlyCheckin = (bool)reservation.early_checkin;
 
             GuestInformation = new GuestViewModel()
             {
