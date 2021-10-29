@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -226,6 +225,7 @@ namespace HotelManagement.ViewModels
             }, (p) =>
             {
                 ClearDetailProperties();
+                //Console.WriteLine(((RESERVATION)p.SelectedItem).id);
                 LoadItemSelected((RESERVATION)p.SelectedItem);
             });
 
@@ -282,8 +282,8 @@ namespace HotelManagement.ViewModels
                 return true;
             }, (p) =>
             {
-                ClearDetailProperties();
                 CheckOut((RESERVATION)p.SelectedItem);
+                ClearDetailProperties();
                 LoadReservations();
             });
 
@@ -382,7 +382,9 @@ namespace HotelManagement.ViewModels
 
         void LoadItemSelected(RESERVATION p)
         {
-            var mainGuest = DataProvider.Instance.DB.GUESTs.Where(x => x.id == p.main_guest).SingleOrDefault();
+            if (p == null)
+                return;
+            var mainGuest = DataProvider.Instance.DB.GUESTs.SingleOrDefault(x => x.id == p.main_guest);
             List<GUEST_BOOKING> guestBookingList = 
                 DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == p.id).ToList();
             List<ROOM_BOOKED> roomBookedList =
@@ -444,8 +446,8 @@ namespace HotelManagement.ViewModels
             FolioTotalMoney = SeparateThousands(CalculatorInvoice.FolioTotalMoney(p).ToString());
 
             LoadFeeByStatus(p);
-
-            TotalMoney = SeparateThousands(CalculatorInvoice.TotalMoneyWithFee(p).ToString());
+            TotalMoneyNumber = CalculatorInvoice.TotalMoneyWithFee(p);
+            TotalMoney = SeparateThousands(TotalMoneyNumber.ToString());
         }
 
         void LoadFeeByStatus(RESERVATION p)
@@ -506,6 +508,8 @@ namespace HotelManagement.ViewModels
 
         void CheckOut(RESERVATION p)
         {
+            //Console.WriteLine(p.id);
+            
             p.status = "Completed";
             INVOICE invoice = new INVOICE()
             {
@@ -517,35 +521,13 @@ namespace HotelManagement.ViewModels
             };
             DataProvider.Instance.DB.INVOICEs.Add(invoice);
             DataProvider.Instance.DB.SaveChanges();
+            
         }
 
         void ExportPdf(RESERVATION p)
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "PDF (*.pdf)|*.pdf";
-            sfd.FileName = "invoice.pdf";
-            bool fileError = false;
-
-            if (sfd.ShowDialog() == DialogResult.OK)
-            {
-                if (File.Exists(sfd.FileName))
-                {
-                    try
-                    {
-                        File.Delete(sfd.FileName);
-                    }
-                    catch (IOException ex)
-                    {
-                        fileError = true;
-                        MessageBox.Show("Unable to write data to the path. Description:" + ex.Message);
-                    }
-                }
-                if (!fileError)
-                {
-                    ExportInvoice export = new ExportInvoice();
-                    export.Export(sfd.FileName, p);
-                }
-            } 
+            ExportInvoice export = new ExportInvoice();
+            export.Export(p);
         }
     }
 }
