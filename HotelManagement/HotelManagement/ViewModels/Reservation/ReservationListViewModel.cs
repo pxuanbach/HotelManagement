@@ -14,9 +14,17 @@ namespace HotelManagement.ViewModels
     {
         public IEnumerable<string> ResStatusList => new[] { "All", "On Request", "Confirmed", "Operational", "No Show", "Completed", "Cancelled" };
         private string _selectedStatus;
-        public string SelectedStatus { get { return _selectedStatus; } set { _selectedStatus = value; LoadReservations(); OnPropertyChanged(); } }
+        public string SelectedStatus { get { return _selectedStatus; } set { _selectedStatus = value; OnPropertyChanged(); } }
+
+        private DateTime _selectedArrival;
+        public DateTime SelectedArrival { get { return _selectedArrival; } set { _selectedArrival = value; OnPropertyChanged(); } }
+
+        private DateTime _selectedDeparture;
+        public DateTime SelectedDeparture { get { return _selectedDeparture; } set { _selectedDeparture = value; OnPropertyChanged(); } }
         public PageNavigationViewModel PageNavigationViewModel { get; set; }
-        public ObservableCollection<ReservationItemViewModel> Reservations { get; set; }
+        public List<RESERVATION> AllReservations { get; set; }
+
+        public ObservableCollection<ReservationItemViewModel> CurrentPageReservations { get; set; }
 
         private ICommand _newReservationCommand;
         public ICommand NewReservationCommand
@@ -27,23 +35,41 @@ namespace HotelManagement.ViewModels
             }
         }
 
+        private ICommand _searchCommand;
+        public ICommand SearchCommand
+        {
+            get
+            {
+                return _searchCommand ?? (_searchCommand = new RelayCommand<object>((p) => true, (p) => LoadReservations()));
+            }
+        }
+
+        private ICommand _resetCommand;
+        public ICommand ResetCommand
+        {
+            get
+            {
+                return _resetCommand ?? (_resetCommand = new RelayCommand<object>((p) => true, (p) => ResetFilter()));
+            }
+        }
+
         public ReservationListViewModel()
         {
-            Reservations = new ObservableCollection<ReservationItemViewModel>();
+            AllReservations = new List<RESERVATION>();
+            CurrentPageReservations = new ObservableCollection<ReservationItemViewModel>();
 
             PageNavigationViewModel = new PageNavigationViewModel();
             PageNavigationViewModel.PageSize = 2;
-            var db = new HotelManagementEntities();
 
             PageNavigationViewModel.PropertyChanged += PageNavigationViewModel_PropertyChanged;
-            PageNavigationViewModel.CurrentPage = 1;
+            ResetFilter();
         }
 
         private void PageNavigationViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(PageNavigationViewModel.CurrentPage))
             {
-                LoadReservations();
+                LoadReservationsOnCurrentPage();
             }
         }
 
@@ -53,22 +79,45 @@ namespace HotelManagement.ViewModels
             wd.Show();
         }
 
-        private void LoadReservations()
+        private void ResetFilter()
         {
-            if (Reservations.Count > 0) Reservations.Clear();
+            SelectedArrival = DateTime.Today.AddMonths(-6);
+            SelectedDeparture = DateTime.Today.AddMonths(6);
+            SelectedStatus = "All";
+            LoadReservations();
+        }
 
-            var db = new HotelManagementEntities();
+        public void LoadReservations()
+        {
+            if (SelectedStatus == "All")
+            {
+                AllReservations = DataProvider.Instance.DB.RESERVATIONs.Where(res => res.arrival >= SelectedArrival &&
+                            res.departure <= SelectedDeparture).ToList();
+            }
+            else
+            {
+                AllReservations = DataProvider.Instance.DB.RESERVATIONs.Where(res => res.arrival >= SelectedArrival &&
+                            res.departure <= SelectedDeparture && res.status == SelectedStatus).ToList();
+            }
+            
+            PageNavigationViewModel.SumRecords = AllReservations.Count();
+            if (PageNavigationViewModel.SumRecords > 0)
+                PageNavigationViewModel.CurrentPage = 1;
+            else PageNavigationViewModel.CurrentPage = 0;
+        }
+
+        private void LoadReservationsOnCurrentPage()
+        {
+            if (CurrentPageReservations.Count > 0) CurrentPageReservations.Clear();
 
             int selectedRecords = PageNavigationViewModel.SelectedRecords;
             int exceptRecords = PageNavigationViewModel.ExceptRecords;
 
-            var allReservations = db.RESERVATIONs;
-            PageNavigationViewModel.SumRecords = allReservations.Count();
-            var resCurrentPage = allReservations.OrderBy(res => res.id).Take(selectedRecords).Skip(exceptRecords);
+            var resCurrentPage = AllReservations.OrderBy(res => res.id).Take(selectedRecords).Skip(exceptRecords);
 
             foreach (var res in resCurrentPage)
             {
-                GUEST mainGuest = db.GUESTs.Where(g => g.id == res.main_guest).SingleOrDefault();
+                GUEST mainGuest = DataProvider.Instance.DB.GUESTs.Where(g => g.id == res.main_guest).SingleOrDefault();
 
                 var obj = new ReservationItemViewModel()
                 {
@@ -84,7 +133,7 @@ namespace HotelManagement.ViewModels
 
                 obj.InitializePopup();
 
-                Reservations.Add(obj);
+                CurrentPageReservations.Add(obj);
             }
         }
     }

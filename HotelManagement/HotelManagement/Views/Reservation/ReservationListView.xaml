@@ -61,7 +61,8 @@
                         Margin="0,0,20,0" VerticalAlignment="Center"
                         Text="Arrival" FontSize="16" FontWeight="Bold"/>
 
-                    <DatePicker Width="100"
+                    <DatePicker 
+                        Width="100" SelectedDate="{Binding SelectedArrival}"        
                         materialDesign:HintAssist.Hint="Pick a date"
                         materialDesign:HintAssist.IsFloating="False"/>
                 </StackPanel>
@@ -75,7 +76,8 @@
                         Margin="0,0,20,0" VerticalAlignment="Center"
                         Text="Departure" FontSize="16" FontWeight="Bold"/>
 
-                    <DatePicker Width="100"
+                    <DatePicker 
+                        Width="100" SelectedDate="{Binding SelectedDeparture}"
                         materialDesign:HintAssist.Hint="Pick a date"
                         materialDesign:HintAssist.IsFloating="False"/>
                 </StackPanel>
@@ -92,10 +94,8 @@
                         ItemsSource="{Binding ResStatusList}"
                         SelectedItem="{Binding SelectedStatus}"
                         Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                        materialDesign:TextFieldAssist.HasClearButton="True"
                         materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"
                         materialDesign:ColorZoneAssist.Mode="SecondaryLight"
-                        materialDesign:HintAssist.Hint="--Select--"
                         materialDesign:HintAssist.IsFloating="False"
                         FontSize="14" VerticalContentAlignment="Center"
                         Width="128"/>
@@ -105,11 +105,12 @@
             <Grid Grid.Column="5">
                 <StackPanel Orientation="Horizontal">
                     <Button
-                        Margin="0,0,20,0"
-                        Content="Search"
+                        Margin="0,0,20,0" Content="Search"
+                        Command="{Binding SearchCommand}"
                         IsEnabled="{Binding DataContext.ControlsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"/>
 
                     <Button
+                        Command="{Binding ResetCommand}"
                         Style="{StaticResource MaterialDesignOutlinedButton}"
                         BorderThickness="1.5"
                         ToolTip="Reset Filter" Content="Reset"
@@ -120,7 +121,7 @@
 
         <Grid Grid.Row="2" Margin="0,5,0,0" Height="570">
             <DataGrid
-                ItemsSource="{Binding Reservations}" 
+                ItemsSource="{Binding CurrentPageReservations}" 
                 VerticalScrollBarVisibility="Disabled"
                 CanUserResizeColumns="False" IsReadOnly="False"
                 CanUserAddRows="False" AutoGenerateColumns="False"
