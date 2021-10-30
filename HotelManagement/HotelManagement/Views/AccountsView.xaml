@@ -135,50 +135,62 @@
                 <!-- Filter -->
                 <Border Grid.Row="1" Padding="4 2 4 0">
                     <StackPanel Orientation="Vertical">
-                        <StackPanel Orientation="Horizontal">
-                            <RadioButton x:Name="rdbtAll" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
-                            Style="{StaticResource MaterialDesignTabRadioButton}"
-                            Margin="4" Command="{Binding AllCommnad}"
-                            IsChecked="True">
-                                <TextBlock Text="ALL"/>
-                            </RadioButton>
-                            <RadioButton x:Name="rdbtReservation" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                <RadioButton x:Name="rdbtAll" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
+                                    Style="{StaticResource MaterialDesignTabRadioButton}"
+                                    Margin="4" Command="{Binding AllCommnad}"
+                                    IsChecked="True">
+                                    <TextBlock Text="ALL"/>
+                                </RadioButton>
+                                <RadioButton x:Name="rdbtReservation" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
                                 Style="{StaticResource MaterialDesignTabRadioButton}"
                                 Margin="4" Command="{Binding ReservationCommnad}"
                                 IsChecked="False">
-                                <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock Text="RESERVATION"/>
-                                    <TextBlock Text="{Binding NumberOfReservations}" Margin="6 0 0 0"/>
-                                </StackPanel>
-                            </RadioButton>
-                            <RadioButton x:Name="rdbtReceptionist" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
+                                    <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock Text="RESERVATION"/>
+                                        <TextBlock Text="{Binding NumberOfReservations}" Margin="6 0 0 0"/>
+                                    </StackPanel>
+                                </RadioButton>
+                                <RadioButton x:Name="rdbtReceptionist" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
                                 Style="{StaticResource MaterialDesignTabRadioButton}"
                                 Margin="4" Command="{Binding ReceptionistCommnad}"
                                 IsChecked="False">
-                                <StackPanel Grid.Column="5" Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock Text="RECEPTIONIST"/>
-                                    <TextBlock Text="{Binding NumberOfReceptionists}" Margin="6 0 0 0"/>
-                                </StackPanel>
-                            </RadioButton>
-                            <RadioButton x:Name="rdbtCashier" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
+                                    <StackPanel Grid.Column="5" Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock Text="RECEPTIONIST"/>
+                                        <TextBlock Text="{Binding NumberOfReceptionists}" Margin="6 0 0 0"/>
+                                    </StackPanel>
+                                </RadioButton>
+                                <RadioButton x:Name="rdbtCashier" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
                                 Style="{StaticResource MaterialDesignTabRadioButton}"
                                 Margin="4" Command="{Binding CashierCommnad}"
                                 IsChecked="False">
-                                <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock Text="CASHIER"/>
-                                    <TextBlock Text="{Binding NumberOfCashiers}" Margin="6 0 0 0"/>
-                                </StackPanel>
-                            </RadioButton>
-                            <RadioButton x:Name="rdbtUndefined" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
+                                    <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock Text="CASHIER"/>
+                                        <TextBlock Text="{Binding NumberOfCashiers}" Margin="6 0 0 0"/>
+                                    </StackPanel>
+                                </RadioButton>
+                                <RadioButton x:Name="rdbtUndefined" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
                                 Style="{StaticResource MaterialDesignTabRadioButton}"
                                 Margin="4" Command="{Binding UndefinedCommnad}"
                                 IsChecked="False">
-                                <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock Text="UNDEFINED"/>
-                                    <TextBlock Text="{Binding NumberOfUndefined}" Margin="6 0 0 0"/>
-                                </StackPanel>
-                            </RadioButton>
-                        </StackPanel>
+                                    <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock Text="UNDEFINED"/>
+                                        <TextBlock Text="{Binding NumberOfUndefined}" Margin="6 0 0 0"/>
+                                    </StackPanel>
+                                </RadioButton>
+                            </StackPanel>
+                            <Button Grid.Column="1" Width="Auto" Height="Auto" Margin="6"
+                                Style="{StaticResource MaterialDesignRaisedButton}" 
+                                Content="{materialDesign:PackIcon Kind=Reload, Size=19}" 
+                                Foreground="White" 
+                                Command="{Binding ReloadCommand}">
+                            </Button>
+                        </Grid>
                         <Separator Background="{StaticResource MaterialDesignDarkSeparatorBackground}" Margin="4 0 4 0"/>
                     </StackPanel>
                 </Border>
