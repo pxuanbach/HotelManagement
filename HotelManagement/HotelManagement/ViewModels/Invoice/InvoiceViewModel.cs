@@ -3,6 +3,7 @@ using HotelManagement.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.Entity;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -41,6 +42,21 @@ namespace HotelManagement.ViewModels
             get { return _selectedSearchType; } 
             set { _selectedSearchType = value; OnPropertyChanged(); } 
         }
+
+        private bool _isSearchDateCreated;
+        public bool IsSearchDateCreated { get { return _isSearchDateCreated; } set { _isSearchDateCreated = value; OnPropertyChanged(); } }
+
+        private DateTime _dateCreatedSearch;
+        public DateTime DateCreatedSearch { get { return _dateCreatedSearch; } set { _dateCreatedSearch = value; OnPropertyChanged(); } }
+
+        private bool _isSearchArrDep;
+        public bool IsSearchArrDep { get { return _isSearchArrDep; } set { _isSearchArrDep = value; OnPropertyChanged(); } }
+
+        private DateTime _arrivalSearch;
+        public DateTime ArrivalSearch { get { return _arrivalSearch; } set { _arrivalSearch = value; OnPropertyChanged(); } }
+
+        private DateTime _departureSearch;
+        public DateTime DepartureSearch { get { return _departureSearch; } set { _departureSearch = value; OnPropertyChanged(); } }
         #endregion
 
         #region Invoice Details
@@ -192,6 +208,7 @@ namespace HotelManagement.ViewModels
                 return true;
             }, (p) =>
             {
+                ClearDetailProperties();
                 Search();
             });
 
@@ -313,6 +330,9 @@ namespace HotelManagement.ViewModels
             StatusSelected = "Operational";
             LoadReservations();
             SelectedSearchType = "ID";
+            DateCreatedSearch = DateTime.Now;
+            ArrivalSearch = DateTime.Now;
+            DepartureSearch = DateTime.Now;
         }
 
         void InitDialogProperties()
@@ -361,7 +381,7 @@ namespace HotelManagement.ViewModels
             TotalMoney = "";
         }
 
-        #region Load Function
+        #region Load Functions
         void LoadReservations()
         {
             Reservations = new ObservableCollection<RESERVATION>(
@@ -431,7 +451,8 @@ namespace HotelManagement.ViewModels
             }
 
             ReservationIdSelected = p.id;
-            Arrival = p.arrival.Value.ToString("dd/MM/yyyy");
+            //Arrival = p.arrival.Value.ToString("dd/MM/yyyy");
+            Arrival = p.arrival.Value.Date.ToString();
             Departure = p.departure.Value.ToString("dd/MM/yyyy");
             Identity = p.main_guest;
             Name = mainGuest.name;
@@ -476,7 +497,28 @@ namespace HotelManagement.ViewModels
         }
         #endregion
 
+        #region Search Functions
         void Search()
+        {
+            if (IsSearchArrDep == false && IsSearchDateCreated == false)
+            {
+                SearchWithoutDate();
+            }    
+            else if (IsSearchArrDep == true && IsSearchDateCreated == false)
+            {
+                SearchWithDateArrDep();
+            }    
+            else if (IsSearchArrDep == false && IsSearchDateCreated == true)
+            {
+                SearchWithDateCreated();
+            }    
+            else
+            {
+                SearchWithDateCreateAndArrDep();
+            }    
+        }
+
+        void SearchWithoutDate()
         {
             switch (SelectedSearchType)
             {
@@ -494,6 +536,77 @@ namespace HotelManagement.ViewModels
                     break;
             }
         }
+
+        void SearchWithDateArrDep()
+        {
+            if (string.IsNullOrEmpty(ContentSearch))
+            {
+                Reservations = new ObservableCollection<RESERVATION>(
+                    DataProvider.Instance.DB.RESERVATIONs.Where(
+                        x => x.status == StatusSelected
+                        && DbFunctions.TruncateTime(x.departure.Value) <= DbFunctions.TruncateTime(DepartureSearch)
+                        && DbFunctions.TruncateTime(x.arrival.Value) >= DbFunctions.TruncateTime(ArrivalSearch)));
+            }    
+            else
+            {
+                switch (SelectedSearchType)
+                {
+                    case "ID":
+                        Reservations = new ObservableCollection<RESERVATION>(
+                            DataProvider.Instance.DB.RESERVATIONs.Where(
+                                x => x.id.ToString().Contains(ContentSearch) && x.status == StatusSelected
+                                && DbFunctions.TruncateTime(x.departure.Value) <= DbFunctions.TruncateTime(DepartureSearch)
+                                && DbFunctions.TruncateTime(x.arrival.Value) >= DbFunctions.TruncateTime(ArrivalSearch)));
+                        break;
+                    case "Main Guest":
+                        Reservations = new ObservableCollection<RESERVATION>(
+                            DataProvider.Instance.DB.RESERVATIONs.Where(
+                                x => x.main_guest.ToString().Contains(ContentSearch) && x.status == StatusSelected
+                                && DbFunctions.TruncateTime(x.departure.Value) <= DbFunctions.TruncateTime(DepartureSearch)
+                                && DbFunctions.TruncateTime(x.arrival.Value) >= DbFunctions.TruncateTime(ArrivalSearch)));
+                        break;
+                    default:
+                        break;
+                }
+            }    
+        }
+
+        void SearchWithDateCreated()
+        {
+            if (string.IsNullOrEmpty(ContentSearch))
+            {
+                Reservations = new ObservableCollection<RESERVATION>(
+                    DataProvider.Instance.DB.RESERVATIONs.Where(
+                        x => x.status == StatusSelected
+                        && DbFunctions.DiffDays(x.date_created, DateCreatedSearch) == 0));
+            }
+            else
+            {
+                switch (SelectedSearchType)
+                {
+                    case "ID":
+                        Reservations = new ObservableCollection<RESERVATION>(
+                            DataProvider.Instance.DB.RESERVATIONs.Where(
+                                x => x.id.ToString().Contains(ContentSearch) && x.status == StatusSelected
+                                && DbFunctions.DiffDays(x.date_created, DateCreatedSearch) == 0));
+                        break;
+                    case "Main Guest":
+                        Reservations = new ObservableCollection<RESERVATION>(
+                            DataProvider.Instance.DB.RESERVATIONs.Where(
+                                x => x.main_guest.ToString().Contains(ContentSearch) && x.status == StatusSelected
+                                && DbFunctions.DiffDays(x.date_created, DateCreatedSearch) == 0));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        void SearchWithDateCreateAndArrDep()
+        {
+
+        }
+        #endregion
 
         void OpenFolioOfRoomWindow(RoomDisplayItem room)
         {
