@@ -175,24 +175,32 @@
                         </Border>
                     </Grid>
                     <!-- Filter status -->
-                    <Border Grid.Row="2" Padding="4 2 4 0">
-                        <StackPanel Orientation="Vertical">
-                            <StackPanel Orientation="Horizontal">
-                                <RadioButton x:Name="rdbtOperational" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="4 2 4 0">
+                            <RadioButton x:Name="rdbtOperational" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
                                     Style="{StaticResource MaterialDesignTabRadioButton}"
                                     Margin="4" Command="{Binding OperationalCommnad}"
                                     IsChecked="True">
-                                    <TextBlock Text="OPERATIONAL"/>
-                                </RadioButton>
-                                <RadioButton x:Name="rdbtCompleted" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
+                                <TextBlock Text="OPERATIONAL"/>
+                            </RadioButton>
+                            <RadioButton x:Name="rdbtCompleted" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
                                     Style="{StaticResource MaterialDesignTabRadioButton}"
                                     Margin="4" Command="{Binding CompletedCommnad}"
                                     IsChecked="False">
-                                    <TextBlock Text="COMPLETED"/>
-                                </RadioButton>
-                            </StackPanel>
+                                <TextBlock Text="COMPLETED"/>
+                            </RadioButton>
                         </StackPanel>
-                    </Border>
+                        <Button Grid.Column="1" Width="Auto" Height="Auto" Margin="6"
+                            Style="{StaticResource MaterialDesignRaisedButton}" 
+                            Content="{materialDesign:PackIcon Kind=Reload, Size=19}" 
+                            Foreground="White" 
+                            Command="{Binding ReloadCommand}">
+                        </Button>
+                    </Grid>
                     <!-- Data Table -->
                     <Border Grid.Row="3" BorderBrush="Silver" BorderThickness="0.7" CornerRadius="0 0 12 12" >
                         <ListView x:Name="lvReservation" ItemsSource="{Binding Reservations}">
