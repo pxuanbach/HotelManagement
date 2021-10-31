@@ -76,10 +76,11 @@ namespace HotelManagement.ViewModels
         private void OpenNewReservationWindow()
         {
             var wd = new NewReservationWindow();
+            wd.DataContext = new NewReservationViewModel(this);
             wd.Show();
         }
 
-        private void ResetFilter()
+        public void ResetFilter()
         {
             SelectedArrival = DateTime.Today.AddMonths(-6);
             SelectedDeparture = DateTime.Today.AddMonths(6);
@@ -119,7 +120,7 @@ namespace HotelManagement.ViewModels
             {
                 GUEST mainGuest = DataProvider.Instance.DB.GUESTs.Where(g => g.id == res.main_guest).SingleOrDefault();
 
-                var obj = new ReservationItemViewModel()
+                var obj = new ReservationItemViewModel(this)
                 {
                     ID = res.id,
                     Status = res.status,
@@ -140,6 +141,8 @@ namespace HotelManagement.ViewModels
 
     class ReservationItemViewModel : BaseViewModel
     {
+        private ReservationListViewModel Instance { get; set; } 
+
         #region Property
         private int _id;
         private string _status;
@@ -209,29 +212,29 @@ namespace HotelManagement.ViewModels
         private void OpenReservationDetailsWindow()
         {
             var wd = new ReservationDetailsWindow();
-            wd.DataContext = new ReservationDetailsViewModel(ID);
+            wd.DataContext = new ReservationDetailsViewModel(ID, Instance);
             wd.Show();
         }
 
         private void CheckIn()
         {
-            var db = new HotelManagementEntities();
-            db.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Operational";
-            db.SaveChanges();
+            DataProvider.Instance.DB.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Operational";
+            DataProvider.Instance.DB.SaveChanges();
+            Instance.LoadReservations();
         }
 
         private void CancelRes()
         {
-            var db = new HotelManagementEntities();
-            db.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Cancelled";
-            db.SaveChanges();
+            DataProvider.Instance.DB.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Cancelled";
+            DataProvider.Instance.DB.SaveChanges();
+            Instance.LoadReservations();
         }
 
         private void ConfirmGuarantee()
         {
-            var db = new HotelManagementEntities();
-            db.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Confirmed";
-            db.SaveChanges();
+            DataProvider.Instance.DB.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Confirmed";
+            DataProvider.Instance.DB.SaveChanges();
+            Instance.LoadReservations();
         }
 
         public void InitializePopup()
@@ -276,6 +279,11 @@ namespace HotelManagement.ViewModels
             }      
         }
         #endregion
+
+        public ReservationItemViewModel(ReservationListViewModel _instance)
+        {
+            Instance = _instance;
+        }
     }
 
     class Option : BaseViewModel

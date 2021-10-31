@@ -13,10 +13,6 @@
         Background="WhiteSmoke"
         SizeToContent="WidthAndHeight" ResizeMode="NoResize"
         Title="Walk In / New Reservation">
-    <Window.DataContext>
-        <viewModels:NewReservationViewModel/>
-    </Window.DataContext>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>

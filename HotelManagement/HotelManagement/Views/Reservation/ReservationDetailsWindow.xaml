@@ -505,9 +505,11 @@
                                 </Button>
                             </Grid>
 
-                            <DataGrid Height="200"
+                            <DataGrid 
+                                Height="200"
                                 ItemsSource="{Binding Sharers}"
                                 CanUserResizeColumns="False" 
+                                IsReadOnly="True"
                                 CanUserAddRows="False"
                                 AutoGenerateColumns="False"
                                 HeadersVisibility="All">

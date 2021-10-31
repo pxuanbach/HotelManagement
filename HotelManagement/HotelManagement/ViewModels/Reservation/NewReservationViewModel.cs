@@ -10,6 +10,8 @@ namespace HotelManagement.ViewModels
 {
     class NewReservationViewModel : BaseViewModel
     {
+        private ReservationListViewModel Instance { get; set; }
+
         public GuestViewModel GuestInformation { get; set; }
 
         public ReservationViewModel StayInformation { get; set; }
@@ -76,8 +78,10 @@ namespace HotelManagement.ViewModels
         }
         #endregion
 
-        public NewReservationViewModel()
+        public NewReservationViewModel(ReservationListViewModel _instance)
         {
+            Instance = _instance;
+
             Sharers = new ObservableCollection<GuestViewModel>();
             GuestInformation = new GuestViewModel();
             StayInformation = new ReservationViewModel();
@@ -306,6 +310,7 @@ namespace HotelManagement.ViewModels
                 }
             }
 
+            Instance.LoadReservations();
             window.Close();
         }
 

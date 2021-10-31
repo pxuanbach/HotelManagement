@@ -13,6 +13,8 @@ namespace HotelManagement.ViewModels
 {
     class ReservationDetailsViewModel : BaseViewModel
     {
+        private ReservationListViewModel Instance { get; set; }
+
         private bool _canEdit;
         public bool CanEdit { get { return _canEdit; } set { _canEdit = value; OnPropertyChanged(); } }
 
@@ -21,6 +23,8 @@ namespace HotelManagement.ViewModels
         public ReservationViewModel StayInformation { get; set; }
 
         public ObservableCollection<GuestViewModel> Sharers { get; set; }
+
+        public GuestViewModel NewSharer { get; set; }
 
         public ObservableCollection<RoomViewModel> BookedRooms { get; set; }
 
@@ -49,7 +53,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => FilledGuestInformation && !BeASharer, (p) => ReserveLikeASharer()));
+                return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => FilledGuestInformation(GuestInformation) && !BeASharer, (p) => ReserveLikeASharer()));
             }
         }
 
@@ -58,7 +62,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _addSharerCommand ?? (_addSharerCommand = new RelayCommand<object>((p) => CanAddSharer, (p) => AddSharer()));
+                return _addSharerCommand ?? (_addSharerCommand = new RelayCommand<object>((p) => true, (p) => OpenAddSharerWindow()));
             }
         }
 
@@ -80,6 +84,15 @@ namespace HotelManagement.ViewModels
             }
         }
 
+        private ICommand _confirmAddSharerCommand;
+        public ICommand ConfirmAddSharerCommand
+        {
+            get
+            {
+                return _confirmAddSharerCommand ?? (_confirmAddSharerCommand = new RelayCommand<Window>((p) => FilledGuestInformation(NewSharer), (p) => AddSharer(p)));
+            }
+        }
+
         private ICommand _removeRoomCommand;
         public ICommand RemoveRoomCommand
         {
@@ -89,12 +102,21 @@ namespace HotelManagement.ViewModels
             }
         }
 
+        private ICommand _confirmAddRoomCommand;
+        public ICommand ConfirmAddRoomCommand
+        {
+            get
+            {
+                return _confirmAddRoomCommand ?? (_confirmAddRoomCommand = new RelayCommand<Window>((p) => SelectedRooms.Count > 0, (p) => AddRoom(p)));
+            }
+        }
+
         private ICommand _saveDataCommand;
         public ICommand SaveDataCommand
         {
             get
             {
-                return _saveDataCommand ?? (_saveDataCommand = new RelayCommand<Window>((p) => CanSaveData, (p) => SaveDataChange(p)));
+                return _saveDataCommand ?? (_saveDataCommand = new RelayCommand<Window>((p) => FilledGuestInformation(GuestInformation), (p) => SaveDataChange(p)));
             }
         }
 
@@ -106,19 +128,12 @@ namespace HotelManagement.ViewModels
                 return _cancelCommand ?? (_cancelCommand = new RelayCommand<Window>((p) => true, (p) => p.Close()));
             }
         }
-
-        private ICommand _confirmAddRoomCommand;
-        public ICommand ConfirmAddRoomCommand
-        {
-            get
-            {
-                return _confirmAddRoomCommand ?? (_confirmAddRoomCommand = new RelayCommand<Window>((p) => true, (p) => AddRoom(p)));
-            }
-        }
         #endregion
 
-        public ReservationDetailsViewModel(int ResID)
+        public ReservationDetailsViewModel(int ResID, ReservationListViewModel _instance)
         {
+            Instance = _instance;
+
             CanEdit = false;
             Sharers = new ObservableCollection<GuestViewModel>();
             BookedRooms = new ObservableCollection<RoomViewModel>();
@@ -166,57 +181,81 @@ namespace HotelManagement.ViewModels
             StayInformation.Rooms = BookedRooms.Count;
         }
 
-        public bool FilledGuestInformation
+        public bool FilledGuestInformation(GuestViewModel guest)
         {
-            get
-            {
-                if (String.IsNullOrEmpty(GuestInformation.ID) ||
-                    String.IsNullOrEmpty(GuestInformation.Gender) ||
-                    String.IsNullOrEmpty(GuestInformation.Name) ||
-                    String.IsNullOrEmpty(GuestInformation.Email) ||
-                    String.IsNullOrEmpty(GuestInformation.Phone) ||
-                    String.IsNullOrEmpty(GuestInformation.Address))
-                    return false;
-                return true;
-            }
-        }
-
-        public bool CanAddSharer
-        {
-            get
-            {
-                if (Sharers.Count == 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    foreach (var row in Sharers)
-                    {
-                        if (String.IsNullOrEmpty(row.Name) ||
-                            String.IsNullOrEmpty(row.ID) ||
-                            String.IsNullOrEmpty(row.Gender) ||
-                            String.IsNullOrEmpty(row.Address))
-                        {
-                            return false;
-                        }
-                    }
-
-                    return true;
-                }
-            }
+            if (String.IsNullOrEmpty(guest.ID) ||
+                String.IsNullOrEmpty(guest.Gender) ||
+                String.IsNullOrEmpty(guest.Name) ||
+                String.IsNullOrEmpty(guest.Email) ||
+                String.IsNullOrEmpty(guest.Phone) ||
+                String.IsNullOrEmpty(guest.Address))
+                return false;
+            return true;
         }
 
         public void ReserveLikeASharer()
         {
-            Sharers.Add(GuestInformation);
+            var db = new HotelManagementEntities();
+            if (!db.GUEST_BOOKING.Any(gb => gb.reservation_id == StayInformation.ID && gb.guest_id == GuestInformation.ID))
+            {
+                var guestBooking = new GUEST_BOOKING()
+                {
+                    reservation_id = StayInformation.ID,
+                    guest_id = GuestInformation.ID,
+                };
+                db.GUEST_BOOKING.Add(guestBooking);
+                db.SaveChanges();
+            }
+
+            LoadGuests(StayInformation.ID);
             BeASharer = true;
         }
 
-        public void AddSharer()
+        public void OpenAddSharerWindow()
         {
-            GuestViewModel newSharer = new GuestViewModel();
-            Sharers.Add(newSharer);
+            var wd = new AddBookingGuestWindow();
+            NewSharer = new GuestViewModel();
+            NewSharer.Birthday = DateTime.Parse("01-01-2000");
+            wd.DataContext = this;
+            wd.ShowDialog();
+        }
+
+        public void AddSharer(Window wd)
+        {
+            var db = new HotelManagementEntities();
+            if (!db.GUEST_BOOKING.Any(gb => gb.reservation_id == StayInformation.ID && gb.guest_id == NewSharer.ID))
+            {
+                var existing_guest = db.GUESTs.SingleOrDefault(g => g.id == NewSharer.ID);
+                if (existing_guest == null)
+                {
+                    var guest = new GUEST()
+                    {
+                        id = NewSharer.ID,
+                        name = NewSharer.Name,
+                        gender = NewSharer.Gender,
+                        address = NewSharer.Address,
+                    };
+                    db.GUESTs.Add(guest);
+                }
+                else
+                {
+                    existing_guest.name = NewSharer.Name;
+                    existing_guest.gender = NewSharer.Gender;
+                    existing_guest.address = NewSharer.Address;
+                }
+                db.SaveChanges();
+
+                var guestBooking = new GUEST_BOOKING()
+                {
+                    reservation_id = StayInformation.ID,
+                    guest_id = NewSharer.ID,
+                };
+                db.GUEST_BOOKING.Add(guestBooking);
+                db.SaveChanges();
+            }
+
+            LoadGuests(StayInformation.ID);
+            wd.Close();
         }
 
         public void RemoveSelectedSharer(GuestViewModel sharer)
@@ -249,7 +288,6 @@ namespace HotelManagement.ViewModels
             var db = new HotelManagementEntities();
             foreach (var room in SelectedRooms)
             {
-                BookedRooms.Add(room);
                 var bookedBoom = new ROOM_BOOKED()
                 {
                     reservation_id = StayInformation.ID,
@@ -258,6 +296,8 @@ namespace HotelManagement.ViewModels
                 db.ROOM_BOOKED.Add(bookedBoom);
             }
             db.SaveChanges();
+            LoadBookedRooms(StayInformation.ID);
+            Instance.LoadReservations();
             wd.Close();
         }
 
@@ -269,10 +309,9 @@ namespace HotelManagement.ViewModels
             if (room_booked.FOLIOs.Count() == 0)
             {
                 db.ROOM_BOOKED.Remove(room_booked);
-                BookedRooms.Remove(room);
-
                 db.SaveChanges();
-
+                LoadBookedRooms(StayInformation.ID);
+                Instance.LoadReservations();
             }
             else MessageBox.Show("Cannot remove booked room which registed a folio!!!", "[ERROR]");
         }
@@ -284,24 +323,6 @@ namespace HotelManagement.ViewModels
             var reservation = (from res in db.RESERVATIONs where res.id == ResID select res).SingleOrDefault();
 
             var mainGuest = (from g in db.GUESTs where reservation.main_guest == g.id select g).SingleOrDefault();
-
-            var rooms = (from r in db.ROOMs
-                         join rt in db.ROOMTYPEs on r.roomtype_id equals rt.id
-                         join rb in db.ROOM_BOOKED on r.id equals rb.room_id
-                         where rb.reservation_id == ResID
-                         select new
-                         {
-                             RoomID = r.id,
-                             RoomName = r.name,
-                             TypeID = rt.id,
-                             TypeName = rt.name,
-                             Price = rt.price,
-                         }).ToList();
-
-            var sharers = (from g in db.GUESTs
-                           join gb in db.GUEST_BOOKING on g.id equals gb.guest_id
-                           where gb.reservation_id == ResID
-                           select g).ToList();
 
             StayInformation = new ReservationViewModel();
             StayInformation.PropertyChanged += StayInformation_PropertyChanged;
@@ -322,6 +343,28 @@ namespace HotelManagement.ViewModels
                 Phone = mainGuest.phone,
             };
 
+            LoadGuests(ResID);
+            LoadBookedRooms(ResID);
+        }
+
+        void LoadBookedRooms(int ResID)
+        {
+            if (BookedRooms.Count > 0) BookedRooms.Clear();
+
+            var db = new HotelManagementEntities();
+            var rooms = (from r in db.ROOMs
+                         join rt in db.ROOMTYPEs on r.roomtype_id equals rt.id
+                         join rb in db.ROOM_BOOKED on r.id equals rb.room_id
+                         where rb.reservation_id == ResID
+                         select new
+                         {
+                             RoomID = r.id,
+                             RoomName = r.name,
+                             TypeID = rt.id,
+                             TypeName = rt.name,
+                             Price = rt.price,
+                         }).ToList();
+
             foreach (var room in rooms)
             {
                 var obj = new RoomViewModel()
@@ -333,6 +376,17 @@ namespace HotelManagement.ViewModels
                 };
                 BookedRooms.Add(obj);
             }
+        }
+
+        void LoadGuests(int ResID)
+        {
+            if (Sharers.Count > 0) Sharers.Clear();
+
+            var db = new HotelManagementEntities();
+            var sharers = (from g in db.GUESTs
+                           join gb in db.GUEST_BOOKING on g.id equals gb.guest_id
+                           where gb.reservation_id == ResID
+                           select g).ToList();
 
             foreach (var sharer in sharers)
             {
@@ -346,23 +400,6 @@ namespace HotelManagement.ViewModels
                     Address = sharer.address,
                 };
                 Sharers.Add(obj);
-            }
-        }
-
-        public bool CanSaveData
-        {
-            get
-            {
-                if (!FilledGuestInformation) return false;
-                foreach (var row in Sharers)
-                {
-                    if (String.IsNullOrEmpty(row.Name) ||
-                        String.IsNullOrEmpty(row.ID) ||
-                        String.IsNullOrEmpty(row.Gender) ||
-                        String.IsNullOrEmpty(row.Address))
-                        return false;
-                }
-                return true;
             }
         }
 
@@ -385,42 +422,9 @@ namespace HotelManagement.ViewModels
                 reservation.arrival = StayInformation.Arrival;
                 reservation.departure = StayInformation.Departure;
                 context.SaveChanges();
-
-                // Update sharer information
-                foreach (var sharer in Sharers)
-                {
-                    var existing_guest = context.GUESTs.SingleOrDefault(g => g.id == sharer.ID);
-                    if (existing_guest == null)
-                    {
-                        var guest = new GUEST()
-                        {
-                            id = sharer.ID,
-                            name = sharer.Name,
-                            gender = sharer.Gender,
-                            address = sharer.Address,
-                        };
-                        context.GUESTs.Add(guest);
-                    }
-                    else
-                    {
-                        existing_guest.name = sharer.Name;
-                        existing_guest.gender = sharer.Gender;
-                        existing_guest.address = sharer.Address;
-                    }
-                    context.SaveChanges();
-
-                    if (!context.GUEST_BOOKING.Any(gb => gb.reservation_id == reservation.id && gb.guest_id == sharer.ID))
-                    {
-                        var guestBooking = new GUEST_BOOKING()
-                        {
-                            reservation_id = reservation.id,
-                            guest_id = sharer.ID,
-                        };
-                        context.GUEST_BOOKING.Add(guestBooking);
-                        context.SaveChanges();
-                    }
-                }
             }
+
+            Instance.LoadReservations();
 
             window.Close();
         }
