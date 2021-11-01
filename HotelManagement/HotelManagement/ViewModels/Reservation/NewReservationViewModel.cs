@@ -49,7 +49,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _addSharerCommand ?? (_addSharerCommand = new RelayCommand<object>((p) => true, (p) => OpenAddSharerWindow()));
+                return _addSharerCommand ?? (_addSharerCommand = new RelayCommand<object>((p) => CanAddSharer, (p) => OpenAddSharerWindow()));
             }
         }
 
@@ -171,29 +171,13 @@ namespace HotelManagement.ViewModels
             StayInformation.Pax = Sharers.Count;
         }
 
-        public bool CanAddSharer
+        private bool CanAddSharer
         {
             get
             {
-                if (Sharers.Count == 0)
-                {
+                if (Sharers.Count < StayInformation.MaxPax)
                     return true;
-                }
-                else
-                {
-                    foreach (var row in Sharers)
-                    {
-                        if (String.IsNullOrEmpty(row.Name) ||
-                            String.IsNullOrEmpty(row.ID) ||
-                            String.IsNullOrEmpty(row.Gender) || 
-                            String.IsNullOrEmpty(row.Address))
-                        {
-                            return false;
-                        }
-                    }
-
-                    return true;
-                }
+                else return false;
             }
         }
 
@@ -370,6 +354,7 @@ namespace HotelManagement.ViewModels
                                 Arrival = rs1.arrival,
                                 Departure = rs1.departure,
                                 Price = rt.price,
+                                Capacity = rt.max_guest,
                            };
 
             var excepts = from r in allrooms where !(r.Arrival >= StayInformation.Departure || r.Departure <= StayInformation.Arrival) select r;
@@ -391,6 +376,7 @@ namespace HotelManagement.ViewModels
                     RoomName = room.RoomName,
                     RoomTypeID = room.TypeID,
                     Price = SeparateThousands(((long)room.Price).ToString()),
+                    Capacity = (int)room.Capacity,
                 };
 
                 AvailableRooms.Add(obj);
@@ -406,10 +392,12 @@ namespace HotelManagement.ViewModels
                 if ((sender as RoomViewModel).IsSelected)
                 {
                     SelectedRooms.Add(sender as RoomViewModel);
+                    StayInformation.MaxPax += (sender as RoomViewModel).Capacity;
                 }
                 else
                 {
                     SelectedRooms.Remove(sender as RoomViewModel);
+                    StayInformation.MaxPax -= (sender as RoomViewModel).Capacity;
                 }
                 OnPropertyChanged(nameof(IsAllRoomsSelected));
             }
@@ -446,6 +434,8 @@ namespace HotelManagement.ViewModels
         public int Rooms { get { return _rooms; } set { _rooms = value; OnPropertyChanged(); } }
 
         public int Pax { get { return _pax; } set { _pax = value; OnPropertyChanged(); } }
+
+        public int MaxPax { get; set; }
     }
 
     class GuestViewModel : BaseViewModel
@@ -496,6 +486,7 @@ namespace HotelManagement.ViewModels
         string _roomType;
         string _roomName;
         string _price;
+        int _capacity;
 
         public bool IsSelected { get { return _isSelected; } set { _isSelected = value; OnPropertyChanged(); } }
 
@@ -508,5 +499,7 @@ namespace HotelManagement.ViewModels
         public string RoomName { get { return _roomName; } set { _roomName = value; OnPropertyChanged(); } }
 
         public string Price { get { return _price; } set { _price = value; OnPropertyChanged(); } }
+
+        public int Capacity { get { return _capacity; } set { _capacity = value; OnPropertyChanged(); } }
     }
 }

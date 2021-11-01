@@ -44,7 +44,8 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _canEditCommand ?? (_canEditCommand = new RelayCommand<object>((p) => StayInformation.Status != "Completed", (p) => { CanEdit = !CanEdit; }));
+                return _canEditCommand ?? (_canEditCommand = new RelayCommand<object>((p) =>
+                CanExecuteEditCommand, (p) => { CanEdit = !CanEdit; }));
             }
         }
 
@@ -62,7 +63,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _addSharerCommand ?? (_addSharerCommand = new RelayCommand<object>((p) => true, (p) => OpenAddSharerWindow()));
+                return _addSharerCommand ?? (_addSharerCommand = new RelayCommand<object>((p) => CanAddSharer, (p) => OpenAddSharerWindow()));
             }
         }
 
@@ -181,6 +182,25 @@ namespace HotelManagement.ViewModels
             StayInformation.Rooms = BookedRooms.Count;
         }
 
+        private bool CanExecuteEditCommand
+        {
+            get
+            {
+                if (StayInformation.Status != "Completed" && StayInformation.Status != "Cancelled") return true;
+                return false;
+            }
+        }
+
+        private bool CanAddSharer
+        {
+            get
+            {
+                if (Sharers.Count < StayInformation.MaxPax)
+                    return true;
+                else return false;
+            }
+        }
+
         public void ReserveLikeASharer()
         {
             var db = new HotelManagementEntities();
@@ -284,6 +304,7 @@ namespace HotelManagement.ViewModels
                 db.ROOM_BOOKED.Add(bookedBoom);
             }
             db.SaveChanges();
+
             LoadBookedRooms(StayInformation.ID);
             Instance.LoadReservations();
             wd.Close();
@@ -298,6 +319,7 @@ namespace HotelManagement.ViewModels
             {
                 db.ROOM_BOOKED.Remove(room_booked);
                 db.SaveChanges();
+
                 LoadBookedRooms(StayInformation.ID);
                 Instance.LoadReservations();
             }
@@ -338,6 +360,7 @@ namespace HotelManagement.ViewModels
         void LoadBookedRooms(int ResID)
         {
             if (BookedRooms.Count > 0) BookedRooms.Clear();
+            StayInformation.MaxPax = 0;
 
             var db = new HotelManagementEntities();
             var rooms = (from r in db.ROOMs
@@ -351,6 +374,7 @@ namespace HotelManagement.ViewModels
                              TypeID = rt.id,
                              TypeName = rt.name,
                              Price = rt.price,
+                             Capacity = rt.max_guest,
                          }).ToList();
 
             foreach (var room in rooms)
@@ -361,8 +385,11 @@ namespace HotelManagement.ViewModels
                     RoomName = room.RoomName,
                     RoomType = room.TypeName,
                     Price = SeparateThousands(((long)room.Price).ToString()),
+                    Capacity = (int)room.Capacity,
                 };
                 BookedRooms.Add(obj);
+
+                StayInformation.MaxPax += obj.Capacity;
             }
         }
 
@@ -469,6 +496,7 @@ namespace HotelManagement.ViewModels
                                Arrival = rs1.arrival,
                                Departure = rs1.departure,
                                Price = rt.price,
+                               Capacity = rt.max_guest,
                            };
 
             var excepts = from r in allrooms where !(r.Arrival >= StayInformation.Departure || r.Departure <= StayInformation.Arrival) select r;
@@ -488,6 +516,7 @@ namespace HotelManagement.ViewModels
                     RoomName = room.RoomName,
                     RoomTypeID = room.TypeID,
                     Price = SeparateThousands(((long)room.Price).ToString()),
+                    Capacity = (int)room.Capacity,
                 };
 
                 AvailableRooms.Add(obj);

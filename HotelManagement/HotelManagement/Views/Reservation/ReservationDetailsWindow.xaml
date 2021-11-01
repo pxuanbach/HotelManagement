@@ -441,6 +441,26 @@
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
 
+                                    <DataGridTextColumn 
+                                        Header="Capacity" Binding="{Binding Capacity}"
+                                        IsReadOnly="True">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
                                     <DataGridTemplateColumn>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
@@ -557,18 +577,26 @@
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
 
-
-                                    <materialDesign:DataGridComboBoxColumn
-                                        Header="Gender" 
-                                        SelectedValueBinding="{Binding Gender}"
-                                        ItemsSourceBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.Gender}">
-                                        <materialDesign:DataGridComboBoxColumn.ElementStyle>
-                                            <Style TargetType="{x:Type ComboBox}"
-                                                   BasedOn="{StaticResource MaterialDesignDataGridComboBox}">
-                                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <DataGridTextColumn 
+                                        Header="Gender"
+                                        Binding="{Binding Gender}"
+                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
                                             </Style>
-                                        </materialDesign:DataGridComboBoxColumn.ElementStyle>
-                                    </materialDesign:DataGridComboBoxColumn>
+                                        </DataGridTextColumn.HeaderStyle>
+
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
 
                                     <DataGridTextColumn 
                                         Header="Address" Width="200"
