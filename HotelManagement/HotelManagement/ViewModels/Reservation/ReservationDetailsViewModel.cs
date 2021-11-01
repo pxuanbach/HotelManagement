@@ -53,7 +53,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => FilledGuestInformation(GuestInformation) && !BeASharer, (p) => ReserveLikeASharer()));
+                return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => GuestInformation.FilledGuestInformation && !BeASharer, (p) => ReserveLikeASharer()));
             }
         }
 
@@ -75,21 +75,21 @@ namespace HotelManagement.ViewModels
             }
         }
 
+        private ICommand _confirmAddSharerCommand;
+        public ICommand ConfirmAddSharerCommand
+        {
+            get
+            {
+                return _confirmAddSharerCommand ?? (_confirmAddSharerCommand = new RelayCommand<Window>((p) => NewSharer.FilledGuestInformation, (p) => AddSharer(p)));
+            }
+        }
+
         private ICommand _addRoomCommand;
         public ICommand AddRoomCommand
         {
             get
             {
                 return _addRoomCommand ?? (_addRoomCommand = new RelayCommand<object>((p) => true, (p) => OpenAddRoomWindow()));
-            }
-        }
-
-        private ICommand _confirmAddSharerCommand;
-        public ICommand ConfirmAddSharerCommand
-        {
-            get
-            {
-                return _confirmAddSharerCommand ?? (_confirmAddSharerCommand = new RelayCommand<Window>((p) => FilledGuestInformation(NewSharer), (p) => AddSharer(p)));
             }
         }
 
@@ -116,7 +116,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _saveDataCommand ?? (_saveDataCommand = new RelayCommand<Window>((p) => FilledGuestInformation(GuestInformation), (p) => SaveDataChange(p)));
+                return _saveDataCommand ?? (_saveDataCommand = new RelayCommand<Window>((p) => GuestInformation.FilledGuestInformation, (p) => SaveDataChange(p)));
             }
         }
 
@@ -179,18 +179,6 @@ namespace HotelManagement.ViewModels
         private void BookedRooms_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             StayInformation.Rooms = BookedRooms.Count;
-        }
-
-        public bool FilledGuestInformation(GuestViewModel guest)
-        {
-            if (String.IsNullOrEmpty(guest.ID) ||
-                String.IsNullOrEmpty(guest.Gender) ||
-                String.IsNullOrEmpty(guest.Name) ||
-                String.IsNullOrEmpty(guest.Email) ||
-                String.IsNullOrEmpty(guest.Phone) ||
-                String.IsNullOrEmpty(guest.Address))
-                return false;
-            return true;
         }
 
         public void ReserveLikeASharer()

@@ -1,4 +1,5 @@
 ﻿using HotelManagement.Models;
+using HotelManagement.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +16,8 @@ namespace HotelManagement.ViewModels
         public GuestViewModel GuestInformation { get; set; }
 
         public ReservationViewModel StayInformation { get; set; }
+
+        public GuestViewModel NewSharer { get; set; }
 
         public ObservableCollection<RoomViewModel> AvailableRooms { get; set; }
 
@@ -37,7 +40,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => FilledGuestInformation && !BeASharer, (p) => ReserveLikeASharer()));
+                return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => GuestInformation.FilledGuestInformation && !BeASharer, (p) => ReserveLikeASharer()));
             }
         }
 
@@ -46,7 +49,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _addSharerCommand ?? (_addSharerCommand = new RelayCommand<object>((p) => CanAddSharer, (p) => AddSharer()));
+                return _addSharerCommand ?? (_addSharerCommand = new RelayCommand<object>((p) => true, (p) => OpenAddSharerWindow()));
             }
         }
 
@@ -56,6 +59,15 @@ namespace HotelManagement.ViewModels
             get
             {
                 return _removeSharerCommand ?? (_removeSharerCommand = new RelayCommand<GuestViewModel>((p) => Sharers.Count > 1, (p) => RemoveSelectedSharer(p)));
+            }
+        }
+
+        private ICommand _confirmAddSharerCommand;
+        public ICommand ConfirmAddSharerCommand
+        {
+            get
+            {
+                return _confirmAddSharerCommand ?? (_confirmAddSharerCommand = new RelayCommand<Window>((p) => NewSharer.FilledGuestInformation, (p) => AddSharer(p)));
             }
         }
 
@@ -159,21 +171,6 @@ namespace HotelManagement.ViewModels
             StayInformation.Pax = Sharers.Count;
         }
 
-        public bool FilledGuestInformation
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(GuestInformation.ID) ||
-                    String.IsNullOrEmpty(GuestInformation.Gender) ||
-                    String.IsNullOrEmpty(GuestInformation.Name) ||
-                    String.IsNullOrEmpty(GuestInformation.Email) ||
-                    String.IsNullOrEmpty(GuestInformation.Phone) ||
-                    String.IsNullOrEmpty(GuestInformation.Address))
-                    return false;
-                return true;
-            }
-        }
-
         public bool CanAddSharer
         {
             get
@@ -204,7 +201,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                if (!FilledGuestInformation) return false;
+                if (!GuestInformation.FilledGuestInformation) return false;
                 if (Sharers.Count == 0) return false;
                 if (StayInformation.Rooms == 0) return false;
                 foreach (var row in Sharers)
@@ -225,10 +222,19 @@ namespace HotelManagement.ViewModels
             BeASharer = true;
         }
 
-        public void AddSharer()
+        public void OpenAddSharerWindow()
         {
-            GuestViewModel newSharer = new GuestViewModel();
-            Sharers.Add(newSharer);
+            var wd = new AddBookingGuestWindow();
+            NewSharer = new GuestViewModel();
+            NewSharer.Birthday = DateTime.Parse("01-01-2000");
+            wd.DataContext = this;
+            wd.ShowDialog();
+        }
+
+        public void AddSharer(Window wd)
+        {
+            Sharers.Add(NewSharer);
+            wd.Close();
         }
 
         public void RemoveSelectedSharer(GuestViewModel sharer)
@@ -465,6 +471,21 @@ namespace HotelManagement.ViewModels
         public string Email { get { return _email; } set { _email = value; OnPropertyChanged(); } }
 
         public string Phone { get { return _phone; } set { _phone = value; OnPropertyChanged(); } }
+
+        public bool FilledGuestInformation
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(ID) ||
+                    String.IsNullOrEmpty(Gender) ||
+                    String.IsNullOrEmpty(Name) ||
+                    String.IsNullOrEmpty(Email) ||
+                    String.IsNullOrEmpty(Phone) ||
+                    String.IsNullOrEmpty(Address))
+                    return false;
+                return true;
+            }
+        }
     }
 
     class RoomViewModel : BaseViewModel
