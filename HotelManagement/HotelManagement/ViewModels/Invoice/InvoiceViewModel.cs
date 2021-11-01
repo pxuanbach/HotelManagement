@@ -274,6 +274,8 @@ namespace HotelManagement.ViewModels
 
             ShowFeesCommand = new RelayCommand<object>((p) =>
             {
+                if (CurrentAccount.Instance.Permission != "Admin")
+                    return false;
                 return true;
             }, (p) =>
             {
@@ -340,7 +342,7 @@ namespace HotelManagement.ViewModels
             StatusSelected = "Operational";
             LoadReservations();
             SelectedSearchType = "ID";
-            DateCreatedSearch = DateTime.Now;
+            DateCreatedSearch = DateTime.Now.AddDays(-14);
             ArrivalSearch = DateTime.Now.AddDays(-14);
             DepartureSearch = DateTime.Now;
         }

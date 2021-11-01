@@ -96,14 +96,28 @@ namespace HotelManagement.ViewModels
             if (p == null)
                 return;
 
+            if (!CheckVietKey(Username))
+            {
+                p.txtUsername.Text = "";
+                ErrorMessage = "Username contains vietkey";
+                return;
+            }    
+
             //Check username
             var accCount = DataProvider.Instance.DB.ACCOUNTs
                 .Where(x => x.username == Username).Count();
-
             if (accCount > 0)
             {
                 p.txtUsername.Text = "";
                 ErrorMessage = "\"" + Username + "\"" + " has already existed";
+                return;
+            }
+
+            if (!CheckVietKey(Password) || !CheckVietKey(ConfirmPassword))
+            {
+                p.txtPassword.Password = "";
+                p.txtConfirmPassword.Password = "";
+                ErrorMessage = "Password or confirm password contains vietkey";
                 return;
             }
 
