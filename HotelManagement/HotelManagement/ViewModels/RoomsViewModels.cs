@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -48,6 +49,8 @@ namespace HotelManagement.ViewModels
         public ICommand SaveTypeCommand {get; set;}
         public ICommand DeleteTypeCommand { get; set; }
         public ICommand DeleteRoomCommand { get; set; }
+        public ICommand ToggleDirtyCommand { get; set; }
+        public ICommand ToggleOutServiceCommand { get; set; }
 
 
         public RoomsViewModels()
@@ -68,7 +71,55 @@ namespace HotelManagement.ViewModels
             SaveRoomCommand = new RelayCommand<AddRoomWindow>((para) => true, (para) => SaveRoom(para));
             SaveTypeCommand = new RelayCommand<AddTypeWindow>((para) => true, (para) => SaveType(para));
             DeleteTypeCommand = new RelayCommand<UC_RoomType>((para) => true, (para) => DeleteType(para));
-            DeleteRoomCommand = new RelayCommand<UC_Room>((para) => true, (para) => DeleteRoom(para));
+            DeleteRoomCommand = new RelayCommand<RoomsView>((para) => true, (para) => DeleteRoom(para));
+            ToggleDirtyCommand = new RelayCommand<ToggleButton>((para) => true, (para) => ExcuteDirty(para));
+            ToggleOutServiceCommand = new RelayCommand<ToggleButton>((para) => true, (para) => ExcuteOutService(para));
+        }
+
+        private void ExcuteOutService(ToggleButton para)
+        {
+            Grid grid = (Grid)para.Parent;
+            Grid grid1 = (Grid)grid.Parent;
+            this.roomView = (RoomsView)grid1.Parent;
+            if (this.roomView.txbNameRoom.Text != "")
+            {
+                int id = int.Parse(this.roomView.txb_id.Text);
+                ROOM room = DataProvider.Instance.DB.ROOMs.Where(x => x.id == id).FirstOrDefault();
+                if (para.IsChecked == true)
+                {
+                    room.out_of_service = true;
+                }
+                else
+                {
+                    room.out_of_service = false;
+                }
+
+                DataProvider.Instance.DB.ROOMs.AddOrUpdate(room);
+                DataProvider.Instance.DB.SaveChanges();
+            }
+        }
+
+        private void ExcuteDirty(ToggleButton para)
+        {
+            Grid grid = (Grid)para.Parent;
+            Grid grid1 = (Grid)grid.Parent;
+            this.roomView = (RoomsView)grid1.Parent;
+            if (this.roomView.txbNameRoom.Text != "")
+            {
+                int id = int.Parse(this.roomView.txb_id.Text);
+                ROOM room = DataProvider.Instance.DB.ROOMs.Where(x => x.id == id).FirstOrDefault();
+                if (para.IsChecked == true)
+                {
+                    room.dirty = true;
+                }
+                else
+                {
+                    room.dirty = false;
+                }
+
+                DataProvider.Instance.DB.ROOMs.AddOrUpdate(room);
+                DataProvider.Instance.DB.SaveChanges();
+            }
         }
 
         private void OpenAddRoomType(AddRoomWindow para)
@@ -108,22 +159,31 @@ namespace HotelManagement.ViewModels
             }
         }
 
-        private void DeleteRoom(UC_Room para)
+        private void DeleteRoom(RoomsView para)
         {
-            MessageBoxResult res = MessageBox.Show("Are you sure?", "Notify", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (res == MessageBoxResult.Yes)
+            if (para.txbNameRoom.Text != "")
             {
-                int id = int.Parse(para.txbID.Text);
+                MessageBoxResult res = MessageBox.Show("Are you sure?", "Notify", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (res == MessageBoxResult.Yes)
+                {
+                    int id = int.Parse(para.txb_id.Text);
 
-                ROOM room = DataProvider.Instance.DB.ROOMs.Where(x => x.id == id).FirstOrDefault();
+                    ROOM room = DataProvider.Instance.DB.ROOMs.Where(x => x.id == id).FirstOrDefault();
 
-                room.isActive = false;
+                    room.isActive = false;
 
-                DataProvider.Instance.DB.ROOMs.AddOrUpdate(room);
-                DataProvider.Instance.DB.SaveChanges();
+                    DataProvider.Instance.DB.ROOMs.AddOrUpdate(room);
+                    DataProvider.Instance.DB.SaveChanges();
 
-                WrapPanel wrap = (WrapPanel)para.Parent;
-                wrap.Children.Remove(para);
+                    foreach (UC_Room item in para.stkRoom.Children)
+                    {
+                        if (item.txbID.Text == id.ToString())
+                        {
+                            para.stkRoom.Children.Remove(item);
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -189,6 +249,15 @@ namespace HotelManagement.ViewModels
 
                 DataProvider.Instance.DB.ROOMTYPEs.Add(newType);
                 DataProvider.Instance.DB.SaveChanges();
+
+                List<ROOM> rooms = DataProvider.Instance.DB.ROOMs.Where(x => x.roomtype_id == id).ToList();
+                foreach  (ROOM room in rooms)
+                {
+                    room.roomtype_id = newType.id;
+
+                    DataProvider.Instance.DB.ROOMs.AddOrUpdate(room);
+                    DataProvider.Instance.DB.SaveChanges();
+                }
 
                 MessageBox.Show("Completed!!!", "Notify", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
@@ -478,6 +547,7 @@ namespace HotelManagement.ViewModels
             Grid grid3 = (Grid)grid2.Parent;
             this.roomView = (RoomsView)grid3.Parent;
 
+            this.roomView.txb_id.Text = para.txbID.Text;
             int id = int.Parse(para.txbID.Text);
             ROOM room = DataProvider.Instance.DB.ROOMs.Where(x => x.id == id).FirstOrDefault();
             List<ROOM_BOOKED> listR = DataProvider.Instance.DB.ROOM_BOOKED.Where(x => x.room_id == id).ToList();
@@ -508,6 +578,8 @@ namespace HotelManagement.ViewModels
             roomView.txbMaxRoom.Text = type.max_guest.ToString();
             roomView.txbNoteRoom.Text = room.notes;
             roomView.txbNameRoom.Text = room.name;
+            roomView.togDirty.IsChecked = room.dirty;
+            roomView.togOutService.IsChecked = room.out_of_service;
         }
 
         private void LoadRoom(RoomsView para)

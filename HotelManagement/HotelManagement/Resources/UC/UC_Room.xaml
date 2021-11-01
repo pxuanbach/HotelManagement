@@ -19,15 +19,6 @@
                                    CommandParameter="{Binding ElementName=ucRoom}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <UserControl.ContextMenu>
-        <ContextMenu>
-            <MenuItem 
-                Header="Show"
-                Command="{Binding DeleteRoomCommand}"
-                CommandParameter="{Binding ElementName=ucRoom}"/>
-            <MenuItem Header="Dirty"/>
-        </ContextMenu>
-    </UserControl.ContextMenu>
     <Grid>
         <TextBlock
             x:Name="txbName"

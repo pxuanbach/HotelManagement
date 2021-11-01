@@ -159,7 +159,6 @@ namespace HotelManagement.ViewModels
                             }
                             var interval = new TimeSchedulerInterval((DateTime)item.arrival, (TimeSpan)length);
                             var guest = item.main_guest;
-                            var type = "loai 1";
                             var sb = new StringBuilder();
                             var resID = item.id.ToString();
                             sb.AppendLine($"Room type: {booked.ROOM.ROOMTYPE.name}");
