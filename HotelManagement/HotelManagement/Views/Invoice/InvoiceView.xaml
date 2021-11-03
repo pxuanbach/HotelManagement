@@ -101,6 +101,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <!-- Searchbar-->
@@ -117,10 +118,10 @@
                                     <ColumnDefinition Width=".2*"/>
                                 </Grid.ColumnDefinitions>
                                 <ComboBox x:Name="cbbSearch" BorderThickness="0.2" Padding="8 2 2 2"
-                                                BorderBrush="{StaticResource PrimaryHueDarkBrush}" 
-                                                ItemsSource="{Binding SearchTypes}" SelectedItem="{Binding SelectedSearchType}"
-                                                Style="{StaticResource MaterialDesignOutlinedComboBox}" 
-                                                VerticalContentAlignment="Center" Width="auto" >
+                                    BorderBrush="{StaticResource PrimaryHueDarkBrush}" 
+                                    ItemsSource="{Binding SearchTypes}" SelectedItem="{Binding SelectedSearchType}"
+                                    Style="{StaticResource MaterialDesignOutlinedComboBox}" 
+                                    VerticalContentAlignment="Center" Width="auto" >
                                 </ComboBox>
                                 <Separator Grid.Column="1" Background="{StaticResource PrimaryHueDarkBrush}" Margin="1 0 1 0"/>
                                 <TextBox Grid.Column="2" Margin="5 0" Name="tbSearch" CaretBrush="Black"
@@ -140,27 +141,68 @@
                             </Grid>
                         </Border>
                     </Grid>
-                    <!-- Filter -->
-                    <Border Grid.Row="1" Padding="4 2 4 0">
-                        <StackPanel Orientation="Vertical">
+                    <!-- Filter datetime -->
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width=".1*"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width=".1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="1" BorderThickness="0.3" BorderBrush="{StaticResource PrimaryHueDarkBrush}" 
+                                CornerRadius="5" Margin="14 4 12 4" Padding="4">
                             <StackPanel Orientation="Horizontal">
-                                <RadioButton x:Name="rdbtOperational" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
+                                <CheckBox x:Name="cbDateCreated" IsChecked="{Binding IsSearchDateCreated}"></CheckBox>
+                                <TextBlock Text="Date created" Margin="4 0 4 0" VerticalAlignment="Center"/>
+                                <DatePicker Name="dpDateCreated" Width="120" Margin="2 0 0 0"
+                                    materialDesign:HintAssist.Hint="Date Created" SelectedDate="{Binding DateCreatedSearch}"
+                                    IsEnabled="{Binding Path=IsChecked, ElementName=cbDateCreated}"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" BorderThickness="0.3" BorderBrush="{StaticResource PrimaryHueDarkBrush }" 
+                                CornerRadius="5" Margin="4" Padding="4">
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox x:Name="cbArrivalDeparture" IsChecked="{Binding IsSearchArrDep}"></CheckBox>
+                                <TextBlock Text="Arrival" Margin="4 0 4 0" VerticalAlignment="Center"/>
+                                <DatePicker Name="dpArrival" Width="120" Margin="2 0 0 0"
+                                    materialDesign:HintAssist.Hint="Arrival Date" SelectedDate="{Binding ArrivalSearch}"
+                                    IsEnabled="{Binding Path=IsChecked, ElementName=cbArrivalDeparture}"/>
+                                <TextBlock Text="Departure" Margin="12 0 4 0" VerticalAlignment="Center"/>
+                                <DatePicker Name="dpDeparture" Width="120" Margin="2 0 0 0"
+                                    materialDesign:HintAssist.Hint="DepartureDate" SelectedDate="{Binding DepartureSearch}"
+                                    IsEnabled="{Binding Path=IsChecked, ElementName=cbArrivalDeparture}"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    <!-- Filter status -->
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="4 2 4 0">
+                            <RadioButton x:Name="rdbtOperational" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
                                     Style="{StaticResource MaterialDesignTabRadioButton}"
                                     Margin="4" Command="{Binding OperationalCommnad}"
                                     IsChecked="True">
-                                    <TextBlock Text="OPERATIONAL"/>
-                                </RadioButton>
-                                <RadioButton x:Name="rdbtCompleted" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
+                                <TextBlock Text="OPERATIONAL"/>
+                            </RadioButton>
+                            <RadioButton x:Name="rdbtCompleted" BorderBrush="{StaticResource PrimaryHueDarkBrush}"
                                     Style="{StaticResource MaterialDesignTabRadioButton}"
                                     Margin="4" Command="{Binding CompletedCommnad}"
                                     IsChecked="False">
-                                    <TextBlock Text="COMPLETED"/>
-                                </RadioButton>
-                            </StackPanel>
+                                <TextBlock Text="COMPLETED"/>
+                            </RadioButton>
                         </StackPanel>
-                    </Border>
+                        <Button Grid.Column="1" Width="Auto" Height="Auto" Margin="6"
+                            Style="{StaticResource MaterialDesignRaisedButton}" 
+                            Content="{materialDesign:PackIcon Kind=Reload, Size=19}" 
+                            Foreground="White" 
+                            Command="{Binding ReloadCommand}">
+                        </Button>
+                    </Grid>
                     <!-- Data Table -->
-                    <Border Grid.Row="2" BorderBrush="Silver" BorderThickness="0.7" CornerRadius="0 0 12 12" >
+                    <Border Grid.Row="3" BorderBrush="Silver" BorderThickness="0.7" CornerRadius="0 0 12 12" >
                         <ListView x:Name="lvReservation" ItemsSource="{Binding Reservations}">
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignGridViewItem}">

@@ -60,9 +60,9 @@
                     <TextBlock Grid.Row="0" Text="Register" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="30"/>
                     <TextBlock Grid.Row="1" Text="{Binding ErrorMessage}" Foreground="Red" HorizontalAlignment="Center" FontSize="13"/>
                     <TextBox Grid.Row="2" Margin="0, 6, 0, 6"
-                             Name="txtUsername"
+                        Name="txtUsername"
                         Style="{StaticResource MaterialDesignFilledTextBox}"
-                        MaxLength="30" Text="{Binding Username}"
+                        MaxLength="50" Text="{Binding Username}"
                         materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
                         VerticalAlignment="Center"
                         AcceptsReturn="True"
