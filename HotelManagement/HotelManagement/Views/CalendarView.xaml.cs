@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HotelManagement.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TagBites.WinSchedulers;
+using TagBites.WinSchedulers.Drawing;
 
 namespace HotelManagement.Views
 {
@@ -23,6 +26,23 @@ namespace HotelManagement.Views
         public CalendarView()
         {
             InitializeComponent();
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            SC_Scheduler.DataSource = new SchedulerDataSource();
+
+            SC_Scheduler.ViewOptions.ExactTaskDates = true;
+            SC_Scheduler.ViewOptions.InnerLines = true;
+            SC_Scheduler.ViewOptions.FadeNotSelectedOrNotConnected = true;
+
+            SC_Scheduler.TimeScroller.Scale = TimeSpan.FromDays(0.2);
+            SC_Scheduler.ResourceScroller.HeaderSize = 75;
+
+            SC_Scheduler.VerticalTimeLine = false;
+          
+            SC_Scheduler.ScrollTo(DateTime.Now, Alignment.Center);
         }
     }
 }
