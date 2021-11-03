@@ -54,7 +54,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _firstPageCommand ?? (_firstPageCommand = new RelayCommand<object>((p) => { return CurrentPage != 1; }, (p) => { CurrentPage = 1; }));
+                return _firstPageCommand ?? (_firstPageCommand = new RelayCommand<object>((p) => { return CurrentPage > 1; }, (p) => { CurrentPage = 1; }));
             }
         }
 
@@ -63,7 +63,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _lastPageCommand ?? (_lastPageCommand = new RelayCommand<object>((p) => { return CurrentPage != MaxPage; }, (p) => { CurrentPage = MaxPage; }));
+                return _lastPageCommand ?? (_lastPageCommand = new RelayCommand<object>((p) => { return CurrentPage < MaxPage; }, (p) => { CurrentPage = MaxPage; }));
             }
         }
 

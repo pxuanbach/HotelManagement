@@ -13,10 +13,6 @@
         Background="WhiteSmoke"
         SizeToContent="WidthAndHeight" ResizeMode="NoResize"
         Title="Walk In / New Reservation">
-    <Window.DataContext>
-        <viewModels:NewReservationViewModel/>
-    </Window.DataContext>
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -242,13 +238,42 @@
                                     materialDesign:HintAssist.IsFloating="False"/>
 
                                 <!--Gauranteed-->
-                                <TextBlock Grid.Row="4" Grid.Column="0"
+                                <TextBlock 
+                                    Grid.Row="4" Grid.Column="0"    
                                     Margin="0,0,10,0" VerticalAlignment="Center"
-                                    Text="Guaranteed" FontSize="16"/>
+                                    Text="Guaranteed" FontSize="16">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding BeWalkIn}" Value="True">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding BeWalkIn}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
 
                                 <CheckBox 
                                     Grid.Row="4" Grid.Column="2" Height="26" Margin="0,3,0,3"
-                                    IsChecked="{Binding Guaranteed}"/>
+                                    IsChecked="{Binding Guaranteed}">
+                                    <CheckBox.Style>
+                                        <Style TargetType="CheckBox" BasedOn="{StaticResource MaterialDesignCheckBox}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding BeWalkIn}" Value="True">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding BeWalkIn}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </CheckBox.Style>
+                                </CheckBox>
 
                                 <!--Stays-->
                                 <TextBlock 
@@ -277,6 +302,26 @@
                                     Grid.Row="4" Grid.Column="6"
                                     Text="{Binding StayInformation.Rooms}" FontSize="16"/>
                             </Grid>
+
+                            <TextBlock
+                                Margin="0,5,0,0"
+                                Foreground="{StaticResource PrimaryHueDarkBrush}" 
+                                Text="Early check-in fee is added!"
+                                FontSize="12" FontStyle="Italic">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding StayInformation.EarlyCheckin}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+
+                                            <DataTrigger Binding="{Binding StayInformation.EarlyCheckin}" Value="False">
+                                                <Setter Property="Visibility" Value="Hidden"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -379,6 +424,26 @@
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
+
+                                    <DataGridTextColumn 
+                                        Header="Capacity" Binding="{Binding Capacity}"
+                                        IsReadOnly="True">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
                                 </DataGrid.Columns>
 
                                 <DataGrid.CellStyle>
@@ -467,18 +532,26 @@
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
 
-
-                                    <materialDesign:DataGridComboBoxColumn
-                                        Header="Gender" 
-                                        SelectedValueBinding="{Binding Gender}"
-                                        ItemsSourceBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.Gender}">
-                                        <materialDesign:DataGridComboBoxColumn.ElementStyle>
-                                            <Style TargetType="{x:Type ComboBox}"
-                                                   BasedOn="{StaticResource MaterialDesignDataGridComboBox}">
-                                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <DataGridTextColumn 
+                                        Header="Gender"
+                                        Binding="{Binding Gender}"
+                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
                                             </Style>
-                                        </materialDesign:DataGridComboBoxColumn.ElementStyle>
-                                    </materialDesign:DataGridComboBoxColumn>
+                                        </DataGridTextColumn.HeaderStyle>
+
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
 
                                     <DataGridTextColumn 
                                         Header="Address" Width="200"
@@ -543,8 +616,22 @@
                     
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
                         <Button 
-                            Content="Reserve" Command="{Binding ReserveCommand}"
-                            CommandParameter="{Binding ElementName=windowNewReservation}"/>
+                            Command="{Binding ReserveCommand}"
+                            CommandParameter="{Binding ElementName=windowNewReservation}">
+                            <Button.Style>
+                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedDarkButton}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding BeWalkIn}" Value="False">
+                                            <Setter Property="Content" Value="Reserve"/>
+                                        </DataTrigger>
+
+                                        <DataTrigger Binding="{Binding BeWalkIn}" Value="True">
+                                            <Setter Property="Content" Value="Walk In"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                         
                         <Button 
                             Command="{Binding CancelCommand}"

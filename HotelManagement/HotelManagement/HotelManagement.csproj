@@ -238,6 +238,9 @@
     <Compile Include="Views\PageNavigationView.xaml.cs">
       <DependentUpon>PageNavigationView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Reservation\AddBookingGuestWindow.xaml.cs">
+      <DependentUpon>AddBookingGuestWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Reservation\ReservationDetailsWindow.xaml.cs">
       <DependentUpon>ReservationDetailsWindow.xaml</DependentUpon>
     </Compile>
@@ -334,6 +337,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PageNavigationView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Reservation\AddBookingGuestWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

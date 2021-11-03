@@ -104,7 +104,7 @@ namespace HotelManagement.ViewModels
         public ICommand AddNewAccountCommand { get; set; }
         public ICommand SaveAccountCommand { get; set; }
         public ICommand EditAccountCommand { get; set; }
-
+        public ICommand ReloadCommand { get; set; }
         public ICommand AllCommnad { get; set; }
         public ICommand ReservationCommnad { get; set; }
         public ICommand ReceptionistCommnad { get; set; }
@@ -152,6 +152,17 @@ namespace HotelManagement.ViewModels
                 Save(IsReadOnlyUsername);
             });
 
+            ReloadCommand = new RelayCommand<object>((p) =>
+            {
+                return true;
+            }, (p) =>
+            {
+                if (RoleSelected == "All")
+                    LoadPropertiesAll();
+                else
+                    LoadPropertiesByRole();
+            });
+
             AllCommnad = new RelayCommand<object>((p) =>
             {
                 return true;
@@ -167,7 +178,7 @@ namespace HotelManagement.ViewModels
             }, (p) =>
             {
                 RoleSelected = "Reservation";
-                LoadPropertiesByRole(RoleSelected);
+                LoadPropertiesByRole();
             });
 
             ReceptionistCommnad = new RelayCommand<object>((p) =>
@@ -176,7 +187,7 @@ namespace HotelManagement.ViewModels
             }, (p) =>
             {
                 RoleSelected = "Receptionist";
-                LoadPropertiesByRole(RoleSelected);
+                LoadPropertiesByRole();
             });
 
             CashierCommnad = new RelayCommand<object>((p) =>
@@ -185,7 +196,7 @@ namespace HotelManagement.ViewModels
             }, (p) =>
             {
                 RoleSelected = "Cashier";
-                LoadPropertiesByRole(RoleSelected);
+                LoadPropertiesByRole();
             });
 
             UndefinedCommnad = new RelayCommand<object>((p) =>
@@ -194,7 +205,7 @@ namespace HotelManagement.ViewModels
             }, (p) =>
             {
                 RoleSelected = "Undefined";
-                LoadPropertiesByRole(RoleSelected);
+                LoadPropertiesByRole();
             });
         }
 
@@ -297,7 +308,7 @@ namespace HotelManagement.ViewModels
             }
             else
             {
-                LoadPropertiesByRole(RoleSelected);
+                LoadPropertiesByRole();
             }
 
             if (isRoleCount)
@@ -310,10 +321,10 @@ namespace HotelManagement.ViewModels
                 DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission != "Admin"));
         }
 
-        void LoadPropertiesByRole(string role)
+        void LoadPropertiesByRole()
         {
             Accounts = new ObservableCollection<ACCOUNT>(
-                DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == role));
+                DataProvider.Instance.DB.ACCOUNTs.Where(x => x.permission == RoleSelected));
         }
         #endregion
 

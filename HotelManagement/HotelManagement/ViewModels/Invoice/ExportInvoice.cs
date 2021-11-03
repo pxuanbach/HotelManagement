@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Forms;
 
 namespace HotelManagement.ViewModels
 {
@@ -26,26 +28,49 @@ namespace HotelManagement.ViewModels
         public Font f15B = new Font(bf, 15, Font.BOLD);
         public Font f15W = new Font(bf, 15, Font.NORMAL, BaseColor.WHITE);
 
-        public void Export(string filePath, RESERVATION reservation)
+        public void Export(RESERVATION reservation)
         {
-            using (FileStream stream = new FileStream(filePath, FileMode.Create))
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "PDF (*.pdf)|*.pdf";
+            sfd.FileName = "invoice.pdf";
+            bool fileError = false;
+
+            if (sfd.ShowDialog() == DialogResult.OK)
             {
-                Document pdfDoc = new Document(PageSize.A4, 10f, 20f, 20f, 10f);
-                PdfWriter.GetInstance(pdfDoc, stream);
-                pdfDoc.Open();
+                if (File.Exists(sfd.FileName))
+                {
+                    try
+                    {
+                        File.Delete(sfd.FileName);
+                    }
+                    catch (IOException ex)
+                    {
+                        fileError = true;
+                        System.Windows.MessageBox.Show("Unable to write data to the path. Description:" + ex.Message);
+                    }
+                }
+                if (!fileError)
+                {
+                    using (FileStream stream = new FileStream(sfd.FileName, FileMode.Create))
+                    {
+                        Document pdfDoc = new Document(PageSize.A4, 10f, 20f, 20f, 10f);
+                        PdfWriter.GetInstance(pdfDoc, stream);
+                        pdfDoc.Open();
 
-                FormatHeader(pdfDoc);
+                        FormatHeader(pdfDoc);
 
-                FormatInvoiceDetails(pdfDoc, reservation);
+                        FormatInvoiceDetails(pdfDoc, reservation);
 
-                FormatListRoom_Folio(pdfDoc, reservation);
+                        FormatListRoom_Folio(pdfDoc, reservation);
 
-                FormatChargesAndTotalMoney(pdfDoc, reservation);
+                        FormatChargesAndTotalMoney(pdfDoc, reservation);
 
-                FormatFooter(pdfDoc);
+                        FormatFooter(pdfDoc);
 
-                pdfDoc.Close();
-                stream.Close();
+                        pdfDoc.Close();
+                        stream.Close();
+                    }
+                }
             }
         }
 
