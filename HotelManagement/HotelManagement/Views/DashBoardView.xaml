@@ -352,7 +352,7 @@
             </Grid>
         </Grid>
         <Grid Grid.Column="1">
-            <materialDesign:Card Margin="5 5 5 5"
+            <!--<materialDesign:Card Margin="5 5 5 5"
                                  UniformCornerRadius="10"
                                  Padding="10">
                 <i:Interaction.Triggers>
@@ -367,7 +367,8 @@
                     <StackPanel x:Name="stackRoomStatus" 
                         Margin="0 15 0 0"></StackPanel>
                 </StackPanel>
-            </materialDesign:Card>
+            </materialDesign:Card>-->
+            <Image Source="/Resources/dashboard side.jpg" HorizontalAlignment="Stretch" Stretch="Fill"/>
         </Grid>
     </Grid>
 </UserControl>

@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 using HotelManagement.Views;
 using HotelManagement.Models;
 using System.Windows.Input;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
-
+using System.Runtime;
 
 namespace HotelManagement.ViewModels
 {
@@ -53,7 +54,26 @@ namespace HotelManagement.ViewModels
                 OnPropertyChanged();
             }
         }
-
+        private bool isReadOnlyServiceName;
+        public bool IsReadOnlyServiceName
+        {
+            get { return isReadOnlyServiceName; }
+            set
+            {
+                isReadOnlyServiceName = value;
+                OnPropertyChanged();
+            }
+        }
+        private string dialogTitle;
+        public string DialogTitle
+        {
+            get { return dialogTitle; }
+            set
+            {
+                dialogTitle = value;
+                OnPropertyChanged();
+            }
+        }
         private string serviceName;
         public string ServiceName
         {
@@ -106,6 +126,7 @@ namespace HotelManagement.ViewModels
 
         public ICommand SearchServiceCommand { get; set; }
         public ICommand DeleteServiceCommand { get; set; }
+        public ICommand EditServiceCommand { get; set; }
         public ICommand AddNewServiceCommand { get; set; }
         public ICommand SaveServiceCommand { get; set; }
 
@@ -116,7 +137,15 @@ namespace HotelManagement.ViewModels
             LoadServices();
             SearchServiceCommand = new RelayCommand<ServicesView>((p) => true, (p) => Search(p));
             DeleteServiceCommand = new RelayCommand<object>((p) => true, (p) => Delete());
-            AddNewServiceCommand = new RelayCommand<object>((p) => true, (p) => { IsOpenDialog = true; DialogPropertiesChanged(); });
+            EditServiceCommand = new RelayCommand<SERVICE>((p) =>
+            {
+                return ItemSourceServices.Count > 0;
+            }, (p) =>
+            {
+                IsOpenDialog = true;
+                DialogPropertiesChanged(SelectedService);
+            });
+            AddNewServiceCommand = new RelayCommand<object>((p) => true, (p) => { IsOpenDialog = true; DialogPropertiesChanged(null); });
             SaveServiceCommand = new RelayCommand<object>((p) =>
             {
                 if (string.IsNullOrEmpty(ServiceName) && string.IsNullOrEmpty(ServicePrice.ToString()))
@@ -124,38 +153,64 @@ namespace HotelManagement.ViewModels
                 else return true;
             }, (p) =>
             {
-                SaveService();
+                SaveService(IsReadOnlyServiceName);
             });
         }
         #endregion
 
         #region New Service
-        public void DialogPropertiesChanged()
+        public void DialogPropertiesChanged(SERVICE p)
         {
             ErrorMessage = "";
-            ServiceName = "";
-            ServicePrice = 0;
-        }
-
-        public void SaveService()
-        {
-            var serviceMount = DataProvider.Instance.DB.SERVICEs.Where(x => x.name == ServiceName).Count();
-            if (serviceMount > 0)
+            if (p == null)
             {
-                ErrorMessage = "\"" + ServiceName + "\"" + " has already existed";
+                DialogTitle = "New service";
+                IsReadOnlyServiceName = false;
                 ServiceName = "";
-                return;
+                ServicePrice = 0;
             }
             else
             {
-                SERVICE service = new SERVICE()
-                {
-                    name = ServiceName,
-                    price = ServicePrice,
-                    isActive = true,
-                };
-                DataProvider.Instance.DB.SERVICEs.Add(service);
+                DialogTitle = "Edit service";
+                IsReadOnlyServiceName = true;
+                ServiceName = p.name;
+                ServicePrice = (decimal)p.price;
+            }
+        }
+
+        public void SaveService(bool isEdit)
+        {
+            if(isEdit)
+            {
+                SERVICE service = SelectedService;
+                service.price = ServicePrice;
                 DataProvider.Instance.DB.SaveChanges();
+            }
+            else
+            {
+                var serviceMount = DataProvider.Instance.DB.SERVICEs.Where(x => x.name == ServiceName && x.isActive == true).Count();
+                if (serviceMount > 0)
+                {
+                    ErrorMessage = "\"" + ServiceName + "\"" + " has already existed";
+                    ServiceName = "";
+                    return;
+                }
+                else if (String.IsNullOrEmpty(ServiceName))
+                {
+                    ErrorMessage = "Please enter service name!";
+                    return;
+                }
+                else
+                {
+                    SERVICE service = new SERVICE()
+                    {
+                        name = ServiceName,
+                        price = ServicePrice,
+                        isActive = true,
+                    };
+                    DataProvider.Instance.DB.SERVICEs.Add(service);
+                    DataProvider.Instance.DB.SaveChanges();
+                }
             }
             LoadServices();
         }
@@ -165,9 +220,20 @@ namespace HotelManagement.ViewModels
         private void Delete()
         {
             SERVICE service = SelectedService;
-            service.isActive = false;
-            DataProvider.Instance.DB.SaveChanges();
-            LoadServices();
+            string message = "Do you want to delete this service?";
+            string caption = "Delete service";
+            DialogResult result = MessageBox.Show(message, caption, MessageBoxButtons.YesNo);
+            if (result == DialogResult.Yes) 
+            {
+                service.isActive = false;
+                DataProvider.Instance.DB.SaveChanges();
+                LoadServices();
+            }
+            else
+            {
+                return;
+            }
+            
         }
         #endregion
 
@@ -207,5 +273,6 @@ namespace HotelManagement.ViewModels
             return res;
         }
         #endregion
+
     }
 }
