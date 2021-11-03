@@ -9,7 +9,7 @@
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:UC="clr-namespace:HotelManagement.Resources.UC" x:Class="HotelManagement.Views.RoomsView"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
+             d:DesignHeight="600" d:DesignWidth="800"
              Background="White"
              x:Name="Room">
     <UserControl.DataContext>
@@ -25,8 +25,11 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
+            <ColumnDefinition Width="1"></ColumnDefinition>
             <ColumnDefinition Width="300"/>
         </Grid.ColumnDefinitions>
+        <Grid Grid.Column="1"
+              Background="Gray"/>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="100"/>
@@ -181,112 +184,149 @@
             </Grid>
             <Grid Grid.Row="2"/>
         </Grid>
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="2">
+            <TextBlock x:Name="txb_id" Visibility="Hidden"/>
             <TextBlock
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
                 Text="ROOM INFOMATION"
-                FontWeight="SemiBold"
-                FontSize="15"
+                FontWeight="Bold"
+                FontSize="20"
                 Margin="0 25 0 0 "/>
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text="Name:"
                 FontWeight="SemiBold"
-                FontSize="12"
-                Margin="30 55 0 0 "/>
+                FontSize="15"
+                Margin="30 60 0 0 "/>
             <TextBlock
                 x:Name="txbNameRoom"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text=""
-                FontSize="12"
-                Margin="80 55 0 0 "/>
+                FontSize="15"
+                Margin="80 60 0 0 "/>
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text="Status:"
                 FontWeight="SemiBold"
-                FontSize="12"
-                Margin="130 55 0 0 "/>
+                FontSize="15"
+                Margin="140 60 0 0 "/>
             <TextBlock
                 x:Name="txbStatusRoom"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text=""
-                FontSize="12"
-                Margin="180 55 0 0 "/>
+                FontSize="15"
+                Margin="190 60 0 0 "/>
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text="Room type:"
                 FontWeight="SemiBold"
-                FontSize="12"
-                Margin="30 80 0 0 "/>
+                FontSize="15"
+                Margin="30 90 0 0 "/>
             <TextBlock
                 x:Name="txbTypeRoom"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text=""
-                FontSize="12"
-                Margin="180 80 0 0 "/>
+                FontSize="15"
+                Margin="180 90 0 0 "/>
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text="Price:"
                 FontWeight="SemiBold"
-                FontSize="12"
-                Margin="30 105 0 0 "/>
+                FontSize="15"
+                Margin="30 120 0 0 "/>
             <TextBlock
                 x:Name="txbPriceRoom"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text=""
-                FontSize="12"
-                Margin="180 105 0 0 "/>
+                FontSize="15"
+                Margin="180 120 0 0 "/>
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text="Max customer:"
                 FontWeight="SemiBold"
-                FontSize="12"
-                Margin="30 130 0 0 "/>
+                FontSize="15"
+                Margin="30 150 0 0 "/>
             <TextBlock
                 x:Name="txbMaxRoom"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text=""
-                FontSize="12"
-                Margin="180 130 0 0 "/>
+                FontSize="15"
+                Margin="180 150 0 0 "/>
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text="Count customer:"
                 FontWeight="SemiBold"
-                FontSize="12"
-                Margin="30 155 0 0 "/>
+                FontSize="15"
+                Margin="30 180 0 0 "/>
             <TextBlock
                 x:Name="txbCountRoom"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text=""
-                FontSize="12"
-                Margin="180 155 0 0 "/>
+                FontSize="15"
+                Margin="180 180 0 0 "/>
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text="Note:"
                 FontWeight="SemiBold"
-                FontSize="12"
-                Margin="30 180 0 0 "/>
+                FontSize="15"
+                Margin="30 210 0 0 "/>
             <TextBlock
                 x:Name="txbNoteRoom"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text=""
-                FontSize="12"
-                Margin="180 180 0 0 "/>
+                FontSize="15"
+                Margin="180 210 0 0 "/>
+            <TextBlock
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Text="Dirty"
+                FontWeight="SemiBold"
+                FontSize="15"
+                Margin="30 240 0 0 "/>
+            <ToggleButton
+                x:Name="togDirty"
+                Width="auto"
+                Style="{StaticResource MaterialDesignSwitchAccentToggleButton}"
+                ToolTip="MaterialDesignSwitchAccentToggleButton"
+                IsChecked="False" 
+                Margin="80,245,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Command="{Binding ToggleDirtyCommand}" 
+                CommandParameter="{Binding ElementName=togDirty}"/>
+            <TextBlock
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Text="Out of Service"
+                FontWeight="SemiBold"
+                FontSize="15"
+                Margin="140 240 0 0 "/>
+            <ToggleButton
+                x:Name="togOutService"
+                Style="{StaticResource MaterialDesignSwitchAccentToggleButton}"
+                ToolTip="MaterialDesignSwitchAccentToggleButton"
+                IsChecked="False" 
+                Width="auto"
+                Margin="250,245,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Command="{Binding ToggleOutServiceCommand}" 
+                CommandParameter="{Binding ElementName=togOutService}"/>
             <Button
                 x:Name="btnMoreRoom"
                 Style="{StaticResource MaterialDesignFlatLightButton}"
@@ -296,115 +336,129 @@
                 Height="25"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Margin="162,195,0,0"
+                Margin="60,270,0,0"
                 Command="{Binding OpenEditRoomCommand}"
                 CommandParameter="{Binding ElementName=Room}"
-                FontSize="12"/>
+                FontSize="15"/>
+            <Button
+                x:Name="btnDelRoom"
+                Style="{StaticResource MaterialDesignFlatLightButton}"
+                ToolTip="Delete"
+                Content="Delete"
+                Foreground="OrangeRed"
+                Width="80"
+                Height="25"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Margin="162,270,0,0"
+                Command="{Binding DeleteRoomCommand}"
+                CommandParameter="{Binding ElementName=Room}"
+                FontSize="15"/>
             <TextBlock
                 HorizontalAlignment="Center"
                 VerticalAlignment="Top"
                 Text="MAIN CUSTOM INFOMATION"
-                FontWeight="SemiBold"
-                FontSize="15"
-                Margin="0 220 0 0 "/>
+                FontWeight="Bold"
+                FontSize="18"
+                Margin="0 300 0 0 "/>
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text="Name:"
                 FontWeight="SemiBold"
-                FontSize="12"
-                Margin="30 250 0 0 "/>
+                FontSize="15"
+                Margin="30 360 0 0 "/>
             <TextBlock
                 x:Name="txbNameCustom"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text=""
-                FontSize="12"
-                Margin="130 250 0 0 "/>
+                FontSize="15"
+                Margin="130 360 0 0 "/>
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text="ID card:"
                 FontWeight="SemiBold"
-                FontSize="12"
-                Margin="30 275 0 0 "/>
+                FontSize="15"
+                Margin="30 330 0 0 "/>
             <TextBlock
                 x:Name="txbIDCustom"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text=""
-                FontSize="12"
-                Margin="130 275 0 0 "/>
+                FontSize="15"
+                Margin="130 330 0 0 "/>
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text="Gender:"
                 FontWeight="SemiBold"
-                FontSize="12"
-                Margin="30 300 0 0 "/>
+                FontSize="15"
+                Margin="30 390 0 0 "/>
             <TextBlock
                 x:Name="txbGenderCustom"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text=""
-                FontSize="12"
-                Margin="130 300 0 0 "/>
+                FontSize="15"
+                Margin="130 390 0 0 "/>
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text="Phone:"
                 FontWeight="SemiBold"
-                FontSize="12"
-                Margin="30 325 0 0 "/>
+                FontSize="15"
+                Margin="30 420 0 0 "/>
             <TextBlock
                 x:Name="txbPhoneCustom"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text=""
-                FontSize="12"
-                Margin="130 325 0 0 "/>
+                FontSize="15"
+                Margin="130 420 0 0 "/>
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text="Email:"
                 FontWeight="SemiBold"
-                FontSize="12"
-                Margin="30 350 0 0 "/>
+                FontSize="15"
+                Margin="30 450 0 0 "/>
             <TextBlock
                 x:Name="txbEmailCustom"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text=""
-                FontSize="12"
-                Margin="130 350 0 0 "/>
+                FontSize="15"
+                Margin="130 450 0 0 "/>
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text="Arrival:"
                 FontWeight="SemiBold"
-                FontSize="12"
-                Margin="30 375 0 0 "/>
+                FontSize="15"
+                Margin="30 480 0 0 "/>
             <TextBlock
                 x:Name="txbArrivalCustom"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text=""
-                FontSize="12"
-                Margin="130 375 0 0 "/>
+                FontSize="15"
+                Margin="130 480 0 0 "/>
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text="Departure:"
                 FontWeight="SemiBold"
-                FontSize="12"
-                Margin="30,400,0,0"/>
+                FontSize="15"
+                Margin="30,510,0,0"/>
             <TextBlock
                 x:Name="txbDepCustom"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Text=""
-                FontSize="12"
-                Margin="130 400 0 0 "/>
+                FontSize="15"
+                Margin="130 510 0 0 "/>
             <Button
                 Style="{StaticResource MaterialDesignFlatLightButton}"
                 ToolTip="More info custom"
@@ -413,8 +467,8 @@
                 Height="25"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Margin="160,415,0,0"
-                FontSize="12"/>
+                Margin="160,540,0,0"
+                FontSize="15"/>
         </Grid>
     </Grid>
 </UserControl>

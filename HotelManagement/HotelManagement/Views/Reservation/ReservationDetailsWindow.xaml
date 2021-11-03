@@ -217,6 +217,8 @@
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="auto"/>
                                 </Grid.RowDefinitions>
 
                                 <!--Arrival Date-->
@@ -281,6 +283,42 @@
                                         </Style>
                                     </TextBlock.Style>
                                 </TextBlock>
+
+                                <TextBlock
+                                    Grid.Row="6" Grid.Column="0" Margin="0,5,0,5"
+                                    Text="Early Check-in" FontSize="16">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding StayInformation.EarlyCheckin}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding StayInformation.EarlyCheckin}" Value="False">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+
+                                <materialDesign:PackIcon
+                                    Grid.Row="6" Grid.Column="2"
+                                    Kind="CheckBoxOutline" VerticalAlignment="Center">
+                                    <materialDesign:PackIcon.Style>
+                                        <Style TargetType="materialDesign:PackIcon">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding StayInformation.EarlyCheckin}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+
+                                                <DataTrigger Binding="{Binding StayInformation.EarlyCheckin}" Value="False">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </materialDesign:PackIcon.Style>
+                                </materialDesign:PackIcon>
 
                                 <!--Stays-->
                                 <TextBlock 
@@ -403,6 +441,26 @@
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
 
+                                    <DataGridTextColumn 
+                                        Header="Capacity" Binding="{Binding Capacity}"
+                                        IsReadOnly="True">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
                                     <DataGridTemplateColumn>
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
@@ -467,9 +525,11 @@
                                 </Button>
                             </Grid>
 
-                            <DataGrid Height="200"
+                            <DataGrid 
+                                Height="200"
                                 ItemsSource="{Binding Sharers}"
                                 CanUserResizeColumns="False" 
+                                IsReadOnly="True"
                                 CanUserAddRows="False"
                                 AutoGenerateColumns="False"
                                 HeadersVisibility="All">
@@ -517,18 +577,26 @@
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
 
-
-                                    <materialDesign:DataGridComboBoxColumn
-                                        Header="Gender" 
-                                        SelectedValueBinding="{Binding Gender}"
-                                        ItemsSourceBinding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGrid}}, Path=DataContext.Gender}">
-                                        <materialDesign:DataGridComboBoxColumn.ElementStyle>
-                                            <Style TargetType="{x:Type ComboBox}"
-                                                   BasedOn="{StaticResource MaterialDesignDataGridComboBox}">
-                                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <DataGridTextColumn 
+                                        Header="Gender"
+                                        Binding="{Binding Gender}"
+                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
                                             </Style>
-                                        </materialDesign:DataGridComboBoxColumn.ElementStyle>
-                                    </materialDesign:DataGridComboBoxColumn>
+                                        </DataGridTextColumn.HeaderStyle>
+
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
 
                                     <DataGridTextColumn 
                                         Header="Address" Width="200"

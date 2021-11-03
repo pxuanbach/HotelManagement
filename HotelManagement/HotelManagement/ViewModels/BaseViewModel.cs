@@ -90,6 +90,20 @@ namespace HotelManagement.ViewModels
                 e.Handled = true;
             }
         }
+
+        public bool CheckVietKey(string vietKeyStr)
+        {
+            const string FindText = "áàảãạâấầẩẫậăắằẳẵặđéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵÁÀẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶĐÉÈẺẼẸÊẾỀỂỄỆÍÌỈĨỊÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢÚÙỦŨỤƯỨỪỬỮỰÝỲỶỸỴ";
+            int n;
+            int m = vietKeyStr.Length;
+            char[] arrS = vietKeyStr.ToCharArray();
+            for (int i = 0; i < m; i++)
+            {
+                n = FindText.IndexOf(arrS[i]);
+                if (n != -1) return false;  //Tìm thấy kí tự có dấu trong dãy FindText
+            }
+            return true;    //Không tìm thấy kí tự có dấu
+        }
     }
 
     class RelayCommand<T> : ICommand

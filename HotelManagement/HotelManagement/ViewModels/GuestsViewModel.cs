@@ -151,6 +151,16 @@ namespace HotelManagement.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        private List<string> _searchTypes;
+        public List<string> SearchTypes { get { return _searchTypes; } set { _searchTypes = value; OnPropertyChanged(); } }
+
+        private string _selectedSearchType;
+        public string SelectedSearchType
+        {
+            get { return _selectedSearchType; }
+            set { _selectedSearchType = value; OnPropertyChanged(); }
+        }
         #endregion
 
         #region Command
@@ -160,6 +170,7 @@ namespace HotelManagement.ViewModels
         public ICommand DeleteGuestCommand { get; set; }
         public ICommand AddNewGuestCommand { get; set; }
         public ICommand SaveGuestCommand { get; set; }
+        public ICommand EditCommand { get; set; }
 
 
         public GuestsViewModel()
@@ -168,7 +179,7 @@ namespace HotelManagement.ViewModels
             LoadGuest();
             guestName = "null";
             GuestBirthday = DateTime.Now;
-            SearchGuestCommand = new RelayCommand<GuestsView>((p) => true, (p) => Search(p));
+            SearchGuestCommand = new RelayCommand<GuestsView>((p) => true, (p) => Search());
             DeleteGuestCommand = new RelayCommand<object>((p) => true, (p) => Delete());
             AddNewGuestCommand = new RelayCommand<object>((p) => true, (p) => { IsOpenDialog = true; DialogPropertiesChanged(); });
             SaveGuestCommand = new RelayCommand<object>((p) =>
@@ -180,6 +191,7 @@ namespace HotelManagement.ViewModels
             {
                 SaveGuest();
             });
+            EditCommand = new RelayCommand<object>((p) => true, (p) => { IsOpenDialog = true; DialogPropertiesChanged(); });
         }
         #endregion
 
@@ -230,17 +242,22 @@ namespace HotelManagement.ViewModels
         #endregion
 
         #region Search
-        private void Search(GuestsView view)
+        void Search()
         {
-            this.GuestView = view;
-            if (ContentSearch == "")
+            switch (SelectedSearchType)
             {
-                LoadGuest();
-            }
-            else
-            {
-                ItemSource = new ObservableCollection<GUEST>(
-                    DataProvider.Instance.DB.GUESTs.Where(x => x.id.ToString() == ContentSearch));
+                case "ID":
+                    ItemSource = new ObservableCollection<GUEST>(
+                        DataProvider.Instance.DB.GUESTs.Where(
+                            x => x.id.ToString().Contains(ContentSearch)));
+                    break;
+                case "Name":
+                    ItemSource = new ObservableCollection<GUEST>(
+                        DataProvider.Instance.DB.GUESTs.Where(
+                            x => x.name.ToString().Contains(ContentSearch)));
+                    break;
+                default:
+                    break;
             }
         }
         #endregion
@@ -255,6 +272,11 @@ namespace HotelManagement.ViewModels
             {
                 ItemSource.Add(item);
             }
+            SearchTypes = new List<string>();
+            SearchTypes.Add("ID");
+            SearchTypes.Add("Name");
+
+            SelectedSearchType = "ID";
         }
 
         private List<GUEST> GetGuests()
