@@ -185,6 +185,7 @@ namespace HotelManagement.ViewModels
                 room.txbID.Text = item.id.ToString();
                 room.Width = 100;
                 room.Height = 100;
+                room.IsEnabled = false;
 
                 List<ROOM_BOOKED> listR = DataProvider.Instance.DB.ROOM_BOOKED.Where(x => x.room_id == item.id).ToList();
                 foreach (ROOM_BOOKED booked in listR)
