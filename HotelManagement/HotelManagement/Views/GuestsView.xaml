@@ -19,7 +19,7 @@
             DialogTheme="Inherit" IsOpen="{Binding IsOpenDialog}">
             <materialDesign:DialogHost.DialogContent>
                 <Grid Background="White">
-                    <Grid Height="600" Width="400">
+                    <Grid Height="600" Width="400" Margin="10">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40"/>
                             <RowDefinition Height="auto"/>
@@ -56,6 +56,7 @@
                         </ComboBox>
 
                         <DatePicker Grid.Row="5" Margin="4"
+                            Style="{StaticResource MaterialDesignOutlinedDatePicker}"
                             VerticalAlignment="Top" 
                             Text="{Binding GuestBirthday}"
                             materialDesign:HintAssist.Hint="Guest's birthday"/>

@@ -7,14 +7,74 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
              xmlns:dsxch="http://schemas.devexpress.com/winfx/2008/xaml/scheduling"
-             xmlns:WinSchedulers="clr-namespace:TagBites.WinSchedulers;assembly=TagBites.WinSchedulers" x:Class="HotelManagement.Views.CalendarView"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             xmlns:WinSchedulers="clr-namespace:TagBites.WinSchedulers;assembly=TagBites.WinSchedulers" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" x:Class="HotelManagement.Views.CalendarView"
+            xmlns:sys="clr-namespace:System;assembly=mscorlib"        
+            mc:Ignorable="d" 
+             x:Name="calendar"
+             d:DesignHeight="450" d:DesignWidth="800"
+            Background="White">
     <UserControl.DataContext>
         <viewModels:CalendarViewModel/>
     </UserControl.DataContext>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction 
+                            Command="{Binding LoadCommand}" 
+                            CommandParameter="{Binding ElementName=calendar}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0" Margin="20 0 0 0">
+                <StackPanel
+                        Orientation="Horizontal"
+                        >
+                    <RadioButton
+                        x:Name="btnWeek"
+                        Style="{StaticResource MaterialDesignTabRadioButton}"
+                        Margin="4"
+                        IsChecked="True"
+                        Content="WEEK" 
+                        Command="{Binding WeekCommand}"
+                        CommandParameter="{Binding ElementName=calendar}"/>
+                    <RadioButton
+                        x:Name="btnMonth"
+                        Style="{StaticResource MaterialDesignTabRadioButton}"
+                        Margin="4"
+                        IsChecked="False"
+                        Content="MONTH" 
+                        Command="{Binding MonthCommand}"
+                        CommandParameter="{Binding ElementName=calendar}"/>
+                </StackPanel>
+            </Grid>
+            <DatePicker
+                Grid.Column="1"
+                x:Name="datePciker"
+                Style="{StaticResource MaterialDesignDatePicker}"
+                HorizontalAlignment="Right"
+                Margin="0 0 20 0"
+                Width="auto"
+                SelectedDate="{x:Static sys:DateTime.Now}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectedDateChanged">
+                        <i:InvokeCommandAction 
+                            Command="{Binding DateChangeCommand}" 
+                            CommandParameter="{Binding ElementName=calendar}"/>
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </DatePicker>
+        </Grid>
         <WinSchedulers:TimeScheduler
+            Margin="10 0 10 0"
+            Grid.Row="1"
             Name="SC_Scheduler"
             VerticalTimeLine="True"/>
 

@@ -37,12 +37,11 @@ namespace HotelManagement.Views
             SC_Scheduler.ViewOptions.InnerLines = true;
             SC_Scheduler.ViewOptions.FadeNotSelectedOrNotConnected = true;
 
-            SC_Scheduler.TimeScroller.Scale = TimeSpan.FromDays(1);
-            SC_Scheduler.ResourceScroller.HeaderSize = 100;
+            SC_Scheduler.TimeScroller.Scale = TimeSpan.FromDays(0.2);
+            SC_Scheduler.ResourceScroller.HeaderSize = 75;
 
             SC_Scheduler.VerticalTimeLine = false;
-
-            SC_Scheduler.VisibleDateTimeInterval = new TimeSchedulerInterval(new DateTime(2021, 9, 1), new DateTime(2021, 10, 31));
+          
             SC_Scheduler.ScrollTo(DateTime.Now, Alignment.Center);
         }
     }
