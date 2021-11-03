@@ -88,7 +88,7 @@ namespace HotelManagement.ViewModels
         public DashBoardViewModel()
         {
             LoadRoomType();
-            InitRoomStatusCommand = new RelayCommand<DashBoardView>((p) => true, (p) => LoadRoomTypeSide(p));
+            //InitRoomStatusCommand = new RelayCommand<DashBoardView>((p) => true, (p) => LoadRoomTypeSide(p));
             InitTodayStatusCommand = new RelayCommand<DashBoardView>((p) => true, (p) => LoadTodayStatus(p));
         }
 
@@ -161,23 +161,23 @@ namespace HotelManagement.ViewModels
         }
 
         #region Load Room Type Side
-        private void LoadRoomTypeSide(DashBoardView dashBoardView)
-        {
-            this.DashBoardView = dashBoardView;
-            this.DashBoardView.stackRoomStatus.Children.Clear();
-            foreach (var ROOMTYPE in ItemRoomTypes)
-            {
-                UC_RoomStatus uC_RoomStatus = new UC_RoomStatus();
-                uC_RoomStatus.expanderRoomStatus.Header = ROOMTYPE.name;
-                this.DashBoardView.stackRoomStatus.Children.Add(uC_RoomStatus);
-                List<ROOM> rOOMs = ROOMTYPE.ROOMs.Where(x => x.isActive == true).ToList();
-                LoadRoom(rOOMs, uC_RoomStatus);
-            }
-        }
+        //private void LoadRoomTypeSide(DashBoardView dashBoardView)
+        //{
+        //    this.DashBoardView = dashBoardView;
+        //    this.DashBoardView.stackRoomStatus.Children.Clear();
+        //    foreach (var ROOMTYPE in ItemRoomTypes)
+        //    {
+        //        UC_RoomStatus uC_RoomStatus = new UC_RoomStatus();
+        //        uC_RoomStatus.expanderRoomStatus.Header = ROOMTYPE.name;
+        //        this.DashBoardView.stackRoomStatus.Children.Add(uC_RoomStatus);
+        //        List<ROOM> rOOMs = ROOMTYPE.ROOMs.Where(x => x.isActive == true).ToList();
+        //        LoadRoom(rOOMs, uC_RoomStatus);
+        //    }
+        //}
         private void LoadRoom(List<ROOM> rOOMs, UC_RoomStatus uC_RoomStatus)
         {
             uC_RoomStatus.stackRoom.Children.Clear();
-            foreach(var item in rOOMs)
+            foreach (var item in rOOMs)
             {
                 UC_Room room = new UC_Room();
                 room.txbName.Text = item.name;

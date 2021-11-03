@@ -387,6 +387,7 @@
       <DependentUpon>Model.edmx</DependentUpon>
       <LastGenOutput>Model.cs</LastGenOutput>
     </Content>
+    <Resource Include="Resources\dashboard side.jpg" />
     <Resource Include="Resources\image_1.png" />
   </ItemGroup>
   <ItemGroup>
