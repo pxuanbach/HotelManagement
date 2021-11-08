@@ -375,7 +375,7 @@
                                 </Button>
                             </Grid>
 
-                            <DataGrid Height="200"
+                            <DataGrid Height="300"
                                 ItemsSource="{Binding BookedRooms}"
                                 CanUserResizeColumns="False" CanUserDeleteRows="True"
                                 CanUserAddRows="False" IsReadOnly="False"
@@ -526,7 +526,7 @@
                             </Grid>
 
                             <DataGrid 
-                                Height="200"
+                                Height="300"
                                 ItemsSource="{Binding Sharers}"
                                 CanUserResizeColumns="False" 
                                 IsReadOnly="True"

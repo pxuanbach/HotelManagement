@@ -18,6 +18,9 @@ namespace HotelManagement.ViewModels
         private bool _canEdit;
         public bool CanEdit { get { return _canEdit; } set { _canEdit = value; OnPropertyChanged(); } }
 
+        private DateTime LimitArrival { get; set; }
+        private DateTime LimitDeparture { get; set; }
+
         public GuestViewModel GuestInformation { get; set; }
 
         public ReservationViewModel StayInformation { get; set; }
@@ -54,7 +57,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => GuestInformation.FilledGuestInformation && !BeASharer, (p) => ReserveLikeASharer()));
+                return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => CanReserveAsSharer, (p) => ReserveLikeASharer()));
             }
         }
 
@@ -90,7 +93,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _addRoomCommand ?? (_addRoomCommand = new RelayCommand<object>((p) => true, (p) => OpenAddRoomWindow()));
+                return _addRoomCommand ?? (_addRoomCommand = new RelayCommand<object>((p) => CanBookRoom, (p) => OpenAddRoomWindow()));
             }
         }
 
@@ -99,7 +102,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _removeRoomCommand ?? (_removeRoomCommand = new RelayCommand<RoomViewModel>((p) => BookedRooms.Count > 1, (p) => RemoveSelectedRoom(p)));
+                return _removeRoomCommand ?? (_removeRoomCommand = new RelayCommand<RoomViewModel>((p) => CanRemoveBooked, (p) => RemoveSelectedRoom(p)));
             }
         }
 
@@ -182,6 +185,17 @@ namespace HotelManagement.ViewModels
             StayInformation.Rooms = BookedRooms.Count;
         }
 
+        private bool CanReserveAsSharer
+        {
+            get
+            {
+                if (GuestInformation.FilledGuestInformation == false) return false;
+                if (BeASharer == true) return false;
+                if (StayInformation.MaxPax >= StayInformation.Pax) return false;
+                return true;
+            }
+        }
+
         private bool CanExecuteEditCommand
         {
             get
@@ -198,6 +212,27 @@ namespace HotelManagement.ViewModels
                 if (Sharers.Count < StayInformation.MaxPax)
                     return true;
                 else return false;
+            }
+        }
+
+        private bool CanBookRoom
+        {
+            get
+            {
+                if (StayInformation.Status == "Operational" ||
+                    StayInformation.Status == "No Show") return false;
+                return true;
+            }
+        }
+
+        private bool CanRemoveBooked
+        {
+            get
+            {
+                if (BookedRooms.Count <= 1) return false;
+                if (StayInformation.Status == "Operational" ||
+                    StayInformation.Status == "No Show") return false;
+                return true;
             }
         }
 
@@ -389,6 +424,18 @@ namespace HotelManagement.ViewModels
                 };
                 BookedRooms.Add(obj);
 
+                // Find limit of changing arrival and departure date
+                var nearestArrival = (from res in db.RESERVATIONs join rb in db.ROOM_BOOKED on res.id equals rb.reservation_id into result
+                                      where res.departure < StayInformation.Arrival orderby res.departure descending select res).FirstOrDefault();
+
+                var nearestDeparture = (from res in db.RESERVATIONs join rb in db.ROOM_BOOKED on res.id equals rb.reservation_id into result 
+                                        where res.arrival > StayInformation.Departure orderby res.arrival ascending select res).FirstOrDefault();
+
+                if (nearestArrival != null && nearestArrival.departure >= LimitArrival) 
+                    LimitArrival = (DateTime)nearestArrival.departure;
+                if (nearestDeparture != null && nearestDeparture.arrival >= LimitDeparture) 
+                    LimitDeparture = (DateTime)nearestDeparture.arrival;
+
                 StayInformation.MaxPax += obj.Capacity;
             }
         }
@@ -479,34 +526,35 @@ namespace HotelManagement.ViewModels
             var db = new HotelManagementEntities();
 
             var allrooms = from r in db.ROOMs
-                           join rt in db.ROOMTYPEs on r.roomtype_id equals rt.id
                            join rb in db.ROOM_BOOKED on r.id equals rb.room_id into result
                            from rs in result.DefaultIfEmpty()
-                           join res in db.RESERVATIONs on rs.reservation_id equals res.id into result1
-                           from rs1 in result1.DefaultIfEmpty()
-                           where rt.date_created <= DateTime.Today && (rt.date_updated == null || rt.date_updated >= DateTime.Today) &&
-                           r.out_of_service == false && r.dirty == false
                            select new
                            {
                                RoomID = r.id,
                                RoomName = r.name,
-                               TypeID = rt.id,
-                               TypeName = rt.name,
+                               OOS = r.out_of_service,
+                               Dirty = r.dirty,
+                               TypeID = r.roomtype_id,
+                               TypeName = r.ROOMTYPE.name,
+                               CreatedRT = r.ROOMTYPE.date_created,
+                               UpdatedRT = r.ROOMTYPE.date_updated,
                                ResID = rs == null ? 0 : rs.reservation_id,
-                               Arrival = rs1.arrival,
-                               Departure = rs1.departure,
-                               Price = rt.price,
-                               Capacity = rt.max_guest,
+                               Arrival = rs.RESERVATION.arrival,
+                               Departure = rs.RESERVATION.departure,
+                               Price = r.ROOMTYPE.price,
+                               Capacity = r.ROOMTYPE.max_guest,
                            };
 
-            var excepts = from r in allrooms where !(r.Arrival >= StayInformation.Departure || r.Departure <= StayInformation.Arrival) select r;
+            var booked = from r in allrooms where !(r.Arrival >= StayInformation.Departure || r.Departure <= StayInformation.Arrival) select r;
 
-            var rooms = (from r in allrooms
-                         where !excepts.Any(exc => exc.RoomID == r.RoomID) || r.ResID == 0
-                         group r by r.RoomID into rs 
-                         select rs).ToList();
+            var availables = from r in allrooms
+                             where r.CreatedRT <= DateTime.Today && (r.UpdatedRT == null || r.UpdatedRT >= DateTime.Today) &&
+                             r.OOS == false && r.Dirty == false &&
+                             !booked.Any(exc => exc.RoomID == r.RoomID) || r.ResID == 0
+                             group r by r.RoomID into result
+                             select result;
 
-            foreach (var r in rooms)
+            foreach (var r in availables)
             {
                 var room = r.FirstOrDefault();
                 var obj = new RoomViewModel()

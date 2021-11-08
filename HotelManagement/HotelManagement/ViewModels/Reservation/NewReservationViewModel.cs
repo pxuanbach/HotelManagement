@@ -40,7 +40,7 @@ namespace HotelManagement.ViewModels
         {
             get
             {
-                return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => GuestInformation.FilledGuestInformation && !BeASharer, (p) => ReserveLikeASharer()));
+                return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => CanReserveAsSharer, (p) => ReserveLikeASharer()));
             }
         }
 
@@ -169,6 +169,17 @@ namespace HotelManagement.ViewModels
         private void Sharers_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             StayInformation.Pax = Sharers.Count;
+        }
+
+        private bool CanReserveAsSharer
+        {
+            get
+            {
+                if (GuestInformation.FilledGuestInformation == false) return false;
+                if (BeASharer == true) return false;
+                if (StayInformation.Pax >= StayInformation.MaxPax) return false;
+                return true;
+            }
         }
 
         private bool CanAddSharer
@@ -337,36 +348,36 @@ namespace HotelManagement.ViewModels
             var db = new HotelManagementEntities();
 
             var allrooms = from r in db.ROOMs
-                           join rt in db.ROOMTYPEs on r.roomtype_id equals rt.id 
                            join rb in db.ROOM_BOOKED on r.id equals rb.room_id into result
-                           from rs in result.DefaultIfEmpty()
-                           join res in db.RESERVATIONs on rs.reservation_id equals res.id into result1
-                           from rs1 in result1.DefaultIfEmpty()
-                           where rt.date_created <= DateTime.Today && (rt.date_updated == null || rt.date_updated >= DateTime.Today) &&
-                           r.out_of_service == false && r.dirty == false
+                           from rs in result.DefaultIfEmpty() 
                            select new
                            {
-                                RoomID = r.id,
-                                RoomName = r.name,
-                                TypeID = rt.id,
-                                TypeName = rt.name,
-                                ResID = rs == null ? 0 : rs.reservation_id,
-                                Arrival = rs1.arrival,
-                                Departure = rs1.departure,
-                                Price = rt.price,
-                                Capacity = rt.max_guest,
+                               RoomID = r.id,
+                               RoomName = r.name,
+                               OOS = r.out_of_service,
+                               Dirty = r.dirty,
+                               TypeID = r.roomtype_id,
+                               TypeName = r.ROOMTYPE.name,
+                               CreatedRT = r.ROOMTYPE.date_created,
+                               UpdatedRT = r.ROOMTYPE.date_updated,
+                               ResID = rs == null ? 0 : rs.reservation_id,
+                               Arrival = rs.RESERVATION.arrival,
+                               Departure = rs.RESERVATION.departure,
+                               Price = r.ROOMTYPE.price,
+                               Capacity = r.ROOMTYPE.max_guest,
                            };
 
-            var excepts = from r in allrooms where !(r.Arrival >= StayInformation.Departure || r.Departure <= StayInformation.Arrival) select r;
+            var booked = from r in allrooms where !(r.Arrival >= StayInformation.Departure || r.Departure <= StayInformation.Arrival) select r;
 
-            // Thieu truong hop cancelled res va on request res
+            var availables = from r in allrooms
+                             where r.CreatedRT <= DateTime.Today && (r.UpdatedRT == null || r.UpdatedRT >= DateTime.Today) &&
+                             r.OOS == false && r.Dirty == false &&
+                             !booked.Any(exc => exc.RoomID == r.RoomID) || r.ResID == 0
+                             group r by r.RoomID into result select result;
 
-            var rooms = (from r in allrooms
-                         where !excepts.Any(exc => exc.RoomID == r.RoomID) || r.ResID == 0 
-                         group r by r.RoomID into rs
-                         select rs).ToList();
+            // TODO: Thieu truong hop cancelled res va on request res
 
-            foreach (var r in rooms)
+            foreach (var r in availables)
             {
                 var room = r.FirstOrDefault();
                 var obj = new RoomViewModel()
