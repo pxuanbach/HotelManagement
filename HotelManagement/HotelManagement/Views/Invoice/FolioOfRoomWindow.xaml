@@ -99,7 +99,7 @@
                                         <TextBlock Text="{Binding RoomName}"/>
                                     </StackPanel>
                                     <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="4">
-                                        <TextBlock Text="Max Guest: " FontWeight="Bold"/>
+                                        <TextBlock Text="Capacity: " FontWeight="Bold"/>
                                         <TextBlock Text="{Binding MaxGuest}"/>
                                     </StackPanel>
                                 </Grid>

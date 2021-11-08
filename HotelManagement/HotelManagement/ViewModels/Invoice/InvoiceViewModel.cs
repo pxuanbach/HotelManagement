@@ -463,8 +463,7 @@ namespace HotelManagement.ViewModels
             }
 
             ReservationIdSelected = p.id;
-            //Arrival = p.arrival.Value.ToString("dd/MM/yyyy");
-            Arrival = p.arrival.Value.Date.ToString();
+            Arrival = p.arrival.Value.ToString("dd/MM/yyyy");
             Departure = p.departure.Value.ToString("dd/MM/yyyy");
             Identity = p.main_guest;
             Name = mainGuest.name;

@@ -236,7 +236,7 @@
                                     </GridViewColumn>
                                     <GridViewColumn DisplayMemberBinding="{Binding main_guest}">
                                         <GridViewColumn.Header>
-                                            <TextBlock Text="Main Guest" Foreground="Black" FontSize="14" FontWeight="SemiBold" Margin="8 0 0 0"/>
+                                            <TextBlock Text="Guest" Foreground="Black" FontSize="14" FontWeight="SemiBold" Margin="8 0 0 0"/>
                                         </GridViewColumn.Header>
                                     </GridViewColumn>
                                 </GridView>
@@ -304,18 +304,26 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <StackPanel Grid.Row="0" Orientation="Horizontal">
-                            <TextBlock Text="Main Guest:" FontSize="18" FontWeight="Bold" 
+                            <TextBlock Text="Guest:" FontSize="18" FontWeight="Bold" 
                                 Margin="6 0 6 0" Foreground="{StaticResource PrimaryHueDarkBrush}" 
                                 VerticalAlignment="Center"/>
                             <TextBlock Text="{Binding Name}" FontSize="18" VerticalAlignment="Center"/>
                         </StackPanel>
                         <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch" Margin="4 2 0 6">
-                            <StackPanel Orientation="Horizontal" Margin="8 2 2 2">
-                                <TextBlock Text="ID Card:" Width="55" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                <TextBlock Text="{Binding Identity}" Width="110" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                <TextBlock Text="Phone:" Width="52" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                <TextBlock Text="{Binding Phone}" Width="90" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                            </StackPanel>
+                            <Grid Margin="8 2 2 2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                    <TextBlock Text="ID Card:" Width="55" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Identity}" Width="110" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="2 0 0 0">
+                                    <TextBlock Text="Phone:" Width="52" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Phone}" Width="90" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
                             <StackPanel Orientation="Horizontal" Margin="8 2 2 2">
                                 <TextBlock Text="Email:" Width="55" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                                 <TextBlock Text="{Binding Email}" 
