@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:HotelManagement.Views" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
+        xmlns:local="clr-namespace:HotelManagement.Views" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:viewModels="clr-namespace:HotelManagement.ViewModels" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         mc:Ignorable="d"
         Title="AddTypeRoom" 
         Height="450" Width="400"
@@ -113,7 +113,14 @@
                     Height="25"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
-                    Margin="0 0 60 0"/>
+                    Margin="0 0 60 0">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="PreviewTextInput">
+                            <ei:CallMethodAction TargetObject="{Binding}"
+                                                         MethodName="NumberValidationTextBox"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </TextBox>
             </Grid>
             <Grid Grid.Row="3">
                 <TextBlock 

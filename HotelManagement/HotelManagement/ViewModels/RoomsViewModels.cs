@@ -31,7 +31,21 @@ namespace HotelManagement.ViewModels
                 OnPropertyChanged();
             }
         }
+        private readonly Color[] m_colors =
+        {
+            Color.FromRgb(178, 191, 229),
+            Color.FromRgb(178,223, 229),
+            Color.FromRgb(178, 229, 203),
+            Color.FromRgb(184, 229, 178),
+            Color.FromRgb(197, 178, 229),
+            Color.FromRgb(216, 229, 178),
+            Color.FromRgb(229, 178, 178),
+            Color.FromRgb(229,178,197),
+            Color.FromRgb(229, 178, 229),
+            Color.FromRgb(229, 210, 178),
+        };
 
+        #region icommand
         public ICommand LoadRoomCommand { get; set; }
         public ICommand ChosenRoomCommand { get; set; }
         public ICommand MouseRightCommand { get; set; }
@@ -51,8 +65,23 @@ namespace HotelManagement.ViewModels
         public ICommand DeleteRoomCommand { get; set; }
         public ICommand ToggleDirtyCommand { get; set; }
         public ICommand ToggleOutServiceCommand { get; set; }
+        private ICommand _newReservationCommand;
+        public ICommand NewReservationCommand
+        {
+            get
+            {
+                return _newReservationCommand ?? (_newReservationCommand = new RelayCommand<object>((p) => true, (p) => OpenNewReservationWindow()));
+            }
+        }
 
+        private void OpenNewReservationWindow()
+        {
+            var wd = new NewReservationWindow();
+            wd.DataContext = new NewReservationViewModel();
+            wd.Show();
+        }
 
+        #endregion
         public RoomsViewModels()
         {
             LoadRoomCommand = new RelayCommand<RoomsView>((para) => true, (para) => LoadRoom(para));
@@ -96,6 +125,22 @@ namespace HotelManagement.ViewModels
 
                 DataProvider.Instance.DB.ROOMs.AddOrUpdate(room);
                 DataProvider.Instance.DB.SaveChanges();
+
+                foreach (UC_Room item in this.roomView.stkRoom.Children)
+                {
+                    if (item.txbID.Text == id.ToString())
+                    {
+                        item.Background = loadColor(item.txbStatus.Text);
+                        if (room.dirty == true)
+                        {
+                            item.Background = (Brush)new BrushConverter().ConvertFrom("#D8E5B2");
+                        }
+                        if (room.out_of_service == true)
+                        {
+                            item.Background = (Brush)new BrushConverter().ConvertFrom("#E5D2B2");
+                        }
+                    }
+                }
             }
         }
 
@@ -119,6 +164,22 @@ namespace HotelManagement.ViewModels
 
                 DataProvider.Instance.DB.ROOMs.AddOrUpdate(room);
                 DataProvider.Instance.DB.SaveChanges();
+
+                foreach (UC_Room item in this.roomView.stkRoom.Children)
+                {
+                    if (item.txbID.Text == id.ToString())
+                    {
+                        item.Background = loadColor(item.txbStatus.Text);
+                        if (room.dirty == true)
+                        {
+                            item.Background = (Brush)new BrushConverter().ConvertFrom("#D8E5B2");
+                        }
+                        if (room.out_of_service == true)
+                        {
+                            item.Background = (Brush)new BrushConverter().ConvertFrom("#E5D2B2");
+                        }
+                    }
+                }
             }
         }
 
@@ -275,6 +336,9 @@ namespace HotelManagement.ViewModels
                 para.rooms.stkType.Children.Add(item);
                 para.Close();
             }
+           
+            para.rooms.stkType.Children.Clear();
+            LoadType(para.rooms);
         }
 
         private void SaveRoom(AddRoomWindow para)
@@ -301,6 +365,7 @@ namespace HotelManagement.ViewModels
                 item.txbType.Text = para.cbbType.Text;
                 item.txbStatus.Text = "Available";
                 item.Width = 100;
+                item.Height = 100;
 
                 para.rooms.stkRoom.Children.Add(item);
                 para.Close();
@@ -356,7 +421,8 @@ namespace HotelManagement.ViewModels
         private void EditType(UC_RoomType para)
         {
             StackPanel stk = (StackPanel)para.Parent;
-            Grid grid1 = (Grid)stk.Parent;
+            ScrollViewer viewer = (ScrollViewer)stk.Parent;
+            Grid grid1 = (Grid)viewer.Parent;
             Grid grid2 = (Grid)grid1.Parent;
             Grid grid3 = (Grid)grid2.Parent;
             this.roomView = (RoomsView)grid3.Parent;
@@ -423,6 +489,7 @@ namespace HotelManagement.ViewModels
             para.stkRoom.Visibility = System.Windows.Visibility.Collapsed;
             para.btnAddRoom.Visibility = System.Windows.Visibility.Collapsed;
 
+            para.grdStatus.Visibility = Visibility.Collapsed;
             ResetInfo(para);
         }
 
@@ -440,7 +507,7 @@ namespace HotelManagement.ViewModels
                 UC_RoomType uc = new UC_RoomType();
                 uc.txbID.Text = item.id.ToString();
                 uc.txbName.Text = item.name;
-                uc.txbPrice.Text = item.price.ToString();
+                uc.txbPrice.Text = SeparateThousands(((long)item.price).ToString());
                 uc.txbMax.Text = item.max_guest.ToString();
                 uc.txbDateCreate.Text = item.date_created.ToString();
                 uc.txbcOUNT.Text = DataProvider.Instance.DB.ROOMs.Where(x => x.roomtype_id == item.id).Count().ToString();
@@ -460,6 +527,7 @@ namespace HotelManagement.ViewModels
             para.btnSearch.IsEnabled = true;
             para.stkRoom.Visibility = System.Windows.Visibility.Visible;
             para.btnAddRoom.Visibility = System.Windows.Visibility.Visible;
+            para.grdStatus.Visibility = Visibility.Visible;
         }
 
         private void ResetSearchRoom(RoomsView para)
@@ -482,7 +550,7 @@ namespace HotelManagement.ViewModels
             item.name = "All";
             this.ItemsSourceType.Add(item);
 
-            List<ROOMTYPE> list = DataProvider.Instance.DB.ROOMTYPEs.Select(p => p).ToList();
+            List<ROOMTYPE> list = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.date_updated== null).ToList();
             foreach (ROOMTYPE type in list)
             {
                 this.itemsSourceType.Add(type);
@@ -542,7 +610,8 @@ namespace HotelManagement.ViewModels
         private void LoadDataRoom(UC_Room para)
         {
             WrapPanel wrap = (WrapPanel)para.Parent;
-            Grid grid1 = (Grid)wrap.Parent;
+            ScrollViewer viewer = (ScrollViewer)wrap.Parent;
+            Grid grid1 = (Grid)viewer.Parent;
             Grid grid2 = (Grid)grid1.Parent;
             Grid grid3 = (Grid)grid2.Parent;
             this.roomView = (RoomsView)grid3.Parent;
@@ -574,7 +643,7 @@ namespace HotelManagement.ViewModels
             ROOMTYPE type = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.id == room.roomtype_id).FirstOrDefault();
 
             roomView.txbTypeRoom.Text = type.name;
-            roomView.txbPriceRoom.Text = type.price.ToString();
+            roomView.txbPriceRoom.Text = SeparateThousands(((long)type.price).ToString());
             roomView.txbMaxRoom.Text = type.max_guest.ToString();
             roomView.txbNoteRoom.Text = room.notes;
             roomView.txbNameRoom.Text = room.name;
@@ -609,16 +678,16 @@ namespace HotelManagement.ViewModels
                                 if (reser.departure.Value.Day == DateTime.Now.Day && reser.departure.Value.Month == DateTime.Now.Month && reser.departure.Value.Year == DateTime.Now.Year)
                                 {
                                     room.txbStatus.Text = "Due Out";
-                                    room.Background = (Brush)new BrushConverter().ConvertFrom("#F70006");
+                                    room.Background = (Brush)new BrushConverter().ConvertFrom("#B2DFE5");
                                 } else
                                 {
                                     room.txbStatus.Text = "Occupied";
-                                    room.Background = (Brush)new BrushConverter().ConvertFrom("#2C9244");
+                                    room.Background = (Brush)new BrushConverter().ConvertFrom("#C5B2E5");
                                 }
                                 break;
                             case "No Show":
                                 room.txbStatus.Text = "No Show";
-                                room.Background = (Brush)new BrushConverter().ConvertFrom("#FCDA2D");
+                                room.Background = (Brush)new BrushConverter().ConvertFrom("#E5B2B2");
                                 break;
                             case "Completed":
                             case "Cancelled":
@@ -628,7 +697,7 @@ namespace HotelManagement.ViewModels
                             case "Confirmed":
                             case "On Request":
                                 room.txbStatus.Text = "Reserved";
-                                room.Background = (Brush)new BrushConverter().ConvertFrom("#45DCBD");
+                                room.Background = (Brush)new BrushConverter().ConvertFrom("#B8E5B2");
                                 break;
                             default:
                                 break;
@@ -637,12 +706,22 @@ namespace HotelManagement.ViewModels
                     }
                     else
                         room.txbStatus.Text = "Available";
+
+                    if (item.dirty == true)
+                    {
+                        room.Background = (Brush)new BrushConverter().ConvertFrom("#D8E5B2");
+                    }
+                    if (item.out_of_service == true)
+                    {
+                        room.Background = (Brush)new BrushConverter().ConvertFrom("#E5D2B2");
+                    }
                 }
                 para.stkRoom.Children.Add(room);
             }
             InitItemsSourceType();
             InitItemsSourceFloor(para);
             LoadType(para);
+            permissionLogin(roomView);
             para.stkType.Visibility = System.Windows.Visibility.Collapsed;
         }
 
@@ -676,6 +755,37 @@ namespace HotelManagement.ViewModels
             para.txbPriceRoom.Text = "";
             para.txbStatusRoom.Text = "";
             para.txbTypeRoom.Text = "";
+        }
+
+        private void permissionLogin(RoomsView view)
+        {
+            string permission = CurrentAccount.Instance.Permission;
+
+            if (permission != "Admin")
+            {
+                view.btnAddRoom.IsEnabled = false;
+                view.btnAddType.IsEnabled = false;
+                view.btnMoreRoom.IsEnabled = false;
+                view.btnDelRoom.IsEnabled = false;
+            }
+        }
+
+        private Brush loadColor(string status)
+        {
+            switch (status)
+            {
+                case "Due out":
+                    return (Brush)new BrushConverter().ConvertFrom("#B2DFE5");
+                case "Occupied":
+                    return (Brush)new BrushConverter().ConvertFrom("#C5B2E5");
+                case "No Show":
+                    return (Brush)new BrushConverter().ConvertFrom("#E5B2B2");
+                case "Available":
+                    return (Brush)new BrushConverter().ConvertFrom("#FFD0D0D0");
+                case "Reserved":
+                    return (Brush)new BrushConverter().ConvertFrom("#B8E5B2");
+            }
+            return null;
         }
     }
 }

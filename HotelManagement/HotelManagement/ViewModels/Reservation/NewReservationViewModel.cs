@@ -109,6 +109,24 @@ namespace HotelManagement.ViewModels
             StayInformation.Arrival = DateTime.Today;
             StayInformation.Departure = DateTime.Today.AddDays(1);
         }
+        public NewReservationViewModel()
+        {
+            Sharers = new ObservableCollection<GuestViewModel>();
+            GuestInformation = new GuestViewModel();
+            StayInformation = new ReservationViewModel();
+            AvailableRooms = new ObservableCollection<RoomViewModel>();
+            SelectedRooms = new ObservableCollection<RoomViewModel>();
+
+            StayInformation.PropertyChanged += StayInformation_PropertyChanged;
+            Sharers.CollectionChanged += Sharers_CollectionChanged;
+            SelectedRooms.CollectionChanged += SelectedRooms_CollectionChanged;
+
+            BeASharer = false;
+            GuestInformation.Birthday = DateTime.Parse("01-01-2000");
+            StayInformation.Arrival = DateTime.Today;
+            StayInformation.Departure = DateTime.Today.AddDays(1);
+        }
+
 
         private void SelectedRooms_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
@@ -299,8 +317,8 @@ namespace HotelManagement.ViewModels
                     context.SaveChanges();
                 }
             }
-
-            Instance.LoadReservations();
+            if (Instance != null)
+                Instance.LoadReservations();
             window.Close();
         }
 

@@ -54,7 +54,7 @@
                     HorizontalAlignment="Left" 
                     ItemsSource="{Binding ItemsSourceType}"
                     DisplayMemberPath="name"
-                    Margin="80,20,0,0"/>
+                    Margin="90,20,0,0"/>
                 <TextBlock
                     Text="Floor"
                     FontSize="15"
@@ -62,14 +62,14 @@
                     Foreground="Black"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left"
-                    Margin="160,20,0,0"/>
+                    Margin="180,20,0,0"/>
                 <ComboBox
                     materialDesign:HintAssist.Hint="-Select-"
                     materialDesign:HintAssist.HintOpacity=".50"
                     IsEditable="False"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left" 
-                    Margin="205,20,0,0"
+                    Margin="235,20,0,0"
                     x:Name="cbbFloor"/>
                 <TextBlock
                     Text="Status"
@@ -78,7 +78,7 @@
                     Foreground="Black"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left"
-                    Margin="280,20,0,0"/>
+                    Margin="310,20,0,0"/>
                 <ComboBox
                     x:Name="cbbStatus"
                     materialDesign:HintAssist.Hint="-Select-"
@@ -86,7 +86,7 @@
                     IsEditable="False"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left" 
-                    Margin="335,20,0,0">
+                    Margin="370,20,0,0">
                     <ComboBoxItem Content="All"/>
                     <ComboBoxItem Content="Operational"/>
                     <ComboBoxItem Content="No Show"/>
@@ -98,24 +98,24 @@
                 </ComboBox>
                 <Button 
                     x:Name="btnSearch"
-                    Width="70"
-                    Height="25"
+                    Width="100"
+                    Height="30"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top" 
                     Content="Search"
-                    Margin="0,20,80,0"
-                    FontSize="12"
+                    Margin="0,20,120,0"
+                    FontSize="15"
                     Command="{Binding SearchRoomCommand}"
                     CommandParameter="{Binding ElementName=Room}"/>
                 <Button
                     x:Name="btnReset"
-                    Width="65"
-                    Height="25"
+                    Width="90"
+                    Height="30"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top" 
                     Content="Reset"
                     Margin="0,20,10,0"
-                    FontSize="12"
+                    FontSize="15"
                     Command="{Binding ResetSearchCommand}"
                     CommandParameter="{Binding ElementName=Room}"/>
                 <StackPanel
@@ -145,44 +145,144 @@
                 </StackPanel>
                 <Button
                     x:Name="btnAddRoom"
-                    Width="85"
-                    Height="25"
+                    Width="100"
+                    Height="30"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top" 
                     Content="Add room"
-                    Margin="0,60,36,0"
-                    FontSize="11"
+                    Margin="0,60,60,0"
+                    FontSize="15"
                     Command="{Binding OpenAddRoomCommand}"
                     CommandParameter="{Binding ElementName=Room}"/>
+                
                 <Button
                     x:Name="btnAddType"
-                    Width="85"
-                    Height="25"
+                    Width="110"
+                    Height="30"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top" 
                     Content="Add type"
-                    Margin="0,60,36,0"
-                    FontSize="11"
+                    Margin="0,60,60,0"
+                    FontSize="15"
                     Command="{Binding OpenAddTypeCommand}"
                     CommandParameter="{Binding ElementName=Room}"
                     Visibility="Hidden"/>
             </Grid>
             <Grid Grid.Row="1"
                   x:Name="grdType">
-                <StackPanel 
-                    Margin="10 0 10 0"
-                    x:Name="stkType" 
-                    >
-                </StackPanel>
+                <ScrollViewer>
+                    <StackPanel 
+                        Margin="10 0 10 0"
+                        x:Name="stkType" 
+                        >
+                    </StackPanel>
+                </ScrollViewer>
             </Grid>
             <Grid Grid.Row="1"
                   x:Name="grdRoom">
-                <WrapPanel 
+                <ScrollViewer>
+                    <WrapPanel
                     Margin="10 0 10 0"
                     x:Name="stkRoom" 
                     Orientation="Horizontal"/>
+                </ScrollViewer>
             </Grid>
-            <Grid Grid.Row="2"/>
+            <Grid Grid.Row="2" x:Name="grdStatus">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button
+                Grid.Column="0"
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Center"
+                Background="#B2DFE5"/>
+                <TextBlock 
+                Text="Due Out"
+                Grid.Column="1"
+                FontSize="11"
+                HorizontalAlignment="Center"
+                    VerticalAlignment="Center"/>
+                <Button
+                Grid.Column="2"
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Right"
+                Background="#C5B2E5"/>
+                <TextBlock 
+                Text="Occupied"
+                Grid.Column="3"
+                FontSize="12"
+                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button
+                Grid.Column="4"
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Right"
+                Background="#E5B2B2"/>
+                <TextBlock 
+                Text="No Show"
+                Grid.Column="5"
+                FontSize="12"
+                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button
+                Grid.Column="6"
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Right"
+                Background="#D0D0D0"/>
+                <TextBlock 
+                Text="Available"
+                Grid.Column="7"
+                FontSize="12"
+                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button
+                Grid.Column="8"
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Right"
+                Background="#B8E5B2"/>
+                <TextBlock 
+                Text="Reserved"
+                Grid.Column="9"
+                FontSize="12"
+                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button
+                Grid.Column="10"
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Right"
+                Background="#D8E5B2"/>
+                <TextBlock 
+                Text="Dirty"
+                Grid.Column="11"
+                FontSize="12"
+                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button
+                Grid.Column="12"
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Right"
+                Background="#E5D2B2"/>
+                <TextBlock 
+                Text="OutService"
+                Grid.Column="13"
+                FontSize="12"
+                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
         </Grid>
         <Grid Grid.Column="2">
             <TextBlock x:Name="txb_id" Visibility="Hidden"/>
@@ -252,7 +352,7 @@
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Text="Max customer:"
+                Text="Capacity:"
                 FontWeight="SemiBold"
                 FontSize="15"
                 Margin="30 150 0 0 "/>
@@ -331,7 +431,7 @@
                 x:Name="btnMoreRoom"
                 Style="{StaticResource MaterialDesignFlatLightButton}"
                 ToolTip="More info room"
-                Content="More&gt;&gt;"
+                Content="Edit"
                 Width="80"
                 Height="25"
                 HorizontalAlignment="Left"
@@ -460,15 +560,17 @@
                 FontSize="15"
                 Margin="130 510 0 0 "/>
             <Button
-                Style="{StaticResource MaterialDesignFlatLightButton}"
-                ToolTip="More info custom"
-                Content="More&gt;&gt;"
-                Width="80"
-                Height="25"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top"
-                Margin="160,540,0,0"
-                FontSize="15"/>
+                    x:Name="btnNewReservation"
+                    Width="150"
+                    Height="30"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom" 
+                    Content="New Reservation"
+                    Margin="0 0 0 20"
+                    FontSize="15"
+                Style="{StaticResource MaterialDesignRaisedButton}"
+                    Command="{Binding NewReservationCommand}"
+                    CommandParameter="{Binding ElementName=Room}"/>
         </Grid>
     </Grid>
 </UserControl>

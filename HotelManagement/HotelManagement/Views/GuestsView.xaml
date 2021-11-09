@@ -7,7 +7,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewModels="clr-namespace:HotelManagement.ViewModels" 
               xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="guestView">
@@ -33,11 +33,12 @@
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Text="New guest" Margin="8" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Row="1" Text="{Binding Title}" Margin="8 4 4 12"/>
+                        <TextBlock Grid.Row="0" Text="{Binding Title}" Margin="8" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="1" Margin="8 4 4 12"/>
                         <TextBox Grid.Row="2" Margin="4"
                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                 VerticalAlignment="Top" 
+                                 IsReadOnly="{Binding IsReadOnly}"
                                 AcceptsReturn="True" Text="{Binding GuestID}"
                                 materialDesign:HintAssist.Hint="Guest's IDcard"/>
                         <TextBox Grid.Row="3" Margin="4"
@@ -71,8 +72,14 @@
                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                             VerticalAlignment="Top" 
                             AcceptsReturn="True" Text="{Binding GuestPhone}"
-                            materialDesign:HintAssist.Hint="Guest's phone"/>
-
+                            materialDesign:HintAssist.Hint="Guest's phone">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="PreviewTextInput">
+                                    <ei:CallMethodAction TargetObject="{Binding}"
+                                                         MethodName="NumberValidationTextBox"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
                         <TextBox Grid.Row="8" Margin="4"
                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                             VerticalAlignment="Top" 
@@ -155,13 +162,24 @@
                         </Border>
                     </Grid>
                     <Grid Grid.Column="1">
+                        <Button Width="50" Height="30" Margin="35 40 60 0"
+                            Style="{StaticResource MaterialDesignRaisedButton}" 
+                            Content="{materialDesign:PackIcon Kind=Reload, Size=15}" 
+                                VerticalContentAlignment="Center"
+                                HorizontalContentAlignment="Center"
+                            Foreground="White" 
+                            VerticalAlignment="Center"
+                                HorizontalAlignment="Right"
+                            Command="{Binding ReloadCommand}"
+                                CommandParameter="{Binding ElementName=guestView}"/>
                         <Button
-                            Background="{StaticResource PrimaryDarkBrush}"
+                            x:Name="btnAddGuest"
+                            Background="{StaticResource PrimaryHueDarkBrush}"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Right"
-                            Margin="35 0"
-                            Width="140"
-                            Height="40"
+                            Margin="35 0 35 30"
+                            Width="100"
+                            Height="30"
                             Style="{StaticResource MaterialDesignRaisedButton}"
                             ToolTip="New guest"
                             Content="New guest"
@@ -200,7 +218,7 @@
                                 </DataGridTextColumn.ElementStyle>
                             </materialDesign:DataGridTextColumn>
                             <materialDesign:DataGridTextColumn
-                            Header="Name" Binding="{Binding name}" >
+                            Header="Name" Binding="{Binding name}" IsReadOnly="True">
                                 <DataGridTextColumn.HeaderStyle>
                                     <Style TargetType="{x:Type DataGridColumnHeader}"
                                        BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
@@ -236,7 +254,7 @@
                                 </DataGridTextColumn.ElementStyle>
                             </materialDesign:DataGridTextColumn>
                             <materialDesign:DataGridTextColumn
-                            Header="Birthday" Binding="{Binding birthday, StringFormat={}{0:dd/MM/yyyy}}" >
+                            Header="Birthday" Binding="{Binding birthday, StringFormat={}{0:dd/MM/yyyy}}" IsReadOnly="True">
                                 <DataGridTextColumn.HeaderStyle>
                                     <Style TargetType="{x:Type DataGridColumnHeader}"
                                        BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
@@ -254,7 +272,7 @@
                                 </DataGridTextColumn.ElementStyle>
                             </materialDesign:DataGridTextColumn>
                             <materialDesign:DataGridTextColumn
-                            Header="Address" Binding="{Binding address}" >
+                            Header="Address" Binding="{Binding address}" IsReadOnly="True">
                                 <DataGridTextColumn.HeaderStyle>
                                     <Style TargetType="{x:Type DataGridColumnHeader}"
                                        BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
@@ -272,7 +290,7 @@
                                 </DataGridTextColumn.ElementStyle>
                             </materialDesign:DataGridTextColumn>
                             <materialDesign:DataGridTextColumn
-                            Header="Phone" Binding="{Binding phone, StringFormat='{}{0:#,#.}'}" >
+                            Header="Phone" Binding="{Binding phone, StringFormat='{}{0:#,#.}'}" IsReadOnly="True">
                                 <DataGridTextColumn.HeaderStyle>
                                     <Style TargetType="{x:Type DataGridColumnHeader}"
                                        BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
@@ -290,7 +308,7 @@
                                 </DataGridTextColumn.ElementStyle>
                             </materialDesign:DataGridTextColumn>
                             <materialDesign:DataGridTextColumn
-                            Header="Email" Binding="{Binding email}" >
+                            Header="Email" Binding="{Binding email}" IsReadOnly="True" >
                                 <DataGridTextColumn.HeaderStyle>
                                     <Style TargetType="{x:Type DataGridColumnHeader}"
                                        BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
@@ -308,17 +326,18 @@
                                 </DataGridTextColumn.ElementStyle>
                             </materialDesign:DataGridTextColumn>
                             
-                            <!--<DataGridTemplateColumn >
+                            <DataGridTemplateColumn x:Name="dtgEdit">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button Width="40" Padding="0" Background="#637BCF"
                                         Style="{StaticResource MaterialDesignRaisedButton}"
-                                        Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.EditCommand}">
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.EditCommand}"
+                                                CommandParameter="{Binding ElementName=dtgEdit}">
                                             <materialDesign:PackIcon Kind="Edit"/>
                                         </Button>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>-->
+                            </DataGridTemplateColumn>
 
                         </DataGrid.Columns>
                     </DataGrid>

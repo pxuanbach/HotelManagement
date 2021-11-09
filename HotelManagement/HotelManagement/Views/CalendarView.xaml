@@ -27,6 +27,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
@@ -77,6 +78,81 @@
             Grid.Row="1"
             Name="SC_Scheduler"
             VerticalTimeLine="True"/>
-
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button
+                Grid.Column="0"
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Right"
+                materialDesign:ShadowAssist.ShadowDepth="Depth3"
+                Background="#B2DFE5"/>
+            <TextBlock 
+                Text="Due Out"
+                Grid.Column="1"
+                FontSize="12"
+                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Button
+                Grid.Column="2"
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Right"
+                materialDesign:ShadowAssist.ShadowDepth="Depth3"
+                Background="#C5B2E5"/>
+            <TextBlock 
+                Text="Occupied"
+                Grid.Column="3"
+                FontSize="12"
+                HorizontalAlignment="Center" VerticalAlignment="Center"/> 
+            <Button
+                Grid.Column="4"
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Right"
+                materialDesign:ShadowAssist.ShadowDepth="Depth3"
+                Background="#E5B2B2"/>
+            <TextBlock 
+                Text="No Show"
+                Grid.Column="5"
+                FontSize="12"
+                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Button
+                Grid.Column="6"
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Right"
+                materialDesign:ShadowAssist.ShadowDepth="Depth3"
+                Background="#D0D0D0"/>
+            <TextBlock 
+                Text="Available"
+                Grid.Column="7"
+                FontSize="12"
+                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Button
+                Grid.Column="8"
+                Width="20"
+                Height="20"
+                HorizontalAlignment="Right"
+                materialDesign:ShadowAssist.ShadowDepth="Depth3"
+                Background="#B8E5B2"/>
+            <TextBlock 
+                Text="Reserved"
+                Grid.Column="9"
+                FontSize="12"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"/>
+        </Grid>
     </Grid>
 </UserControl>
