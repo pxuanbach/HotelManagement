@@ -26,12 +26,23 @@ namespace HotelManagement.ViewModels
 
         public ObservableCollection<ReservationItemViewModel> CurrentPageReservations { get; set; }
 
+        bool CanCreateNewReservation
+        {
+            get
+            {
+                if (CurrentAccount.Instance.Permission == "Admin" ||
+                    CurrentAccount.Instance.Permission == "Reservation")
+                    return true;
+                return false;
+            }
+        }
+
         private ICommand _newReservationCommand;
         public ICommand NewReservationCommand
         {
             get
             {
-                return _newReservationCommand ?? (_newReservationCommand = new RelayCommand<object>((p) => true, (p) => OpenNewReservationWindow()));
+                return _newReservationCommand ?? (_newReservationCommand = new RelayCommand<object>((p) => CanCreateNewReservation, (p) => OpenNewReservationWindow()));
             }
         }
 
