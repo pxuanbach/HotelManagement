@@ -335,7 +335,7 @@
                                 <TextBlock Margin="5" Text="Booked Room" FontSize="18"/>
                             </Grid>
 
-                            <DataGrid Height="200"
+                            <DataGrid Height="300"
                                 ItemsSource="{Binding AvailableRooms}"
                                 CanUserResizeColumns="False" CanUserDeleteRows="True"
                                 CanUserAddRows="False" IsReadOnly="False"
@@ -481,7 +481,7 @@
                             </Grid>
 
                             <DataGrid 
-                                Height="200"
+                                Height="300"
                                 ItemsSource="{Binding Sharers}"
                                 CanUserResizeColumns="False" 
                                 CanUserAddRows="False"
