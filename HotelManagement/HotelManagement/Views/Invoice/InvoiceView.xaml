@@ -345,7 +345,7 @@
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="Guests:" FontSize="18" FontWeight="Bold" 
+                            <TextBlock Grid.Column="0" Text="Sharers:" FontSize="18" FontWeight="Bold" 
                                 Margin="6 0 0 0" Foreground="{StaticResource PrimaryHueDarkBrush}" 
                                 HorizontalAlignment="Stretch"  VerticalAlignment="Center"/>
                             <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8"
