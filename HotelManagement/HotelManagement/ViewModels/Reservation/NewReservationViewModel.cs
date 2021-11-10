@@ -35,6 +35,23 @@ namespace HotelManagement.ViewModels
         public IEnumerable<string> Gender => new[] { "Male", "Female", "Other" };
 
         #region Command
+        // Reserve as sharer
+        private bool CanReserveAsSharer
+        {
+            get
+            {
+                if (GuestInformation.FilledGuestInformation == false) return false;
+                if (BeASharer == true) return false;
+                if (StayInformation.Pax >= StayInformation.MaxPax) return false;
+                return true;
+            }
+        }
+        public void ReserveLikeASharer()
+        {
+            Sharers.Add(GuestInformation);
+            BeASharer = true;
+        }
+
         private ICommand _beASharerCommand;
         public ICommand BeASharerCommand
         {
@@ -42,6 +59,25 @@ namespace HotelManagement.ViewModels
             {
                 return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => CanReserveAsSharer, (p) => ReserveLikeASharer()));
             }
+        }
+
+        // Open add sharer window
+        private bool CanAddSharer
+        {
+            get
+            {
+                if (Sharers.Count < StayInformation.MaxPax)
+                    return true;
+                else return false;
+            }
+        }
+        public void OpenAddSharerWindow()
+        {
+            var wd = new AddBookingGuestWindow();
+            NewSharer = new GuestViewModel();
+            NewSharer.Birthday = DateTime.Parse("01-01-2000");
+            wd.DataContext = this;
+            wd.ShowDialog();
         }
 
         private ICommand _addSharerCommand;
@@ -53,6 +89,13 @@ namespace HotelManagement.ViewModels
             }
         }
 
+        // Remove sharer
+        public void RemoveSelectedSharer(GuestViewModel sharer)
+        {
+            Sharers.Remove(sharer);
+            if (sharer.ID == GuestInformation.ID) BeASharer = false;
+        }
+
         private ICommand _removeSharerCommand;
         public ICommand RemoveSharerCommand
         {
@@ -60,6 +103,13 @@ namespace HotelManagement.ViewModels
             {
                 return _removeSharerCommand ?? (_removeSharerCommand = new RelayCommand<GuestViewModel>((p) => Sharers.Count > 1, (p) => RemoveSelectedSharer(p)));
             }
+        }
+
+        // Confirm add sharer
+        public void AddSharer(Window wd)
+        {
+            Sharers.Add(NewSharer);
+            wd.Close();
         }
 
         private ICommand _confirmAddSharerCommand;
@@ -71,6 +121,102 @@ namespace HotelManagement.ViewModels
             }
         }
 
+        // Confirm to reserve
+        public bool CanReserve
+        {
+            get
+            {
+                if (!GuestInformation.FilledGuestInformation) return false;
+                if (Sharers.Count == 0) return false;
+                if (StayInformation.Rooms == 0) return false;
+                foreach (var row in Sharers)
+                {
+                    if (String.IsNullOrEmpty(row.Name) ||
+                        String.IsNullOrEmpty(row.ID) ||
+                        String.IsNullOrEmpty(row.Gender) ||
+                        String.IsNullOrEmpty(row.Address))
+                        return false;
+                }
+                return true;
+            }
+        }
+        public void Reserve(Window window)
+        {
+            using (var context = new HotelManagementEntities())
+            {
+                // Insert main guest
+                if (!context.GUESTs.Any(g => g.id == GuestInformation.ID))
+                {
+                    var mainGuest = new GUEST()
+                    {
+                        id = GuestInformation.ID,
+                        name = GuestInformation.Name,
+                        gender = GuestInformation.Gender,
+                        birthday = GuestInformation.Birthday,
+                        email = GuestInformation.Email,
+                        phone = GuestInformation.Phone,
+                        address = GuestInformation.Address,
+                    };
+                    context.GUESTs.Add(mainGuest);
+                    context.SaveChanges();
+                }
+
+                // Insert reservation
+                var reservation = new RESERVATION()
+                {
+                    date_created = DateTime.Today,
+                    arrival = StayInformation.Arrival,
+                    departure = StayInformation.Departure,
+                    main_guest = GuestInformation.ID,
+                    status = StayInformation.Status,
+                    early_checkin = StayInformation.EarlyCheckin,
+                    late_checkout = false,
+                };
+                context.RESERVATIONs.Add(reservation);
+                context.SaveChanges();
+
+                // Insert room_booked
+                foreach (var selectedRoom in SelectedRooms)
+                {
+                    var bookedBoom = new ROOM_BOOKED()
+                    {
+                        reservation_id = reservation.id,
+                        room_id = selectedRoom.RoomID,
+                    };
+                    context.ROOM_BOOKED.Add(bookedBoom);
+                    context.SaveChanges();
+                }
+
+                // Insert sharers
+                foreach (var sharer in Sharers)
+                {
+                    if (!context.GUESTs.Any(g => g.id == sharer.ID))
+                    {
+                        var newGuest = new GUEST()
+                        {
+                            id = sharer.ID,
+                            name = sharer.Name,
+                            gender = sharer.Gender,
+                            address = sharer.Address,
+                        };
+                        context.GUESTs.Add(newGuest);
+                        context.SaveChanges();
+                    }
+
+                    var guestBooking = new GUEST_BOOKING()
+                    {
+                        reservation_id = reservation.id,
+                        guest_id = sharer.ID,
+                    };
+                    context.GUEST_BOOKING.Add(guestBooking);
+                    context.SaveChanges();
+                }
+            }
+
+            Instance.LoadReservations();
+            window.Close();
+        }
+
         private ICommand _reserveCommand;
         public ICommand ReserveCommand
         {
@@ -80,6 +226,7 @@ namespace HotelManagement.ViewModels
             }
         }
 
+        // Cancel reserving
         private ICommand _cancelCommand;
         public ICommand CancelCommand
         {
@@ -169,150 +316,6 @@ namespace HotelManagement.ViewModels
         private void Sharers_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             StayInformation.Pax = Sharers.Count;
-        }
-
-        private bool CanReserveAsSharer
-        {
-            get
-            {
-                if (GuestInformation.FilledGuestInformation == false) return false;
-                if (BeASharer == true) return false;
-                if (StayInformation.Pax >= StayInformation.MaxPax) return false;
-                return true;
-            }
-        }
-
-        private bool CanAddSharer
-        {
-            get
-            {
-                if (Sharers.Count < StayInformation.MaxPax)
-                    return true;
-                else return false;
-            }
-        }
-
-        public bool CanReserve
-        {
-            get
-            {
-                if (!GuestInformation.FilledGuestInformation) return false;
-                if (Sharers.Count == 0) return false;
-                if (StayInformation.Rooms == 0) return false;
-                foreach (var row in Sharers)
-                {
-                    if (String.IsNullOrEmpty(row.Name) ||
-                        String.IsNullOrEmpty(row.ID) ||
-                        String.IsNullOrEmpty(row.Gender) ||
-                        String.IsNullOrEmpty(row.Address)) 
-                        return false;
-                }
-                return true;
-            }
-        }
-
-        public void ReserveLikeASharer()
-        {
-            Sharers.Add(GuestInformation);
-            BeASharer = true;
-        }
-
-        public void OpenAddSharerWindow()
-        {
-            var wd = new AddBookingGuestWindow();
-            NewSharer = new GuestViewModel();
-            NewSharer.Birthday = DateTime.Parse("01-01-2000");
-            wd.DataContext = this;
-            wd.ShowDialog();
-        }
-
-        public void AddSharer(Window wd)
-        {
-            Sharers.Add(NewSharer);
-            wd.Close();
-        }
-
-        public void RemoveSelectedSharer(GuestViewModel sharer)
-        {
-            Sharers.Remove(sharer);
-            if (sharer.ID == GuestInformation.ID) BeASharer = false;
-        }
-
-        public void Reserve(Window window) 
-        {
-            using (var context = new HotelManagementEntities())
-            {
-                // Insert main guest
-                if (!context.GUESTs.Any(g => g.id == GuestInformation.ID))
-                {
-                    var mainGuest = new GUEST()
-                    {
-                        id = GuestInformation.ID,
-                        name = GuestInformation.Name,
-                        gender = GuestInformation.Gender,
-                        birthday = GuestInformation.Birthday,
-                        email = GuestInformation.Email,
-                        phone = GuestInformation.Phone,
-                        address = GuestInformation.Address,
-                    };
-                    context.GUESTs.Add(mainGuest);
-                    context.SaveChanges();
-                }
-
-                // Insert reservation
-                var reservation = new RESERVATION()
-                {
-                    date_created = DateTime.Today,
-                    arrival = StayInformation.Arrival,
-                    departure = StayInformation.Departure,
-                    main_guest = GuestInformation.ID,
-                    status = StayInformation.Status,
-                    early_checkin = StayInformation.EarlyCheckin,
-                    late_checkout = false,
-                };
-                context.RESERVATIONs.Add(reservation);
-                context.SaveChanges();
-
-                // Insert room_booked
-                foreach (var selectedRoom in SelectedRooms)
-                {
-                    var bookedBoom = new ROOM_BOOKED()
-                    {
-                        reservation_id = reservation.id,
-                        room_id = selectedRoom.RoomID,
-                    };
-                    context.ROOM_BOOKED.Add(bookedBoom);
-                    context.SaveChanges();
-                }
-
-                // Insert sharers
-                foreach (var sharer in Sharers)
-                {
-                    if (!context.GUESTs.Any(g => g.id == sharer.ID))
-                    {
-                        var newGuest = new GUEST()
-                        {
-                            id = sharer.ID,
-                            name = sharer.Name,
-                            gender = sharer.Gender,
-                            address = sharer.Address,
-                        };
-                        context.GUESTs.Add(newGuest);
-                        context.SaveChanges();
-                    }
-
-                    var guestBooking = new GUEST_BOOKING()
-                    {
-                        reservation_id = reservation.id,
-                        guest_id = sharer.ID,
-                    };
-                    context.GUEST_BOOKING.Add(guestBooking);
-                    context.SaveChanges();
-                }
-            }
-
-            Instance.LoadReservations();
-            window.Close();
         }
 
         public bool? IsAllRoomsSelected

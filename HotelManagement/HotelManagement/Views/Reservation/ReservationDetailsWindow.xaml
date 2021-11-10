@@ -231,7 +231,9 @@
                                     Margin="0,3,20,3" FontSize="14"
                                     SelectedDate="{Binding Path=StayInformation.Arrival, UpdateSourceTrigger=PropertyChanged}"
                                     materialDesign:HintAssist.Hint="Pick a date"
-                                    materialDesign:HintAssist.IsFloating="False"/>
+                                    materialDesign:HintAssist.IsFloating="False"
+                                    DisplayDateStart="{Binding LimitArrival}"
+                                    DisplayDateEnd="{Binding StayInformation.Arrival}"/>
 
                                 <!--Departure Date-->
                                 <TextBlock Grid.Row="2" Grid.Column="0"
@@ -243,7 +245,9 @@
                                     Width="90" Margin="0,3,20,3" FontSize="14"
                                     SelectedDate="{Binding Path=StayInformation.Departure, UpdateSourceTrigger=PropertyChanged}"
                                     materialDesign:HintAssist.Hint="Pick a date"
-                                    materialDesign:HintAssist.IsFloating="False"/>
+                                    materialDesign:HintAssist.IsFloating="False"
+                                    DisplayDateStart="{Binding StayInformation.Departure}"
+                                    DisplayDateEnd="{Binding LimitDeparture}"/>
 
                                 <!--Gauranteed-->
                                 <TextBlock Grid.Row="4" Grid.Column="0"
@@ -352,7 +356,7 @@
                 </Grid>
 
                 <Grid Grid.Row="1" Grid.Column="1" 
-                      Margin="5,5,10,5" IsEnabled="{Binding CanEdit}">
+                      Margin="5,5,10,5" IsEnabled="{Binding CanEditFolio}">
                     <Border Padding="5" Background="White"
                     BorderBrush="LightGray" BorderThickness="1.5">
                         <StackPanel>
