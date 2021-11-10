@@ -35,13 +35,49 @@ namespace HotelManagement.ViewModels
         public IEnumerable<string> Gender => new[] { "Male", "Female", "Other" };
 
         #region Command
+        // Reserve as sharer
+        private bool CanReserveAsSharer
+        {
+            get
+            {
+                if (GuestInformation.FilledGuestInformation == false) return false;
+                if (BeASharer == true) return false;
+                if (StayInformation.Pax >= StayInformation.MaxPax) return false;
+                return true;
+            }
+        }
+        public void ReserveLikeASharer()
+        {
+            Sharers.Add(GuestInformation);
+            BeASharer = true;
+        }
+
         private ICommand _beASharerCommand;
         public ICommand BeASharerCommand
         {
             get
             {
-                return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => GuestInformation.FilledGuestInformation && !BeASharer, (p) => ReserveLikeASharer()));
+                return _beASharerCommand ?? (_beASharerCommand = new RelayCommand<object>((p) => CanReserveAsSharer, (p) => ReserveLikeASharer()));
             }
+        }
+
+        // Open add sharer window
+        private bool CanAddSharer
+        {
+            get
+            {
+                if (Sharers.Count < StayInformation.MaxPax)
+                    return true;
+                else return false;
+            }
+        }
+        public void OpenAddSharerWindow()
+        {
+            var wd = new AddBookingGuestWindow();
+            NewSharer = new GuestViewModel();
+            NewSharer.Birthday = DateTime.Parse("01-01-2000");
+            wd.DataContext = this;
+            wd.ShowDialog();
         }
 
         private ICommand _addSharerCommand;
@@ -50,42 +86,6 @@ namespace HotelManagement.ViewModels
             get
             {
                 return _addSharerCommand ?? (_addSharerCommand = new RelayCommand<object>((p) => CanAddSharer, (p) => OpenAddSharerWindow()));
-            }
-        }
-
-        private ICommand _removeSharerCommand;
-        public ICommand RemoveSharerCommand
-        {
-            get
-            {
-                return _removeSharerCommand ?? (_removeSharerCommand = new RelayCommand<GuestViewModel>((p) => Sharers.Count > 1, (p) => RemoveSelectedSharer(p)));
-            }
-        }
-
-        private ICommand _confirmAddSharerCommand;
-        public ICommand ConfirmAddSharerCommand
-        {
-            get
-            {
-                return _confirmAddSharerCommand ?? (_confirmAddSharerCommand = new RelayCommand<Window>((p) => NewSharer.FilledGuestInformation, (p) => AddSharer(p)));
-            }
-        }
-
-        private ICommand _reserveCommand;
-        public ICommand ReserveCommand
-        {
-            get
-            {
-                return _reserveCommand ?? (_reserveCommand = new RelayCommand<Window>((p) => CanReserve, (p) => Reserve(p)));
-            }
-        }
-
-        private ICommand _cancelCommand;
-        public ICommand CancelCommand
-        {
-            get
-            {
-                return _cancelCommand ?? (_cancelCommand = new RelayCommand<Window>((p) => true, (p) => p.Close()));
             }
         }
         #endregion
@@ -128,77 +128,39 @@ namespace HotelManagement.ViewModels
         }
 
 
-        private void SelectedRooms_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        // Remove sharer
+        public void RemoveSelectedSharer(GuestViewModel sharer)
         {
-            StayInformation.Rooms = SelectedRooms.Count;
+            Sharers.Remove(sharer);
+            if (sharer.ID == GuestInformation.ID) BeASharer = false;
         }
 
-        private void StayInformation_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            var StayInfo = sender as ReservationViewModel;
-            if (e.PropertyName == nameof(ReservationViewModel.Arrival))
-            {
-                if (StayInfo.Arrival < DateTime.Today)
-                    StayInformation.Arrival = DateTime.Today;
-
-                if (StayInfo.Arrival == DateTime.Today)
-                {
-                    BeWalkIn = true;
-                    StayInformation.Status = "Operational";
-                    if (DateTime.Now.TimeOfDay < new TimeSpan(12, 0, 0))
-                        StayInformation.EarlyCheckin = true;
-                    else StayInformation.EarlyCheckin = false;
-                }
-                else
-                {
-                    BeWalkIn = false;
-                    if (Guaranteed) StayInformation.Status = "Confirmed";
-                    else StayInformation.Status = "On Request";
-                }
-
-                if (StayInfo.Departure != DateTime.Parse("01-01-0001"))
-                {
-                    if ((int)(StayInfo.Departure - StayInfo.Arrival).TotalDays < 1)
-                        StayInformation.Arrival = DateTime.Today;
-
-                    StayInformation.Stays = (int)(StayInformation.Departure - StayInformation.Arrival).TotalDays;
-                }
-
-                LoadAvailableRooms();
-            }
-
-            if (e.PropertyName == nameof(ReservationViewModel.Departure))
-            {
-                if (StayInfo.Departure < DateTime.Today.AddDays(1))
-                    StayInformation.Departure = DateTime.Today.AddDays(1);
-                
-                if (StayInfo.Arrival != DateTime.Parse("01-01-0001"))
-                {
-                    if ((int)(StayInfo.Departure - StayInfo.Arrival).TotalDays < 1)
-                        StayInformation.Departure = DateTime.Today.AddDays(1);
-
-                    StayInformation.Stays = (int)(StayInformation.Departure - StayInformation.Arrival).TotalDays;
-                }
-                    
-                LoadAvailableRooms();
-            }
-        }
-
-        private void Sharers_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            StayInformation.Pax = Sharers.Count;
-        }
-
-        private bool CanAddSharer
+        private ICommand _removeSharerCommand;
+        public ICommand RemoveSharerCommand
         {
             get
             {
-                if (Sharers.Count < StayInformation.MaxPax)
-                    return true;
-                else return false;
+                return _removeSharerCommand ?? (_removeSharerCommand = new RelayCommand<GuestViewModel>((p) => Sharers.Count > 1, (p) => RemoveSelectedSharer(p)));
             }
         }
 
+        // Confirm add sharer
+        public void AddSharer(Window wd)
+        {
+            Sharers.Add(NewSharer);
+            wd.Close();
+        }
+
+        private ICommand _confirmAddSharerCommand;
+        public ICommand ConfirmAddSharerCommand
+        {
+            get
+            {
+                return _confirmAddSharerCommand ?? (_confirmAddSharerCommand = new RelayCommand<Window>((p) => NewSharer.FilledGuestInformation, (p) => AddSharer(p)));
+            }
+        }
+
+        // Confirm to reserve
         public bool CanReserve
         {
             get
@@ -211,41 +173,13 @@ namespace HotelManagement.ViewModels
                     if (String.IsNullOrEmpty(row.Name) ||
                         String.IsNullOrEmpty(row.ID) ||
                         String.IsNullOrEmpty(row.Gender) ||
-                        String.IsNullOrEmpty(row.Address)) 
+                        String.IsNullOrEmpty(row.Address))
                         return false;
                 }
                 return true;
             }
         }
-
-        public void ReserveLikeASharer()
-        {
-            Sharers.Add(GuestInformation);
-            BeASharer = true;
-        }
-
-        public void OpenAddSharerWindow()
-        {
-            var wd = new AddBookingGuestWindow();
-            NewSharer = new GuestViewModel();
-            NewSharer.Birthday = DateTime.Parse("01-01-2000");
-            wd.DataContext = this;
-            wd.ShowDialog();
-        }
-
-        public void AddSharer(Window wd)
-        {
-            Sharers.Add(NewSharer);
-            wd.Close();
-        }
-
-        public void RemoveSelectedSharer(GuestViewModel sharer)
-        {
-            Sharers.Remove(sharer);
-            if (sharer.ID == GuestInformation.ID) BeASharer = false;
-        }
-
-        public void Reserve(Window window) 
+        public void Reserve(Window window)
         {
             using (var context = new HotelManagementEntities())
             {
@@ -322,6 +256,107 @@ namespace HotelManagement.ViewModels
             window.Close();
         }
 
+        private ICommand _reserveCommand;
+        public ICommand ReserveCommand
+        {
+            get
+            {
+                return _reserveCommand ?? (_reserveCommand = new RelayCommand<Window>((p) => CanReserve, (p) => Reserve(p)));
+            }
+        }
+
+        // Cancel reserving
+        private ICommand _cancelCommand;
+        public ICommand CancelCommand
+        {
+            get
+            {
+                return _cancelCommand ?? (_cancelCommand = new RelayCommand<Window>((p) => true, (p) => p.Close()));
+            }
+        }
+        #endregion
+
+        public NewReservationViewModel(ReservationListViewModel _instance)
+        {
+            Instance = _instance;
+
+            Sharers = new ObservableCollection<GuestViewModel>();
+            GuestInformation = new GuestViewModel();
+            StayInformation = new ReservationViewModel();
+            AvailableRooms = new ObservableCollection<RoomViewModel>();
+            SelectedRooms = new ObservableCollection<RoomViewModel>(); 
+
+            StayInformation.PropertyChanged += StayInformation_PropertyChanged;
+            Sharers.CollectionChanged += Sharers_CollectionChanged;
+            SelectedRooms.CollectionChanged += SelectedRooms_CollectionChanged;
+
+            BeASharer = false;
+            GuestInformation.Birthday = DateTime.Parse("01-01-2000");
+            StayInformation.Arrival = DateTime.Today;
+            StayInformation.Departure = DateTime.Today.AddDays(1);
+        }
+
+        private void SelectedRooms_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            StayInformation.Rooms = SelectedRooms.Count;
+        }
+
+        private void StayInformation_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            var StayInfo = sender as ReservationViewModel;
+            if (e.PropertyName == nameof(ReservationViewModel.Arrival))
+            {
+                if (StayInfo.Arrival < DateTime.Today)
+                    StayInformation.Arrival = DateTime.Today;
+
+                if (StayInfo.Arrival == DateTime.Today)
+                {
+                    BeWalkIn = true;
+                    StayInformation.Status = "Operational";
+                    if (DateTime.Now.TimeOfDay < new TimeSpan(12, 0, 0))
+                        StayInformation.EarlyCheckin = true;
+                    else StayInformation.EarlyCheckin = false;
+                }
+                else
+                {
+                    BeWalkIn = false;
+                    if (Guaranteed) StayInformation.Status = "Confirmed";
+                    else StayInformation.Status = "On Request";
+                }
+
+                if (StayInfo.Departure != DateTime.Parse("01-01-0001"))
+                {
+                    if ((int)(StayInfo.Departure - StayInfo.Arrival).TotalDays < 1)
+                        StayInformation.Arrival = DateTime.Today;
+
+                    StayInformation.Stays = (int)(StayInformation.Departure - StayInformation.Arrival).TotalDays;
+                }
+
+                LoadAvailableRooms();
+            }
+
+            if (e.PropertyName == nameof(ReservationViewModel.Departure))
+            {
+                if (StayInfo.Departure < DateTime.Today.AddDays(1))
+                    StayInformation.Departure = DateTime.Today.AddDays(1);
+                
+                if (StayInfo.Arrival != DateTime.Parse("01-01-0001"))
+                {
+                    if ((int)(StayInfo.Departure - StayInfo.Arrival).TotalDays < 1)
+                        StayInformation.Departure = DateTime.Today.AddDays(1);
+
+                    StayInformation.Stays = (int)(StayInformation.Departure - StayInformation.Arrival).TotalDays;
+                }
+                    
+                LoadAvailableRooms();
+            }
+        }
+
+        private void Sharers_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            StayInformation.Pax = Sharers.Count;
+        }
+
         public bool? IsAllRoomsSelected
         {
             get
@@ -355,36 +390,36 @@ namespace HotelManagement.ViewModels
             var db = new HotelManagementEntities();
 
             var allrooms = from r in db.ROOMs
-                           join rt in db.ROOMTYPEs on r.roomtype_id equals rt.id 
                            join rb in db.ROOM_BOOKED on r.id equals rb.room_id into result
-                           from rs in result.DefaultIfEmpty()
-                           join res in db.RESERVATIONs on rs.reservation_id equals res.id into result1
-                           from rs1 in result1.DefaultIfEmpty()
-                           where rt.date_created <= DateTime.Today && (rt.date_updated == null || rt.date_updated >= DateTime.Today) &&
-                           r.out_of_service == false && r.dirty == false
+                           from rs in result.DefaultIfEmpty() 
                            select new
                            {
-                                RoomID = r.id,
-                                RoomName = r.name,
-                                TypeID = rt.id,
-                                TypeName = rt.name,
-                                ResID = rs == null ? 0 : rs.reservation_id,
-                                Arrival = rs1.arrival,
-                                Departure = rs1.departure,
-                                Price = rt.price,
-                                Capacity = rt.max_guest,
+                               RoomID = r.id,
+                               RoomName = r.name,
+                               OOS = r.out_of_service,
+                               Dirty = r.dirty,
+                               TypeID = r.roomtype_id,
+                               TypeName = r.ROOMTYPE.name,
+                               CreatedRT = r.ROOMTYPE.date_created,
+                               UpdatedRT = r.ROOMTYPE.date_updated,
+                               ResID = rs == null ? 0 : rs.reservation_id,
+                               Arrival = rs.RESERVATION.arrival,
+                               Departure = rs.RESERVATION.departure,
+                               Price = r.ROOMTYPE.price,
+                               Capacity = r.ROOMTYPE.max_guest,
                            };
 
-            var excepts = from r in allrooms where !(r.Arrival >= StayInformation.Departure || r.Departure <= StayInformation.Arrival) select r;
+            var booked = from r in allrooms where !(r.Arrival >= StayInformation.Departure || r.Departure <= StayInformation.Arrival) select r;
 
-            // Thieu truong hop cancelled res va on request res
+            var availables = from r in allrooms
+                             where r.CreatedRT <= DateTime.Today && (r.UpdatedRT == null || r.UpdatedRT >= DateTime.Today) &&
+                             r.OOS == false && r.Dirty == false &&
+                             !booked.Any(exc => exc.RoomID == r.RoomID) || r.ResID == 0
+                             group r by r.RoomID into result select result;
 
-            var rooms = (from r in allrooms
-                         where !excepts.Any(exc => exc.RoomID == r.RoomID) || r.ResID == 0 
-                         group r by r.RoomID into rs
-                         select rs).ToList();
+            // TODO: Thieu truong hop cancelled res va on request res
 
-            foreach (var r in rooms)
+            foreach (var r in availables)
             {
                 var room = r.FirstOrDefault();
                 var obj = new RoomViewModel()
