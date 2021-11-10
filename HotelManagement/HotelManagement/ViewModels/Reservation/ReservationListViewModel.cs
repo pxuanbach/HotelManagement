@@ -26,12 +26,23 @@ namespace HotelManagement.ViewModels
 
         public ObservableCollection<ReservationItemViewModel> CurrentPageReservations { get; set; }
 
+        bool CanCreateNewReservation
+        {
+            get
+            {
+                if (CurrentAccount.Instance.Permission == "Admin" ||
+                    CurrentAccount.Instance.Permission == "Reservation")
+                    return true;
+                return false;
+            }
+        }
+
         private ICommand _newReservationCommand;
         public ICommand NewReservationCommand
         {
             get
             {
-                return _newReservationCommand ?? (_newReservationCommand = new RelayCommand<object>((p) => true, (p) => OpenNewReservationWindow()));
+                return _newReservationCommand ?? (_newReservationCommand = new RelayCommand<object>((p) => CanCreateNewReservation, (p) => OpenNewReservationWindow()));
             }
         }
 
@@ -124,12 +135,12 @@ namespace HotelManagement.ViewModels
                 {
                     ID = res.id,
                     Status = res.status,
-                    Rooms = res.ROOM_BOOKED.Count,
+                    Rooms = (from rb in DataProvider.Instance.DB.ROOM_BOOKED where rb.reservation_id == res.id select rb).Count(),
                     Guest = mainGuest.name,
                     DateCreated = (DateTime)res.date_created,
                     Arrival = (DateTime)res.arrival,
                     Departure = (DateTime)res.departure,
-                    Pax = res.GUEST_BOOKING.Count,
+                    Pax = (from gb in DataProvider.Instance.DB.GUEST_BOOKING where gb.reservation_id == res.id select gb).Count(),
                 };
 
                 obj.InitializePopup();
@@ -242,7 +253,7 @@ namespace HotelManagement.ViewModels
             Options = new ObservableCollection<Option>();
             var option = new Option()
             {
-                Content = "Edit details",
+                Content = "Details",
                 Command = DetailsCommand,
             };
             Options.Add(option);
@@ -259,7 +270,7 @@ namespace HotelManagement.ViewModels
 
             if (Status == "On Request" || Status == "Confirmed" || Status == "No Show")
             {
-                if ((Status != "No Show") && (Arrival == DateTime.Today) ||
+                if ((Status != "No Show" && Arrival == DateTime.Today) ||
                     (Status == "No Show"))
                 {
                     option = new Option()
