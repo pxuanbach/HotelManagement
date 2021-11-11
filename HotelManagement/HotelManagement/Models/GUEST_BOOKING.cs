@@ -17,8 +17,10 @@ namespace HotelManagement.Models
         public int id { get; set; }
         public int reservation_id { get; set; }
         public string guest_id { get; set; }
+        public int room_booked_id { get; set; }
     
         public virtual GUEST GUEST { get; set; }
         public virtual RESERVATION RESERVATION { get; set; }
+        public virtual ROOM_BOOKED ROOM_BOOKED { get; set; }
     }
 }
