@@ -161,6 +161,24 @@ namespace HotelManagement.ViewModels
         #endregion
 
         #region Charges + Total Money
+        public static double LoadOverCapacityFee(RESERVATION reservation)
+        {
+            if (reservation.status == "Operational")
+            {
+                if (IsReservationContainsRoomOverCapacity(reservation))
+                {
+                    return DataProvider.Instance.DB.CHARGES.First().over_capacity_fee.Value;
+                }
+            }
+            if (reservation.status == "Completed")
+            {
+                var invoice = DataProvider.Instance.DB.INVOICEs.SingleOrDefault(x => x.reservation_id == reservation.id);
+
+                return invoice.over_capacity_fee.Value;
+            }
+            return 0;
+        }
+
         public static bool IsRoomOverCapacity(ROOM_BOOKED room_booked)
         {
             int capacity = room_booked.ROOM.ROOMTYPE.max_guest.Value;

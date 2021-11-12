@@ -70,7 +70,8 @@ namespace HotelManagement.ViewModels
             long roomTotalMoney = CalculatorInvoice.RoomTotalMoney(RoomId, reservation);
             long folioTotalMoney = CalculatorInvoice.FolioTotalOfRoom(folio.ToArray());
 
-            LoadOverCapacityFeeByStatus(reservation);
+            if (CalculatorInvoice.IsRoomOverCapacity(roomBooked))
+                OverCapacityFee = CalculatorInvoice.LoadOverCapacityFee(reservation);
             long overCapacityFeeMoney = (long)(OverCapacityFee/100 * roomTotalMoney);
 
             foreach (var item in roomBooked.GUEST_BOOKING)
@@ -100,23 +101,6 @@ namespace HotelManagement.ViewModels
             FolioTotalMoney = SeparateThousands(folioTotalMoney.ToString());
             OverCapacityFeeMoney = SeparateThousands(overCapacityFeeMoney.ToString());
             TotalMoney = SeparateThousands((roomTotalMoney + folioTotalMoney + overCapacityFeeMoney).ToString());
-        }
-
-        public void LoadOverCapacityFeeByStatus(RESERVATION p)
-        {
-            if (p.status == "Operational")
-            {
-                if (CalculatorInvoice.IsReservationContainsRoomOverCapacity(p))
-                {
-                    OverCapacityFee = DataProvider.Instance.DB.CHARGES.First().over_capacity_fee.Value;
-                }
-            }
-            if (p.status == "Completed")
-            {
-                var invoice = DataProvider.Instance.DB.INVOICEs.SingleOrDefault(x => x.reservation_id == p.id);
-
-                OverCapacityFee = invoice.over_capacity_fee.Value;
-            }
         }
     }
 }
