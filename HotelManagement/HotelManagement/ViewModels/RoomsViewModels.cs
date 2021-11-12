@@ -487,6 +487,7 @@ namespace HotelManagement.ViewModels
             para.btnReset.IsEnabled = false;
             para.btnSearch.IsEnabled = false;
             para.stkRoom.Visibility = System.Windows.Visibility.Collapsed;
+            para.scrRoom.Visibility = Visibility.Collapsed;
             para.btnAddRoom.Visibility = System.Windows.Visibility.Collapsed;
 
             para.grdStatus.Visibility = Visibility.Collapsed;
@@ -526,6 +527,7 @@ namespace HotelManagement.ViewModels
             para.btnReset.IsEnabled = true;
             para.btnSearch.IsEnabled = true;
             para.stkRoom.Visibility = System.Windows.Visibility.Visible;
+            para.scrRoom.Visibility = Visibility.Visible;
             para.btnAddRoom.Visibility = System.Windows.Visibility.Visible;
             para.grdStatus.Visibility = Visibility.Visible;
         }
