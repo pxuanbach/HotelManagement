@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="HotelManagementModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="HotelManagementModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="ACCOUNT">
           <Key>
             <PropertyRef Name="id" />
@@ -20,6 +20,7 @@
           </Key>
           <Property Name="id" Type="int" Nullable="false" />
           <Property Name="surcharge" Type="float" />
+          <Property Name="over_capacity_fee" Type="float" />
           <Property Name="early_checkin_fee" Type="float" />
           <Property Name="late_checkout_fee" Type="float" />
         </EntityType>
@@ -61,6 +62,7 @@
           <Property Name="reservation_id" Type="int" Nullable="false" />
           <Property Name="total_money" Type="money" />
           <Property Name="surcharge" Type="float" />
+          <Property Name="over_capacity_fee" Type="float" />
           <Property Name="early_checkin_fee" Type="float" />
           <Property Name="late_checkout_fee" Type="float" />
         </EntityType>
@@ -117,7 +119,7 @@
           <Property Name="price" Type="money" />
           <Property Name="isActive" Type="bit" />
         </EntityType>
-        <Association Name="FK__FOLIO__room_book__4D94879B">
+        <Association Name="FK__FOLIO__room_book__3B75D760">
           <End Role="ROOM_BOOKED" Type="Self.ROOM_BOOKED" Multiplicity="1" />
           <End Role="FOLIO" Type="Self.FOLIO" Multiplicity="*" />
           <ReferentialConstraint>
@@ -129,7 +131,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__FOLIO__service_i__4E88ABD4">
+        <Association Name="FK__FOLIO__service_i__3C69FB99">
           <End Role="SERVICE" Type="Self.SERVICE" Multiplicity="1" />
           <End Role="FOLIO" Type="Self.FOLIO" Multiplicity="*" />
           <ReferentialConstraint>
@@ -141,7 +143,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__GUEST_BOO__guest__47DBAE45">
+        <Association Name="FK__GUEST_BOO__guest__35BCFE0A">
           <End Role="GUEST" Type="Self.GUEST" Multiplicity="1" />
           <End Role="GUEST_BOOKING" Type="Self.GUEST_BOOKING" Multiplicity="*" />
           <ReferentialConstraint>
@@ -153,7 +155,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__GUEST_BOO__reser__46E78A0C">
+        <Association Name="FK__GUEST_BOO__reser__34C8D9D1">
           <End Role="RESERVATION" Type="Self.RESERVATION" Multiplicity="1" />
           <End Role="GUEST_BOOKING" Type="Self.GUEST_BOOKING" Multiplicity="*" />
           <ReferentialConstraint>
@@ -165,7 +167,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__GUEST_BOO__room___48CFD27E">
+        <Association Name="FK__GUEST_BOO__room___36B12243">
           <End Role="ROOM_BOOKED" Type="Self.ROOM_BOOKED" Multiplicity="1" />
           <End Role="GUEST_BOOKING" Type="Self.GUEST_BOOKING" Multiplicity="*" />
           <ReferentialConstraint>
@@ -177,7 +179,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__INVOICE__reserva__5165187F">
+        <Association Name="FK__INVOICE__reserva__3F466844">
           <End Role="RESERVATION" Type="Self.RESERVATION" Multiplicity="1" />
           <End Role="INVOICE" Type="Self.INVOICE" Multiplicity="*" />
           <ReferentialConstraint>
@@ -189,7 +191,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__RESERVATI__main___403A8C7D">
+        <Association Name="FK__RESERVATI__main___2E1BDC42">
           <End Role="GUEST" Type="Self.GUEST" Multiplicity="1" />
           <End Role="RESERVATION" Type="Self.RESERVATION" Multiplicity="*" />
           <ReferentialConstraint>
@@ -201,7 +203,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__ROOM__roomtype_i__3D5E1FD2">
+        <Association Name="FK__ROOM__roomtype_i__2B3F6F97">
           <End Role="ROOMTYPE" Type="Self.ROOMTYPE" Multiplicity="1" />
           <End Role="ROOM" Type="Self.ROOM" Multiplicity="*" />
           <ReferentialConstraint>
@@ -213,7 +215,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__ROOM_BOOK__reser__4316F928">
+        <Association Name="FK__ROOM_BOOK__reser__30F848ED">
           <End Role="RESERVATION" Type="Self.RESERVATION" Multiplicity="1" />
           <End Role="ROOM_BOOKED" Type="Self.ROOM_BOOKED" Multiplicity="*" />
           <ReferentialConstraint>
@@ -225,7 +227,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__ROOM_BOOK__room___440B1D61">
+        <Association Name="FK__ROOM_BOOK__room___31EC6D26">
           <End Role="ROOM" Type="Self.ROOM" Multiplicity="1" />
           <End Role="ROOM_BOOKED" Type="Self.ROOM_BOOKED" Multiplicity="*" />
           <ReferentialConstraint>
@@ -249,59 +251,111 @@
           <EntitySet Name="ROOM_BOOKED" EntityType="Self.ROOM_BOOKED" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ROOMTYPE" EntityType="Self.ROOMTYPE" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SERVICE" EntityType="Self.SERVICE" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__FOLIO__room_book__4D94879B" Association="Self.FK__FOLIO__room_book__4D94879B">
+          <AssociationSet Name="FK__FOLIO__room_book__3B75D760" Association="Self.FK__FOLIO__room_book__3B75D760">
             <End Role="ROOM_BOOKED" EntitySet="ROOM_BOOKED" />
             <End Role="FOLIO" EntitySet="FOLIO" />
           </AssociationSet>
-          <AssociationSet Name="FK__FOLIO__service_i__4E88ABD4" Association="Self.FK__FOLIO__service_i__4E88ABD4">
+          <AssociationSet Name="FK__FOLIO__service_i__3C69FB99" Association="Self.FK__FOLIO__service_i__3C69FB99">
             <End Role="SERVICE" EntitySet="SERVICE" />
             <End Role="FOLIO" EntitySet="FOLIO" />
           </AssociationSet>
-          <AssociationSet Name="FK__GUEST_BOO__guest__47DBAE45" Association="Self.FK__GUEST_BOO__guest__47DBAE45">
+          <AssociationSet Name="FK__GUEST_BOO__guest__35BCFE0A" Association="Self.FK__GUEST_BOO__guest__35BCFE0A">
             <End Role="GUEST" EntitySet="GUEST" />
             <End Role="GUEST_BOOKING" EntitySet="GUEST_BOOKING" />
           </AssociationSet>
-          <AssociationSet Name="FK__GUEST_BOO__reser__46E78A0C" Association="Self.FK__GUEST_BOO__reser__46E78A0C">
+          <AssociationSet Name="FK__GUEST_BOO__reser__34C8D9D1" Association="Self.FK__GUEST_BOO__reser__34C8D9D1">
             <End Role="RESERVATION" EntitySet="RESERVATION" />
             <End Role="GUEST_BOOKING" EntitySet="GUEST_BOOKING" />
           </AssociationSet>
-          <AssociationSet Name="FK__GUEST_BOO__room___48CFD27E" Association="Self.FK__GUEST_BOO__room___48CFD27E">
+          <AssociationSet Name="FK__GUEST_BOO__room___36B12243" Association="Self.FK__GUEST_BOO__room___36B12243">
             <End Role="ROOM_BOOKED" EntitySet="ROOM_BOOKED" />
             <End Role="GUEST_BOOKING" EntitySet="GUEST_BOOKING" />
           </AssociationSet>
-          <AssociationSet Name="FK__INVOICE__reserva__5165187F" Association="Self.FK__INVOICE__reserva__5165187F">
+          <AssociationSet Name="FK__INVOICE__reserva__3F466844" Association="Self.FK__INVOICE__reserva__3F466844">
             <End Role="RESERVATION" EntitySet="RESERVATION" />
             <End Role="INVOICE" EntitySet="INVOICE" />
           </AssociationSet>
-          <AssociationSet Name="FK__RESERVATI__main___403A8C7D" Association="Self.FK__RESERVATI__main___403A8C7D">
+          <AssociationSet Name="FK__RESERVATI__main___2E1BDC42" Association="Self.FK__RESERVATI__main___2E1BDC42">
             <End Role="GUEST" EntitySet="GUEST" />
             <End Role="RESERVATION" EntitySet="RESERVATION" />
           </AssociationSet>
-          <AssociationSet Name="FK__ROOM__roomtype_i__3D5E1FD2" Association="Self.FK__ROOM__roomtype_i__3D5E1FD2">
+          <AssociationSet Name="FK__ROOM__roomtype_i__2B3F6F97" Association="Self.FK__ROOM__roomtype_i__2B3F6F97">
             <End Role="ROOMTYPE" EntitySet="ROOMTYPE" />
             <End Role="ROOM" EntitySet="ROOM" />
           </AssociationSet>
-          <AssociationSet Name="FK__ROOM_BOOK__reser__4316F928" Association="Self.FK__ROOM_BOOK__reser__4316F928">
+          <AssociationSet Name="FK__ROOM_BOOK__reser__30F848ED" Association="Self.FK__ROOM_BOOK__reser__30F848ED">
             <End Role="RESERVATION" EntitySet="RESERVATION" />
             <End Role="ROOM_BOOKED" EntitySet="ROOM_BOOKED" />
           </AssociationSet>
-          <AssociationSet Name="FK__ROOM_BOOK__room___440B1D61" Association="Self.FK__ROOM_BOOK__room___440B1D61">
+          <AssociationSet Name="FK__ROOM_BOOK__room___31EC6D26" Association="Self.FK__ROOM_BOOK__room___31EC6D26">
             <End Role="ROOM" EntitySet="ROOM" />
             <End Role="ROOM_BOOKED" EntitySet="ROOM_BOOKED" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="HotelManagementModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="HotelManagementEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="ACCOUNTs" EntityType="HotelManagementModel.ACCOUNT" />
+          <EntitySet Name="CHARGES" EntityType="HotelManagementModel.CHARGE" />
+          <EntitySet Name="FOLIOs" EntityType="HotelManagementModel.FOLIO" />
+          <EntitySet Name="GUESTs" EntityType="HotelManagementModel.GUEST" />
+          <EntitySet Name="GUEST_BOOKING" EntityType="HotelManagementModel.GUEST_BOOKING" />
+          <EntitySet Name="INVOICEs" EntityType="HotelManagementModel.INVOICE" />
+          <EntitySet Name="RESERVATIONs" EntityType="HotelManagementModel.RESERVATION" />
+          <EntitySet Name="ROOMs" EntityType="HotelManagementModel.ROOM" />
+          <EntitySet Name="ROOM_BOOKED" EntityType="HotelManagementModel.ROOM_BOOKED" />
+          <EntitySet Name="ROOMTYPEs" EntityType="HotelManagementModel.ROOMTYPE" />
+          <EntitySet Name="SERVICEs" EntityType="HotelManagementModel.SERVICE" />
+          <AssociationSet Name="FK__FOLIO__room_book__3B75D760" Association="HotelManagementModel.FK__FOLIO__room_book__3B75D760">
+            <End Role="ROOM_BOOKED" EntitySet="ROOM_BOOKED" />
+            <End Role="FOLIO" EntitySet="FOLIOs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__FOLIO__service_i__3C69FB99" Association="HotelManagementModel.FK__FOLIO__service_i__3C69FB99">
+            <End Role="SERVICE" EntitySet="SERVICEs" />
+            <End Role="FOLIO" EntitySet="FOLIOs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__GUEST_BOO__guest__35BCFE0A" Association="HotelManagementModel.FK__GUEST_BOO__guest__35BCFE0A">
+            <End Role="GUEST" EntitySet="GUESTs" />
+            <End Role="GUEST_BOOKING" EntitySet="GUEST_BOOKING" />
+          </AssociationSet>
+          <AssociationSet Name="FK__RESERVATI__main___2E1BDC42" Association="HotelManagementModel.FK__RESERVATI__main___2E1BDC42">
+            <End Role="GUEST" EntitySet="GUESTs" />
+            <End Role="RESERVATION" EntitySet="RESERVATIONs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__GUEST_BOO__reser__34C8D9D1" Association="HotelManagementModel.FK__GUEST_BOO__reser__34C8D9D1">
+            <End Role="RESERVATION" EntitySet="RESERVATIONs" />
+            <End Role="GUEST_BOOKING" EntitySet="GUEST_BOOKING" />
+          </AssociationSet>
+          <AssociationSet Name="FK__GUEST_BOO__room___36B12243" Association="HotelManagementModel.FK__GUEST_BOO__room___36B12243">
+            <End Role="ROOM_BOOKED" EntitySet="ROOM_BOOKED" />
+            <End Role="GUEST_BOOKING" EntitySet="GUEST_BOOKING" />
+          </AssociationSet>
+          <AssociationSet Name="FK__INVOICE__reserva__3F466844" Association="HotelManagementModel.FK__INVOICE__reserva__3F466844">
+            <End Role="RESERVATION" EntitySet="RESERVATIONs" />
+            <End Role="INVOICE" EntitySet="INVOICEs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ROOM_BOOK__reser__30F848ED" Association="HotelManagementModel.FK__ROOM_BOOK__reser__30F848ED">
+            <End Role="RESERVATION" EntitySet="RESERVATIONs" />
+            <End Role="ROOM_BOOKED" EntitySet="ROOM_BOOKED" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ROOM__roomtype_i__2B3F6F97" Association="HotelManagementModel.FK__ROOM__roomtype_i__2B3F6F97">
+            <End Role="ROOMTYPE" EntitySet="ROOMTYPEs" />
+            <End Role="ROOM" EntitySet="ROOMs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ROOM_BOOK__room___31EC6D26" Association="HotelManagementModel.FK__ROOM_BOOK__room___31EC6D26">
+            <End Role="ROOM" EntitySet="ROOMs" />
+            <End Role="ROOM_BOOKED" EntitySet="ROOM_BOOKED" />
+          </AssociationSet>
+        </EntityContainer>
         <EntityType Name="ACCOUNT">
           <Key>
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="username" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="password" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="password" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="permission" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="CHARGE">
@@ -310,6 +364,7 @@
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" />
           <Property Name="surcharge" Type="Double" />
+          <Property Name="over_capacity_fee" Type="Double" />
           <Property Name="early_checkin_fee" Type="Double" />
           <Property Name="late_checkout_fee" Type="Double" />
         </EntityType>
@@ -321,22 +376,22 @@
           <Property Name="room_booked_id" Type="Int32" Nullable="false" />
           <Property Name="service_id" Type="Int32" Nullable="false" />
           <Property Name="amount" Type="Int32" />
-          <NavigationProperty Name="ROOM_BOOKED" Relationship="Self.FK__FOLIO__room_book__4D94879B" FromRole="FOLIO" ToRole="ROOM_BOOKED" />
-          <NavigationProperty Name="SERVICE" Relationship="Self.FK__FOLIO__service_i__4E88ABD4" FromRole="FOLIO" ToRole="SERVICE" />
+          <NavigationProperty Name="ROOM_BOOKED" Relationship="HotelManagementModel.FK__FOLIO__room_book__3B75D760" FromRole="FOLIO" ToRole="ROOM_BOOKED" />
+          <NavigationProperty Name="SERVICE" Relationship="HotelManagementModel.FK__FOLIO__service_i__3C69FB99" FromRole="FOLIO" ToRole="SERVICE" />
         </EntityType>
         <EntityType Name="GUEST">
           <Key>
             <PropertyRef Name="id" />
           </Key>
-          <Property Name="id" Type="String" MaxLength="12" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="id" Type="String" Nullable="false" MaxLength="12" FixedLength="false" Unicode="false" />
           <Property Name="name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="gender" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="birthday" Type="DateTime" Precision="0" />
           <Property Name="address" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="phone" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="GUEST_BOOKING" Relationship="Self.FK__GUEST_BOO__guest__47DBAE45" FromRole="GUEST" ToRole="GUEST_BOOKING" />
-          <NavigationProperty Name="RESERVATIONs" Relationship="Self.FK__RESERVATI__main___403A8C7D" FromRole="GUEST" ToRole="RESERVATION" />
+          <NavigationProperty Name="GUEST_BOOKING" Relationship="HotelManagementModel.FK__GUEST_BOO__guest__35BCFE0A" FromRole="GUEST" ToRole="GUEST_BOOKING" />
+          <NavigationProperty Name="RESERVATIONs" Relationship="HotelManagementModel.FK__RESERVATI__main___2E1BDC42" FromRole="GUEST" ToRole="RESERVATION" />
         </EntityType>
         <EntityType Name="GUEST_BOOKING">
           <Key>
@@ -344,11 +399,11 @@
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="reservation_id" Type="Int32" Nullable="false" />
-          <Property Name="guest_id" Type="String" MaxLength="12" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="guest_id" Type="String" Nullable="false" MaxLength="12" FixedLength="false" Unicode="false" />
           <Property Name="room_booked_id" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="GUEST" Relationship="Self.FK__GUEST_BOO__guest__47DBAE45" FromRole="GUEST_BOOKING" ToRole="GUEST" />
-          <NavigationProperty Name="RESERVATION" Relationship="Self.FK__GUEST_BOO__reser__46E78A0C" FromRole="GUEST_BOOKING" ToRole="RESERVATION" />
-          <NavigationProperty Name="ROOM_BOOKED" Relationship="Self.FK__GUEST_BOO__room___48CFD27E" FromRole="GUEST_BOOKING" ToRole="ROOM_BOOKED" />
+          <NavigationProperty Name="GUEST" Relationship="HotelManagementModel.FK__GUEST_BOO__guest__35BCFE0A" FromRole="GUEST_BOOKING" ToRole="GUEST" />
+          <NavigationProperty Name="RESERVATION" Relationship="HotelManagementModel.FK__GUEST_BOO__reser__34C8D9D1" FromRole="GUEST_BOOKING" ToRole="RESERVATION" />
+          <NavigationProperty Name="ROOM_BOOKED" Relationship="HotelManagementModel.FK__GUEST_BOO__room___36B12243" FromRole="GUEST_BOOKING" ToRole="ROOM_BOOKED" />
         </EntityType>
         <EntityType Name="INVOICE">
           <Key>
@@ -358,9 +413,10 @@
           <Property Name="reservation_id" Type="Int32" Nullable="false" />
           <Property Name="total_money" Type="Decimal" Precision="19" Scale="4" />
           <Property Name="surcharge" Type="Double" />
+          <Property Name="over_capacity_fee" Type="Double" />
           <Property Name="early_checkin_fee" Type="Double" />
           <Property Name="late_checkout_fee" Type="Double" />
-          <NavigationProperty Name="RESERVATION" Relationship="Self.FK__INVOICE__reserva__5165187F" FromRole="INVOICE" ToRole="RESERVATION" />
+          <NavigationProperty Name="RESERVATION" Relationship="HotelManagementModel.FK__INVOICE__reserva__3F466844" FromRole="INVOICE" ToRole="RESERVATION" />
         </EntityType>
         <EntityType Name="RESERVATION">
           <Key>
@@ -371,13 +427,13 @@
           <Property Name="arrival" Type="DateTime" Precision="0" />
           <Property Name="departure" Type="DateTime" Precision="0" />
           <Property Name="status" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="main_guest" Type="String" MaxLength="12" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="main_guest" Type="String" Nullable="false" MaxLength="12" FixedLength="false" Unicode="false" />
           <Property Name="early_checkin" Type="Boolean" />
           <Property Name="late_checkout" Type="Boolean" />
-          <NavigationProperty Name="GUEST" Relationship="Self.FK__RESERVATI__main___403A8C7D" FromRole="RESERVATION" ToRole="GUEST" />
-          <NavigationProperty Name="GUEST_BOOKING" Relationship="Self.FK__GUEST_BOO__reser__46E78A0C" FromRole="RESERVATION" ToRole="GUEST_BOOKING" />
-          <NavigationProperty Name="INVOICEs" Relationship="Self.FK__INVOICE__reserva__5165187F" FromRole="RESERVATION" ToRole="INVOICE" />
-          <NavigationProperty Name="ROOM_BOOKED" Relationship="Self.FK__ROOM_BOOK__reser__4316F928" FromRole="RESERVATION" ToRole="ROOM_BOOKED" />
+          <NavigationProperty Name="GUEST" Relationship="HotelManagementModel.FK__RESERVATI__main___2E1BDC42" FromRole="RESERVATION" ToRole="GUEST" />
+          <NavigationProperty Name="GUEST_BOOKING" Relationship="HotelManagementModel.FK__GUEST_BOO__reser__34C8D9D1" FromRole="RESERVATION" ToRole="GUEST_BOOKING" />
+          <NavigationProperty Name="INVOICEs" Relationship="HotelManagementModel.FK__INVOICE__reserva__3F466844" FromRole="RESERVATION" ToRole="INVOICE" />
+          <NavigationProperty Name="ROOM_BOOKED" Relationship="HotelManagementModel.FK__ROOM_BOOK__reser__30F848ED" FromRole="RESERVATION" ToRole="ROOM_BOOKED" />
         </EntityType>
         <EntityType Name="ROOM">
           <Key>
@@ -390,8 +446,8 @@
           <Property Name="dirty" Type="Boolean" />
           <Property Name="out_of_service" Type="Boolean" />
           <Property Name="isActive" Type="Boolean" />
-          <NavigationProperty Name="ROOMTYPE" Relationship="Self.FK__ROOM__roomtype_i__3D5E1FD2" FromRole="ROOM" ToRole="ROOMTYPE" />
-          <NavigationProperty Name="ROOM_BOOKED" Relationship="Self.FK__ROOM_BOOK__room___440B1D61" FromRole="ROOM" ToRole="ROOM_BOOKED" />
+          <NavigationProperty Name="ROOMTYPE" Relationship="HotelManagementModel.FK__ROOM__roomtype_i__2B3F6F97" FromRole="ROOM" ToRole="ROOMTYPE" />
+          <NavigationProperty Name="ROOM_BOOKED" Relationship="HotelManagementModel.FK__ROOM_BOOK__room___31EC6D26" FromRole="ROOM" ToRole="ROOM_BOOKED" />
         </EntityType>
         <EntityType Name="ROOM_BOOKED">
           <Key>
@@ -400,10 +456,10 @@
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="reservation_id" Type="Int32" Nullable="false" />
           <Property Name="room_id" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="FOLIOs" Relationship="Self.FK__FOLIO__room_book__4D94879B" FromRole="ROOM_BOOKED" ToRole="FOLIO" />
-          <NavigationProperty Name="GUEST_BOOKING" Relationship="Self.FK__GUEST_BOO__room___48CFD27E" FromRole="ROOM_BOOKED" ToRole="GUEST_BOOKING" />
-          <NavigationProperty Name="RESERVATION" Relationship="Self.FK__ROOM_BOOK__reser__4316F928" FromRole="ROOM_BOOKED" ToRole="RESERVATION" />
-          <NavigationProperty Name="ROOM" Relationship="Self.FK__ROOM_BOOK__room___440B1D61" FromRole="ROOM_BOOKED" ToRole="ROOM" />
+          <NavigationProperty Name="FOLIOs" Relationship="HotelManagementModel.FK__FOLIO__room_book__3B75D760" FromRole="ROOM_BOOKED" ToRole="FOLIO" />
+          <NavigationProperty Name="GUEST_BOOKING" Relationship="HotelManagementModel.FK__GUEST_BOO__room___36B12243" FromRole="ROOM_BOOKED" ToRole="GUEST_BOOKING" />
+          <NavigationProperty Name="RESERVATION" Relationship="HotelManagementModel.FK__ROOM_BOOK__reser__30F848ED" FromRole="ROOM_BOOKED" ToRole="RESERVATION" />
+          <NavigationProperty Name="ROOM" Relationship="HotelManagementModel.FK__ROOM_BOOK__room___31EC6D26" FromRole="ROOM_BOOKED" ToRole="ROOM" />
         </EntityType>
         <EntityType Name="ROOMTYPE">
           <Key>
@@ -415,7 +471,7 @@
           <Property Name="max_guest" Type="Int32" />
           <Property Name="date_created" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="date_updated" Type="DateTime" Precision="0" />
-          <NavigationProperty Name="ROOMs" Relationship="Self.FK__ROOM__roomtype_i__3D5E1FD2" FromRole="ROOMTYPE" ToRole="ROOM" />
+          <NavigationProperty Name="ROOMs" Relationship="HotelManagementModel.FK__ROOM__roomtype_i__2B3F6F97" FromRole="ROOMTYPE" ToRole="ROOM" />
         </EntityType>
         <EntityType Name="SERVICE">
           <Key>
@@ -425,11 +481,11 @@
           <Property Name="name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="price" Type="Decimal" Precision="19" Scale="4" />
           <Property Name="isActive" Type="Boolean" />
-          <NavigationProperty Name="FOLIOs" Relationship="Self.FK__FOLIO__service_i__4E88ABD4" FromRole="SERVICE" ToRole="FOLIO" />
+          <NavigationProperty Name="FOLIOs" Relationship="HotelManagementModel.FK__FOLIO__service_i__3C69FB99" FromRole="SERVICE" ToRole="FOLIO" />
         </EntityType>
-        <Association Name="FK__FOLIO__room_book__4D94879B">
-          <End Role="ROOM_BOOKED" Type="Self.ROOM_BOOKED" Multiplicity="1" />
-          <End Role="FOLIO" Type="Self.FOLIO" Multiplicity="*" />
+        <Association Name="FK__FOLIO__room_book__3B75D760">
+          <End Type="HotelManagementModel.ROOM_BOOKED" Role="ROOM_BOOKED" Multiplicity="1" />
+          <End Type="HotelManagementModel.FOLIO" Role="FOLIO" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ROOM_BOOKED">
               <PropertyRef Name="id" />
@@ -439,9 +495,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__FOLIO__service_i__4E88ABD4">
-          <End Role="SERVICE" Type="Self.SERVICE" Multiplicity="1" />
-          <End Role="FOLIO" Type="Self.FOLIO" Multiplicity="*" />
+        <Association Name="FK__FOLIO__service_i__3C69FB99">
+          <End Type="HotelManagementModel.SERVICE" Role="SERVICE" Multiplicity="1" />
+          <End Type="HotelManagementModel.FOLIO" Role="FOLIO" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="SERVICE">
               <PropertyRef Name="id" />
@@ -451,9 +507,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__GUEST_BOO__guest__47DBAE45">
-          <End Role="GUEST" Type="Self.GUEST" Multiplicity="1" />
-          <End Role="GUEST_BOOKING" Type="Self.GUEST_BOOKING" Multiplicity="*" />
+        <Association Name="FK__GUEST_BOO__guest__35BCFE0A">
+          <End Type="HotelManagementModel.GUEST" Role="GUEST" Multiplicity="1" />
+          <End Type="HotelManagementModel.GUEST_BOOKING" Role="GUEST_BOOKING" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="GUEST">
               <PropertyRef Name="id" />
@@ -463,9 +519,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__RESERVATI__main___403A8C7D">
-          <End Role="GUEST" Type="Self.GUEST" Multiplicity="1" />
-          <End Role="RESERVATION" Type="Self.RESERVATION" Multiplicity="*" />
+        <Association Name="FK__RESERVATI__main___2E1BDC42">
+          <End Type="HotelManagementModel.GUEST" Role="GUEST" Multiplicity="1" />
+          <End Type="HotelManagementModel.RESERVATION" Role="RESERVATION" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="GUEST">
               <PropertyRef Name="id" />
@@ -475,9 +531,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__GUEST_BOO__reser__46E78A0C">
-          <End Role="RESERVATION" Type="Self.RESERVATION" Multiplicity="1" />
-          <End Role="GUEST_BOOKING" Type="Self.GUEST_BOOKING" Multiplicity="*" />
+        <Association Name="FK__GUEST_BOO__reser__34C8D9D1">
+          <End Type="HotelManagementModel.RESERVATION" Role="RESERVATION" Multiplicity="1" />
+          <End Type="HotelManagementModel.GUEST_BOOKING" Role="GUEST_BOOKING" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="RESERVATION">
               <PropertyRef Name="id" />
@@ -487,9 +543,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__GUEST_BOO__room___48CFD27E">
-          <End Role="ROOM_BOOKED" Type="Self.ROOM_BOOKED" Multiplicity="1" />
-          <End Role="GUEST_BOOKING" Type="Self.GUEST_BOOKING" Multiplicity="*" />
+        <Association Name="FK__GUEST_BOO__room___36B12243">
+          <End Type="HotelManagementModel.ROOM_BOOKED" Role="ROOM_BOOKED" Multiplicity="1" />
+          <End Type="HotelManagementModel.GUEST_BOOKING" Role="GUEST_BOOKING" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ROOM_BOOKED">
               <PropertyRef Name="id" />
@@ -499,9 +555,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__INVOICE__reserva__5165187F">
-          <End Role="RESERVATION" Type="Self.RESERVATION" Multiplicity="1" />
-          <End Role="INVOICE" Type="Self.INVOICE" Multiplicity="*" />
+        <Association Name="FK__INVOICE__reserva__3F466844">
+          <End Type="HotelManagementModel.RESERVATION" Role="RESERVATION" Multiplicity="1" />
+          <End Type="HotelManagementModel.INVOICE" Role="INVOICE" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="RESERVATION">
               <PropertyRef Name="id" />
@@ -511,9 +567,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__ROOM_BOOK__reser__4316F928">
-          <End Role="RESERVATION" Type="Self.RESERVATION" Multiplicity="1" />
-          <End Role="ROOM_BOOKED" Type="Self.ROOM_BOOKED" Multiplicity="*" />
+        <Association Name="FK__ROOM_BOOK__reser__30F848ED">
+          <End Type="HotelManagementModel.RESERVATION" Role="RESERVATION" Multiplicity="1" />
+          <End Type="HotelManagementModel.ROOM_BOOKED" Role="ROOM_BOOKED" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="RESERVATION">
               <PropertyRef Name="id" />
@@ -523,9 +579,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__ROOM__roomtype_i__3D5E1FD2">
-          <End Role="ROOMTYPE" Type="Self.ROOMTYPE" Multiplicity="1" />
-          <End Role="ROOM" Type="Self.ROOM" Multiplicity="*" />
+        <Association Name="FK__ROOM__roomtype_i__2B3F6F97">
+          <End Type="HotelManagementModel.ROOMTYPE" Role="ROOMTYPE" Multiplicity="1" />
+          <End Type="HotelManagementModel.ROOM" Role="ROOM" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ROOMTYPE">
               <PropertyRef Name="id" />
@@ -535,9 +591,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__ROOM_BOOK__room___440B1D61">
-          <End Role="ROOM" Type="Self.ROOM" Multiplicity="1" />
-          <End Role="ROOM_BOOKED" Type="Self.ROOM_BOOKED" Multiplicity="*" />
+        <Association Name="FK__ROOM_BOOK__room___31EC6D26">
+          <End Type="HotelManagementModel.ROOM" Role="ROOM" Multiplicity="1" />
+          <End Type="HotelManagementModel.ROOM_BOOKED" Role="ROOM_BOOKED" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="ROOM">
               <PropertyRef Name="id" />
@@ -547,59 +603,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="HotelManagementEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="ACCOUNTs" EntityType="Self.ACCOUNT" />
-          <EntitySet Name="CHARGES" EntityType="Self.CHARGE" />
-          <EntitySet Name="FOLIOs" EntityType="Self.FOLIO" />
-          <EntitySet Name="GUESTs" EntityType="Self.GUEST" />
-          <EntitySet Name="GUEST_BOOKING" EntityType="Self.GUEST_BOOKING" />
-          <EntitySet Name="INVOICEs" EntityType="Self.INVOICE" />
-          <EntitySet Name="RESERVATIONs" EntityType="Self.RESERVATION" />
-          <EntitySet Name="ROOMs" EntityType="Self.ROOM" />
-          <EntitySet Name="ROOM_BOOKED" EntityType="Self.ROOM_BOOKED" />
-          <EntitySet Name="ROOMTYPEs" EntityType="Self.ROOMTYPE" />
-          <EntitySet Name="SERVICEs" EntityType="Self.SERVICE" />
-          <AssociationSet Name="FK__FOLIO__room_book__4D94879B" Association="Self.FK__FOLIO__room_book__4D94879B">
-            <End Role="ROOM_BOOKED" EntitySet="ROOM_BOOKED" />
-            <End Role="FOLIO" EntitySet="FOLIOs" />
-          </AssociationSet>
-          <AssociationSet Name="FK__FOLIO__service_i__4E88ABD4" Association="Self.FK__FOLIO__service_i__4E88ABD4">
-            <End Role="SERVICE" EntitySet="SERVICEs" />
-            <End Role="FOLIO" EntitySet="FOLIOs" />
-          </AssociationSet>
-          <AssociationSet Name="FK__GUEST_BOO__guest__47DBAE45" Association="Self.FK__GUEST_BOO__guest__47DBAE45">
-            <End Role="GUEST" EntitySet="GUESTs" />
-            <End Role="GUEST_BOOKING" EntitySet="GUEST_BOOKING" />
-          </AssociationSet>
-          <AssociationSet Name="FK__RESERVATI__main___403A8C7D" Association="Self.FK__RESERVATI__main___403A8C7D">
-            <End Role="GUEST" EntitySet="GUESTs" />
-            <End Role="RESERVATION" EntitySet="RESERVATIONs" />
-          </AssociationSet>
-          <AssociationSet Name="FK__GUEST_BOO__reser__46E78A0C" Association="Self.FK__GUEST_BOO__reser__46E78A0C">
-            <End Role="RESERVATION" EntitySet="RESERVATIONs" />
-            <End Role="GUEST_BOOKING" EntitySet="GUEST_BOOKING" />
-          </AssociationSet>
-          <AssociationSet Name="FK__GUEST_BOO__room___48CFD27E" Association="Self.FK__GUEST_BOO__room___48CFD27E">
-            <End Role="ROOM_BOOKED" EntitySet="ROOM_BOOKED" />
-            <End Role="GUEST_BOOKING" EntitySet="GUEST_BOOKING" />
-          </AssociationSet>
-          <AssociationSet Name="FK__INVOICE__reserva__5165187F" Association="Self.FK__INVOICE__reserva__5165187F">
-            <End Role="RESERVATION" EntitySet="RESERVATIONs" />
-            <End Role="INVOICE" EntitySet="INVOICEs" />
-          </AssociationSet>
-          <AssociationSet Name="FK__ROOM_BOOK__reser__4316F928" Association="Self.FK__ROOM_BOOK__reser__4316F928">
-            <End Role="RESERVATION" EntitySet="RESERVATIONs" />
-            <End Role="ROOM_BOOKED" EntitySet="ROOM_BOOKED" />
-          </AssociationSet>
-          <AssociationSet Name="FK__ROOM__roomtype_i__3D5E1FD2" Association="Self.FK__ROOM__roomtype_i__3D5E1FD2">
-            <End Role="ROOMTYPE" EntitySet="ROOMTYPEs" />
-            <End Role="ROOM" EntitySet="ROOMs" />
-          </AssociationSet>
-          <AssociationSet Name="FK__ROOM_BOOK__room___440B1D61" Association="Self.FK__ROOM_BOOK__room___440B1D61">
-            <End Role="ROOM" EntitySet="ROOMs" />
-            <End Role="ROOM_BOOKED" EntitySet="ROOM_BOOKED" />
-          </AssociationSet>
-        </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -609,123 +612,125 @@
           <EntitySetMapping Name="ACCOUNTs">
             <EntityTypeMapping TypeName="HotelManagementModel.ACCOUNT">
               <MappingFragment StoreEntitySet="ACCOUNT">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="username" ColumnName="username" />
-                <ScalarProperty Name="password" ColumnName="password" />
                 <ScalarProperty Name="permission" ColumnName="permission" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="CHARGES">
             <EntityTypeMapping TypeName="HotelManagementModel.CHARGE">
               <MappingFragment StoreEntitySet="CHARGES">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="surcharge" ColumnName="surcharge" />
-                <ScalarProperty Name="early_checkin_fee" ColumnName="early_checkin_fee" />
                 <ScalarProperty Name="late_checkout_fee" ColumnName="late_checkout_fee" />
+                <ScalarProperty Name="early_checkin_fee" ColumnName="early_checkin_fee" />
+                <ScalarProperty Name="over_capacity_fee" ColumnName="over_capacity_fee" />
+                <ScalarProperty Name="surcharge" ColumnName="surcharge" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="FOLIOs">
             <EntityTypeMapping TypeName="HotelManagementModel.FOLIO">
               <MappingFragment StoreEntitySet="FOLIO">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="room_booked_id" ColumnName="room_booked_id" />
-                <ScalarProperty Name="service_id" ColumnName="service_id" />
                 <ScalarProperty Name="amount" ColumnName="amount" />
+                <ScalarProperty Name="service_id" ColumnName="service_id" />
+                <ScalarProperty Name="room_booked_id" ColumnName="room_booked_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="GUESTs">
             <EntityTypeMapping TypeName="HotelManagementModel.GUEST">
               <MappingFragment StoreEntitySet="GUEST">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="gender" ColumnName="gender" />
-                <ScalarProperty Name="birthday" ColumnName="birthday" />
-                <ScalarProperty Name="address" ColumnName="address" />
-                <ScalarProperty Name="phone" ColumnName="phone" />
                 <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="phone" ColumnName="phone" />
+                <ScalarProperty Name="address" ColumnName="address" />
+                <ScalarProperty Name="birthday" ColumnName="birthday" />
+                <ScalarProperty Name="gender" ColumnName="gender" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="GUEST_BOOKING">
             <EntityTypeMapping TypeName="HotelManagementModel.GUEST_BOOKING">
               <MappingFragment StoreEntitySet="GUEST_BOOKING">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="reservation_id" ColumnName="reservation_id" />
-                <ScalarProperty Name="guest_id" ColumnName="guest_id" />
                 <ScalarProperty Name="room_booked_id" ColumnName="room_booked_id" />
+                <ScalarProperty Name="guest_id" ColumnName="guest_id" />
+                <ScalarProperty Name="reservation_id" ColumnName="reservation_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="INVOICEs">
             <EntityTypeMapping TypeName="HotelManagementModel.INVOICE">
               <MappingFragment StoreEntitySet="INVOICE">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="reservation_id" ColumnName="reservation_id" />
-                <ScalarProperty Name="total_money" ColumnName="total_money" />
-                <ScalarProperty Name="surcharge" ColumnName="surcharge" />
-                <ScalarProperty Name="early_checkin_fee" ColumnName="early_checkin_fee" />
                 <ScalarProperty Name="late_checkout_fee" ColumnName="late_checkout_fee" />
+                <ScalarProperty Name="early_checkin_fee" ColumnName="early_checkin_fee" />
+                <ScalarProperty Name="over_capacity_fee" ColumnName="over_capacity_fee" />
+                <ScalarProperty Name="surcharge" ColumnName="surcharge" />
+                <ScalarProperty Name="total_money" ColumnName="total_money" />
+                <ScalarProperty Name="reservation_id" ColumnName="reservation_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="RESERVATIONs">
             <EntityTypeMapping TypeName="HotelManagementModel.RESERVATION">
               <MappingFragment StoreEntitySet="RESERVATION">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="date_created" ColumnName="date_created" />
-                <ScalarProperty Name="arrival" ColumnName="arrival" />
-                <ScalarProperty Name="departure" ColumnName="departure" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="main_guest" ColumnName="main_guest" />
-                <ScalarProperty Name="early_checkin" ColumnName="early_checkin" />
                 <ScalarProperty Name="late_checkout" ColumnName="late_checkout" />
+                <ScalarProperty Name="early_checkin" ColumnName="early_checkin" />
+                <ScalarProperty Name="main_guest" ColumnName="main_guest" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="departure" ColumnName="departure" />
+                <ScalarProperty Name="arrival" ColumnName="arrival" />
+                <ScalarProperty Name="date_created" ColumnName="date_created" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ROOMs">
             <EntityTypeMapping TypeName="HotelManagementModel.ROOM">
               <MappingFragment StoreEntitySet="ROOM">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="roomtype_id" ColumnName="roomtype_id" />
-                <ScalarProperty Name="notes" ColumnName="notes" />
-                <ScalarProperty Name="dirty" ColumnName="dirty" />
-                <ScalarProperty Name="out_of_service" ColumnName="out_of_service" />
                 <ScalarProperty Name="isActive" ColumnName="isActive" />
+                <ScalarProperty Name="out_of_service" ColumnName="out_of_service" />
+                <ScalarProperty Name="dirty" ColumnName="dirty" />
+                <ScalarProperty Name="notes" ColumnName="notes" />
+                <ScalarProperty Name="roomtype_id" ColumnName="roomtype_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ROOM_BOOKED">
             <EntityTypeMapping TypeName="HotelManagementModel.ROOM_BOOKED">
               <MappingFragment StoreEntitySet="ROOM_BOOKED">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="reservation_id" ColumnName="reservation_id" />
                 <ScalarProperty Name="room_id" ColumnName="room_id" />
+                <ScalarProperty Name="reservation_id" ColumnName="reservation_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ROOMTYPEs">
             <EntityTypeMapping TypeName="HotelManagementModel.ROOMTYPE">
               <MappingFragment StoreEntitySet="ROOMTYPE">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="price" ColumnName="price" />
-                <ScalarProperty Name="max_guest" ColumnName="max_guest" />
-                <ScalarProperty Name="date_created" ColumnName="date_created" />
                 <ScalarProperty Name="date_updated" ColumnName="date_updated" />
+                <ScalarProperty Name="date_created" ColumnName="date_created" />
+                <ScalarProperty Name="max_guest" ColumnName="max_guest" />
+                <ScalarProperty Name="price" ColumnName="price" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="SERVICEs">
             <EntityTypeMapping TypeName="HotelManagementModel.SERVICE">
               <MappingFragment StoreEntitySet="SERVICE">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="price" ColumnName="price" />
                 <ScalarProperty Name="isActive" ColumnName="isActive" />
+                <ScalarProperty Name="price" ColumnName="price" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

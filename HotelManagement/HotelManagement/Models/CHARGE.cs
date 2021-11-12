@@ -16,6 +16,7 @@ namespace HotelManagement.Models
     {
         public int id { get; set; }
         public Nullable<double> surcharge { get; set; }
+        public Nullable<double> over_capacity_fee { get; set; }
         public Nullable<double> early_checkin_fee { get; set; }
         public Nullable<double> late_checkout_fee { get; set; }
     }
