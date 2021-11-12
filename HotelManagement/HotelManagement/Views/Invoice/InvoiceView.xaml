@@ -156,7 +156,8 @@
                                 <TextBlock Text="Date created" Margin="4 0 4 0" VerticalAlignment="Center"/>
                                 <DatePicker Name="dpDateCreated" Width="120" Margin="2 0 0 0"
                                     materialDesign:HintAssist.Hint="Date Created" SelectedDate="{Binding DateCreatedSearch}"
-                                    IsEnabled="{Binding Path=IsChecked, ElementName=cbDateCreated}"/>
+                                    IsEnabled="{Binding Path=IsChecked, ElementName=cbDateCreated}">
+                                </DatePicker>
                             </StackPanel>
                         </Border>
                         <Border Grid.Column="2" BorderThickness="0.3" BorderBrush="{StaticResource PrimaryHueDarkBrush }" 

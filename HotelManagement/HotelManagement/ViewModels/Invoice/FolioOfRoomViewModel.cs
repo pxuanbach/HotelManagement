@@ -64,6 +64,7 @@ namespace HotelManagement.ViewModels
                 x => x.reservation_id == reservation.id && x.room_id == RoomId);
             var folio = DataProvider.Instance.DB.FOLIOs.Where(x => x.room_booked_id == roomBooked.id).ToList();
             int exactRoomPrice = CalculatorInvoice.ExactRoomPrice(RoomId, reservation.date_created.Value);
+            int exactCapacity = CalculatorInvoice.ExactCapacity(RoomId, reservation.date_created.Value);
             long roomTotalMoney = CalculatorInvoice.RoomTotalMoney(RoomId, reservation);
             long folioTotalMoney = CalculatorInvoice.FolioTotalOfRoom(folio.ToArray());
 
@@ -88,7 +89,7 @@ namespace HotelManagement.ViewModels
             Notes = room.notes;
             RoomType = roomType.name;
             Price = SeparateThousands(exactRoomPrice.ToString());
-            MaxGuest = roomType.max_guest.Value;
+            MaxGuest = exactCapacity;
 
             RoomTotalMoney = SeparateThousands(roomTotalMoney.ToString());
             FolioTotalMoney = SeparateThousands(folioTotalMoney.ToString());

@@ -12,6 +12,7 @@ namespace HotelManagement.ViewModels
         #region Room
         public static int ExactRoomPrice(List<ROOMTYPE> roomTypeList, DateTime dateCreated)
         {
+            //in ascending order according to a key
             List<ROOMTYPE> sortList = roomTypeList.OrderBy(x => x.id).ToList();
             foreach (var item in sortList)
             {
@@ -28,6 +29,10 @@ namespace HotelManagement.ViewModels
                     {
                         return (int)item.price;
                     }
+                }
+                else
+                {
+                    break;
                 }
             }
             return 0;
@@ -40,6 +45,7 @@ namespace HotelManagement.ViewModels
             List<ROOMTYPE> roomTypeList = 
                 DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == room.ROOMTYPE.name).ToList();
 
+            //in ascending order according to a key
             List<ROOMTYPE> sortList = roomTypeList.OrderBy(x => x.id).ToList();
             foreach (var item in sortList)
             {
@@ -57,6 +63,43 @@ namespace HotelManagement.ViewModels
                         return (int)item.price;
                     }
                 }
+                else
+                {
+                    break;
+                }
+            }
+            return 0;
+        }
+
+        public static int ExactCapacity(int roomId, DateTime dateCreated)
+        {
+            var room = DataProvider.Instance.DB.ROOMs.SingleOrDefault(x => x.id == roomId);
+
+            List<ROOMTYPE> roomTypeList =
+                DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == room.ROOMTYPE.name).ToList();
+
+            //in ascending order according to a key
+            List<ROOMTYPE> sortList = roomTypeList.OrderBy(x => x.id).ToList();
+            foreach (var item in sortList)
+            {
+                if (item.date_created <= dateCreated)
+                {
+                    if (item.date_updated.HasValue)
+                    {
+                        if (dateCreated <= item.date_updated)
+                        {
+                            return item.max_guest.Value;
+                        }
+                    }
+                    else
+                    {
+                        return item.max_guest.Value;
+                    }
+                }
+                else
+                {
+                    break;
+                }    
             }
             return 0;
         }
