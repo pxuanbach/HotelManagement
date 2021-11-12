@@ -33,6 +33,12 @@ namespace HotelManagement.ViewModels
         public string Notes { get; set; }
         #endregion
 
+        #region Guests
+        public int GuestCount { get; set; }
+
+        public List<GUEST> Guests { get; set; }
+        #endregion
+
         #region Folio
         public int FolioCount { get; set; }
 
@@ -49,6 +55,7 @@ namespace HotelManagement.ViewModels
 
         public void InitProperties()
         {
+            Guests = new List<GUEST>();
             Folio = new List<FolioDisplayItem>();
             var reservation = DataProvider.Instance.DB.RESERVATIONs.SingleOrDefault(x => x.id == ReservationId);
             var room = DataProvider.Instance.DB.ROOMs.SingleOrDefault(x => x.id == RoomId);
@@ -60,6 +67,11 @@ namespace HotelManagement.ViewModels
             long roomTotalMoney = CalculatorInvoice.RoomTotalMoney(RoomId, reservation);
             long folioTotalMoney = CalculatorInvoice.FolioTotalOfRoom(folio.ToArray());
 
+            foreach(var item in roomBooked.GUEST_BOOKING)
+            {
+                Guests.Add(item.GUEST);
+            }    
+
             foreach (var item in folio)
             {
                 var service = DataProvider.Instance.DB.SERVICEs.SingleOrDefault(x => x.id == item.service_id);
@@ -69,6 +81,7 @@ namespace HotelManagement.ViewModels
             }
 
             FolioCount = folio.Count();
+            GuestCount = roomBooked.GUEST_BOOKING.Count();
             Arrival = reservation.arrival.Value;
             Departure = reservation.departure.Value;
             RoomName = room.name;
