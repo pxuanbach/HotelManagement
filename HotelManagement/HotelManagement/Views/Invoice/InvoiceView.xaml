@@ -19,9 +19,10 @@
             DialogTheme="Inherit" IsOpen="{Binding IsOpenDialog}">
             <materialDesign:DialogHost.DialogContent>
                 <Grid Background="White">
-                    <Grid Height="336" Width="300">
+                    <Grid Height="406" Width="300">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40"/>
+                            <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
@@ -34,21 +35,25 @@
                         <TextBlock Grid.Row="1" Text="{Binding ErrorMessageDialog}" Margin="0 0 0 4" 
                             HorizontalAlignment="Center" FontSize="14" Foreground="Red"/>
                         <TextBox Grid.Row="2" Margin="8 8 8 16" Name="tbSurcharge"
-                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                            VerticalAlignment="Top" IsReadOnly="{Binding IsReadOnlyUsername}"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}" VerticalAlignment="Top" 
                             AcceptsReturn="True" Text="{Binding SurchargeDialog}"
                             materialDesign:HintAssist.Hint="Surcharge"/>
-                        <TextBox Grid.Row="3" Margin="8 8 8 16" Name="tbEarlyCheckinFee"
-                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                            VerticalAlignment="Top" IsReadOnly="{Binding IsReadOnlyUsername}"
+
+                        <TextBox Grid.Row="3" Margin="8 8 8 16" Name="tbOverCapacityFee"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}" VerticalAlignment="Top"
+                            AcceptsReturn="True" Text="{Binding OverCapacityFeeDialog}"
+                            materialDesign:HintAssist.Hint="Over Capacity Fee"/>
+                        
+                        <TextBox Grid.Row="4" Margin="8 8 8 16" Name="tbEarlyCheckinFee"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}" VerticalAlignment="Top" 
                             AcceptsReturn="True" Text="{Binding EarlyCheckinFeeDialog}"
                             materialDesign:HintAssist.Hint="Early Checkin Fee"/>
-                        <TextBox Grid.Row="4" Margin="8 8 8 16" Name="tbLateCheckoutFee"
-                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                            VerticalAlignment="Top" IsReadOnly="{Binding IsReadOnlyUsername}"
+                        
+                        <TextBox Grid.Row="5" Margin="8 8 8 16" Name="tbLateCheckoutFee"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}" VerticalAlignment="Top"
                             AcceptsReturn="True" Text="{Binding LateCheckoutFeeDialog}"
                             materialDesign:HintAssist.Hint="Late Checkout Fee"/>
-                        <Grid Grid.Row="5">
+                        <Grid Grid.Row="6">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
@@ -584,10 +589,20 @@
                     <!-- Fee + Total money -->
                     <Grid Grid.Row="6" Margin="6 4 4 2">
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
-                            <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="8 2 2 2">
-                                <TextBlock Text="Early check-in fee (%): " FontWeight="Bold" Width="155"/>
-                                <TextBlock Text="{Binding EarlyCheckinFee}"/>
-                            </StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="8 2 2 2">
+                                    <TextBlock Text="Early check-in fee (%): " FontWeight="Bold" Width="155"/>
+                                    <TextBlock Text="{Binding EarlyCheckinFee}"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8 2 2 2">
+                                    <TextBlock Text="Over capacity fee (%): " FontWeight="Bold" Width="155"/>
+                                    <TextBlock Text="{Binding OverCapacityFee}"/>
+                                </StackPanel>
+                            </Grid>
                             <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="8 2 2 2">
                                 <TextBlock Text="Late check-out fee (%): " FontWeight="Bold" Width="155"/>
                                 <TextBlock Text="{Binding LateCheckoutFee}"/>
