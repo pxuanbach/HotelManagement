@@ -19,7 +19,7 @@
             DialogTheme="Inherit" IsOpen="{Binding IsOpenDialog}">
             <materialDesign:DialogHost.DialogContent>
                 <Grid Background="White">
-                    <Grid Height="406" Width="300">
+                    <Grid Height="416" Width="300">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40"/>
                             <RowDefinition Height="auto"/>
@@ -58,7 +58,7 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" HorizontalAlignment="Center" Margin="4"
+                            <Button Grid.Column="0" HorizontalAlignment="Center" Margin="4" Name="btSave"
                             Command="{Binding SaveFeesCommand}">
                                 <StackPanel Orientation="Horizontal">
                                     <materialDesign:PackIcon Kind="ContentSave" Width="18" Height="18" 
@@ -83,7 +83,7 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
-                            <Button Grid.Column="1" HorizontalAlignment="Center" Margin="4"
+                            <Button Grid.Column="1" HorizontalAlignment="Center" Margin="4" Name="btClose"
                             Style="{StaticResource MaterialDesignRaisedButton}"
                             Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                                 <StackPanel Orientation="Horizontal">
@@ -138,7 +138,7 @@
                                         <KeyBinding Command="{Binding SearchReservationCommand}" Key="Return"/>
                                     </TextBox.InputBindings>
                                 </TextBox>
-                                <Button Grid.Column="3" Width="Auto" Height="Auto" 
+                                <Button Grid.Column="3" Width="Auto" Height="Auto" Name="btSearchRes"
                                     Style="{StaticResource MaterialDesignFlatButton}" 
                                     Content="{materialDesign:PackIcon Kind=Search, Size=19}" 
                                     Foreground="{StaticResource PrimaryHueDarkBrush}" Command="{Binding SearchReservationCommand}">
@@ -168,15 +168,15 @@
                         <Border Grid.Column="2" BorderThickness="0.3" BorderBrush="{StaticResource PrimaryHueDarkBrush }" 
                                 CornerRadius="5" Margin="4" Padding="4">
                             <StackPanel Orientation="Horizontal">
-                                <CheckBox x:Name="cbArrivalDeparture" IsChecked="{Binding IsSearchArrDep}"></CheckBox>
+                                <CheckBox x:Name="cbArrDep" IsChecked="{Binding IsSearchArrDep}"></CheckBox>
                                 <TextBlock Text="Arrival" Margin="4 0 4 0" VerticalAlignment="Center"/>
                                 <DatePicker Name="dpArrival" Width="120" Margin="2 0 0 0"
                                     materialDesign:HintAssist.Hint="Arrival Date" SelectedDate="{Binding ArrivalSearch}"
-                                    IsEnabled="{Binding Path=IsChecked, ElementName=cbArrivalDeparture}"/>
+                                    IsEnabled="{Binding Path=IsChecked, ElementName=cbArrDep}"/>
                                 <TextBlock Text="Departure" Margin="12 0 4 0" VerticalAlignment="Center"/>
                                 <DatePicker Name="dpDeparture" Width="120" Margin="2 0 0 0"
                                     materialDesign:HintAssist.Hint="DepartureDate" SelectedDate="{Binding DepartureSearch}"
-                                    IsEnabled="{Binding Path=IsChecked, ElementName=cbArrivalDeparture}"/>
+                                    IsEnabled="{Binding Path=IsChecked, ElementName=cbArrDep}"/>
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -200,7 +200,7 @@
                                 <TextBlock Text="COMPLETED"/>
                             </RadioButton>
                         </StackPanel>
-                        <Button Grid.Column="1" Width="Auto" Height="Auto" Margin="6"
+                        <Button Grid.Column="1" Width="Auto" Height="Auto" Margin="6" Name="btReload"
                             Style="{StaticResource MaterialDesignRaisedButton}" 
                             Content="{materialDesign:PackIcon Kind=Reload, Size=19}" 
                             Foreground="White" 
@@ -279,7 +279,7 @@
                         <TextBlock Grid.Column="0" Text="Invoice Detail" FontSize="24" FontWeight="Bold" 
                             HorizontalAlignment="Stretch" Margin="6 4 4 2" Foreground="{StaticResource PrimaryHueDarkBrush}" VerticalAlignment="Center"/>
                         <Button Grid.Column="1" HorizontalAlignment="Right" Margin="4" Padding="8"
-                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Style="{StaticResource MaterialDesignRaisedButton}" Name="btClear"
                             Command="{Binding ClearDetailCommand}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Broom" VerticalAlignment="Center" Width="18" Height="18"/>
@@ -379,7 +379,7 @@
                                 <ColumnDefinition Width="43*"/>
                                 <ColumnDefinition Width="357*"/>
                             </Grid.ColumnDefinitions>
-                            <ScrollViewer VerticalScrollBarVisibility="Hidden" Margin="4 1 4 4" Grid.ColumnSpan="2">
+                            <ScrollViewer x:Name="scvSharers" VerticalScrollBarVisibility="Hidden" Margin="4 1 4 4" Grid.ColumnSpan="2">
                                 <ItemsControl ItemsSource="{Binding Guests}" HorizontalAlignment="left" Margin="0 5">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
@@ -453,7 +453,7 @@
                         <Separator Grid.Row="3" Background="{StaticResource MaterialDesignDarkSeparatorBackground}" Margin="12 1 12 0"/>
                         <!-- List -->
                         <Grid Grid.Row="4">
-                            <ScrollViewer x:Name="gridRooms" VerticalScrollBarVisibility="Hidden" Margin="4 1 4 0">
+                            <ScrollViewer x:Name="scvRooms" VerticalScrollBarVisibility="Hidden" Margin="4 1 4 0">
                                 <ItemsControl ItemsSource="{Binding Rooms}" HorizontalAlignment="left" Margin="0 5">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
@@ -465,7 +465,7 @@
                                             <materialDesign:Card
                                                 Background="{DynamicResource PrimaryHueDarkBrush}"
                                                 Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
-                                                Width="{Binding ActualWidth, ElementName=gridRooms}"
+                                                Width="{Binding ActualWidth, ElementName=scvRooms}"
                                                 Padding="5" Margin="8 1 8 1">
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
@@ -481,7 +481,7 @@
                                                     <TextBlock Grid.Column="2" Text="{Binding Type}" Padding="8 0 8 0"
                                                         HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                     <Button Grid.Column="3" Width="auto" Height="auto" Margin="0 0 12 0" Padding="2 0 2 0"
-                                                        Style="{StaticResource MaterialDesignFlatButton}" 
+                                                        Style="{StaticResource MaterialDesignFlatButton}" Name="btDetail"
                                                         Content="{materialDesign:PackIcon Kind=Information, Size=16}"
                                                         Command="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl},Path=DataContext.FolioOfRoomCommand}" 
                                                         CommandParameter="{Binding}" Foreground="White"/>
@@ -543,7 +543,7 @@
                         </Grid>
                         <Separator Grid.Row="3" Background="{StaticResource MaterialDesignDarkSeparatorBackground}" Margin="12 1 12 0"/>
                         <Grid Grid.Row="4">
-                            <ScrollViewer x:Name="gridFolio" VerticalScrollBarVisibility="Hidden" Margin="4 1 4 0">
+                            <ScrollViewer x:Name="scvFolio" VerticalScrollBarVisibility="Hidden" Margin="4 1 4 0">
                                 <ItemsControl ItemsSource="{Binding Folio}" HorizontalAlignment="left" Margin="0 5">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
@@ -555,7 +555,7 @@
                                             <materialDesign:Card
                                                 Background="{DynamicResource PrimaryHueDarkBrush}"
                                                 Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
-                                                Width="{Binding ActualWidth, ElementName=gridFolio}"
+                                                Width="{Binding ActualWidth, ElementName=scvFolio}"
                                                 Padding="5" Margin="8 1 8 1">
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
@@ -644,7 +644,7 @@
                                 <TextBlock Text="Check-out" FontSize="16" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
-                        <Button Grid.Column="2" Margin="4" 
+                        <Button Grid.Column="2" Margin="4" Name="btExport"
                             Style="{StaticResource MaterialDesignRaisedButton}"
                             Command="{Binding ExportCommand}" CommandParameter="{Binding ElementName=lvReservation}">
                             <StackPanel Orientation="Horizontal">

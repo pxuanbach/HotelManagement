@@ -349,7 +349,7 @@ namespace HotelManagement.ViewModels
             Folio = new ObservableCollection<FolioDisplayItem>();
             SearchTypes = new List<string>();
             SearchTypes.Add("ID");
-            SearchTypes.Add("Main Guest");
+            SearchTypes.Add("Guest");
 
             StatusSelected = "Operational";
             LoadReservations();
