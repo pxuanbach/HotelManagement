@@ -35,13 +35,13 @@
                                    Foreground="{StaticResource PrimaryHueDarkBrush}" 
                                    FontWeight="Bold" VerticalAlignment="Center"/>
                         <TextBlock Grid.Row="1" Text="{Binding SubText}" Margin="8 4 4 12"/>
-                        <TextBox Grid.Row="2" Margin="4"
+                        <TextBox Grid.Row="2" Margin="4" Name="tbUsername"
                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                             VerticalAlignment="Top" IsReadOnly="{Binding IsReadOnlyUsername}"
                             AcceptsReturn="True" Text="{Binding Username}"
                             materialDesign:HintAssist.Hint="Username"/>
                         <TextBlock Grid.Row="3" Text="{Binding ErrorMessage}" Margin="0 0 0 4" HorizontalAlignment="Center" FontSize="14" Foreground="Red"/>
-                        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="cbx_roles" ItemsSource="{Binding Roles}"
+                        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="cbbRoles" ItemsSource="{Binding Roles}"
                             Style="{StaticResource MaterialDesignOutlinedComboBox}" 
                             SelectedItem="{Binding SelectedRole}"
                             Margin="4" materialDesign:TextFieldAssist.PrefixText="Role: ">
@@ -52,7 +52,7 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
                             <Button Grid.Column="0" HorizontalAlignment="Center" Margin="4"
-                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Style="{StaticResource MaterialDesignRaisedButton}" Name="btSave"
                             Command="{Binding SaveAccountCommand}">
                                 <StackPanel Orientation="Horizontal">
                                     <materialDesign:PackIcon Kind="ContentSave" Width="18" Height="18" 
@@ -61,7 +61,7 @@
                                 </StackPanel>
                             </Button>
                             <Button Grid.Column="1" HorizontalAlignment="Center" Margin="4"
-                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Style="{StaticResource MaterialDesignRaisedButton}" Name="btClose"
                             Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                                 <StackPanel Orientation="Horizontal">
                                     <materialDesign:PackIcon Kind="CloseCircle" Width="18" Height="18" 
@@ -115,7 +115,7 @@
                                     <KeyBinding Command="{Binding SearchAccountCommand}" Key="Return"/>
                                 </TextBox.InputBindings>
                             </TextBox>
-                            <Button Grid.Column="3" Width="Auto" Height="Auto" 
+                            <Button Grid.Column="3" Width="Auto" Height="Auto" Name="btSearchAcc"
                                 Style="{StaticResource MaterialDesignFlatButton}" 
                                 Content="{materialDesign:PackIcon Kind=Search, Size=19}" 
                                 Foreground="{StaticResource PrimaryHueDarkBrush}" Command="{Binding SearchAccountCommand}">
@@ -123,7 +123,7 @@
                         </Grid>
                     </Border>
                     <Button Grid.Column="2" HorizontalAlignment="Right" Margin="4" Padding="8"
-                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        Style="{StaticResource MaterialDesignRaisedButton}" Name="btNewAccount"
                         Command="{Binding AddNewAccountCommand}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="PlusCircle" VerticalAlignment="Center" Width="16" Height="16"/>
@@ -187,7 +187,7 @@
                             <Button Grid.Column="1" Width="Auto" Height="Auto" Margin="6"
                                 Style="{StaticResource MaterialDesignRaisedButton}" 
                                 Content="{materialDesign:PackIcon Kind=Reload, Size=19}" 
-                                Foreground="White" 
+                                Foreground="White" Name="btReload"
                                 Command="{Binding ReloadCommand}">
                             </Button>
                         </Grid>
@@ -196,7 +196,7 @@
                 </Border>
                 
                 <!--Data Table-->
-                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Hidden">
+                <ScrollViewer x:Name="scvAccounts" Grid.Row="2" VerticalScrollBarVisibility="Hidden">
                     <ItemsControl ItemsSource="{Binding Accounts}" HorizontalAlignment="left" Margin="0 5">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -224,7 +224,7 @@
                                             </Grid.ColumnDefinitions>
                                             <TextBlock Grid.Column="0" Text="ID: " FontSize="12" Margin="0 0 2 0"/>
                                             <TextBlock Grid.Column="1" Text="{Binding id}" FontSize="12"/>
-                                            <Button Width="Auto" Height="Auto" Grid.Column="2" Padding="4"
+                                            <Button Width="Auto" Height="Auto" Grid.Column="2" Padding="4" Name="btEditAccount"
                                                 Style="{StaticResource MaterialDesignFlatButton}" 
                                                 Content="{materialDesign:PackIcon Kind=AccountEdit, Size=20}"
                                                 Command="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl},Path=DataContext.EditAccountCommand}" 
