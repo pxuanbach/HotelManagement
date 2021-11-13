@@ -396,9 +396,25 @@ namespace HotelManagement.ViewModels
 
             Sharers.CollectionChanged += Sharers_CollectionChanged;
             BookedRooms.CollectionChanged += BookedRooms_CollectionChanged;
+            GuestInformation.PropertyChanged += GuestInformation_PropertyChanged;
 
             LoadReservationDetails(ResID);
             LimitDeparture = DateTime.Today.AddYears(1);
+        }
+
+        private void GuestInformation_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(GuestViewModel.Birthday))
+            {
+                int age = DateTime.Today.Year - (sender as GuestViewModel).Birthday.Year;
+                if (DateTime.Now.DayOfYear < (sender as GuestViewModel).Birthday.DayOfYear)
+                    age = age - 1;
+                if (age < 21)
+                {
+                    GuestInformation.Birthday = DateTime.Parse("01-01-2000");
+                    MessageBox.Show("Guest must be at least 21 years of age for reserving.", "WALKIN / RESERVATION POLICY");
+                }
+            }
         }
 
         private void StayInformation_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

@@ -10,6 +10,7 @@
         xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
         mc:Ignorable="d"
         Name="windowNewReservation"
+        WindowStartupLocation="CenterScreen"
         Background="WhiteSmoke"
         SizeToContent="WidthAndHeight" ResizeMode="NoResize"
         Title="Walk In / New Reservation">
@@ -485,7 +486,7 @@
                                 ItemsSource="{Binding Sharers}"
                                 CanUserResizeColumns="False" 
                                 CanUserAddRows="False"
-                                IsReadOnly="False"
+                                IsReadOnly="True"
                                 AutoGenerateColumns="False"
                                 HeadersVisibility="All">
 

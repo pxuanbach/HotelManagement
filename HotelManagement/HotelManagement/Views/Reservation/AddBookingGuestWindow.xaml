@@ -10,6 +10,7 @@
         mc:Ignorable="d"
         Name="windowAddSharer"
         Background="WhiteSmoke"
+        WindowStartupLocation="CenterScreen"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
         Title="Add new sharer">

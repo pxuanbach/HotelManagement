@@ -88,45 +88,6 @@ namespace HotelManagement.ViewModels
                 return _addSharerCommand ?? (_addSharerCommand = new RelayCommand<object>((p) => CanAddSharer, (p) => OpenAddSharerWindow()));
             }
         }
-        #endregion
-
-        public NewReservationViewModel(ReservationListViewModel _instance)
-        {
-            Instance = _instance;
-
-            Sharers = new ObservableCollection<GuestViewModel>();
-            GuestInformation = new GuestViewModel();
-            StayInformation = new ReservationViewModel();
-            AvailableRooms = new ObservableCollection<RoomViewModel>();
-            SelectedRooms = new ObservableCollection<RoomViewModel>(); 
-
-            StayInformation.PropertyChanged += StayInformation_PropertyChanged;
-            Sharers.CollectionChanged += Sharers_CollectionChanged;
-            SelectedRooms.CollectionChanged += SelectedRooms_CollectionChanged;
-
-            BeASharer = false;
-            GuestInformation.Birthday = DateTime.Parse("01-01-2000");
-            StayInformation.Arrival = DateTime.Today;
-            StayInformation.Departure = DateTime.Today.AddDays(1);
-        }
-        public NewReservationViewModel()
-        {
-            Sharers = new ObservableCollection<GuestViewModel>();
-            GuestInformation = new GuestViewModel();
-            StayInformation = new ReservationViewModel();
-            AvailableRooms = new ObservableCollection<RoomViewModel>();
-            SelectedRooms = new ObservableCollection<RoomViewModel>();
-
-            StayInformation.PropertyChanged += StayInformation_PropertyChanged;
-            Sharers.CollectionChanged += Sharers_CollectionChanged;
-            SelectedRooms.CollectionChanged += SelectedRooms_CollectionChanged;
-
-            BeASharer = false;
-            GuestInformation.Birthday = DateTime.Parse("01-01-2000");
-            StayInformation.Arrival = DateTime.Today;
-            StayInformation.Departure = DateTime.Today.AddDays(1);
-        }
-
 
         // Remove sharer
         public void RemoveSelectedSharer(GuestViewModel sharer)
@@ -274,7 +235,63 @@ namespace HotelManagement.ViewModels
                 return _cancelCommand ?? (_cancelCommand = new RelayCommand<Window>((p) => true, (p) => p.Close()));
             }
         }
-        
+        #endregion
+
+        public NewReservationViewModel(ReservationListViewModel _instance)
+        {
+            Instance = _instance;
+
+            Sharers = new ObservableCollection<GuestViewModel>();
+            GuestInformation = new GuestViewModel();
+            StayInformation = new ReservationViewModel();
+            AvailableRooms = new ObservableCollection<RoomViewModel>();
+            SelectedRooms = new ObservableCollection<RoomViewModel>(); 
+
+            StayInformation.PropertyChanged += StayInformation_PropertyChanged;
+            GuestInformation.PropertyChanged += GuestInformation_PropertyChanged;
+            Sharers.CollectionChanged += Sharers_CollectionChanged;
+            SelectedRooms.CollectionChanged += SelectedRooms_CollectionChanged;
+
+            BeASharer = false;
+            GuestInformation.Birthday = DateTime.Parse("01-01-2000");
+            StayInformation.Arrival = DateTime.Today;
+            StayInformation.Departure = DateTime.Today.AddDays(1);
+        }
+
+        public NewReservationViewModel()
+        {
+            Sharers = new ObservableCollection<GuestViewModel>();
+            GuestInformation = new GuestViewModel();
+            StayInformation = new ReservationViewModel();
+            AvailableRooms = new ObservableCollection<RoomViewModel>();
+            SelectedRooms = new ObservableCollection<RoomViewModel>();
+
+            StayInformation.PropertyChanged += StayInformation_PropertyChanged;
+            GuestInformation.PropertyChanged += GuestInformation_PropertyChanged;
+            Sharers.CollectionChanged += Sharers_CollectionChanged;
+            SelectedRooms.CollectionChanged += SelectedRooms_CollectionChanged;
+
+            BeASharer = false;
+            GuestInformation.Birthday = DateTime.Parse("01-01-2000");
+            StayInformation.Arrival = DateTime.Today;
+            StayInformation.Departure = DateTime.Today.AddDays(1);
+        }
+
+        private void GuestInformation_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(GuestViewModel.Birthday))
+            {
+                int age = DateTime.Today.Year - (sender as GuestViewModel).Birthday.Year;
+                if (DateTime.Now.DayOfYear < (sender as GuestViewModel).Birthday.DayOfYear)
+                    age = age - 1;
+                if (age < 21)
+                {
+                    GuestInformation.Birthday = DateTime.Parse("01-01-2000");
+                    MessageBox.Show("Guest must be at least 21 years of age for reserving.", "WALKIN / RESERVATION POLICY");
+                }
+            }
+        }
+
         private void SelectedRooms_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             StayInformation.Rooms = SelectedRooms.Count;

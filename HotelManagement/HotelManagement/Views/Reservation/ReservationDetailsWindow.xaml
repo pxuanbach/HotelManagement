@@ -10,6 +10,7 @@
         xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
         mc:Ignorable="d"
         Name="windowReservationDetails"
+        WindowStartupLocation="CenterScreen"
         Background="WhiteSmoke"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
