@@ -555,8 +555,8 @@
                                     </DataGridTextColumn>
 
                                     <DataGridTextColumn 
-                                        Header="Address" Width="200"
-                                        Binding="{Binding Address}"
+                                        Header="Age"
+                                        Binding="{Binding Age}"
                                         EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
                                         <DataGridTextColumn.HeaderStyle>
                                             <Style TargetType="{x:Type DataGridColumnHeader}"
@@ -570,10 +570,44 @@
                                             <Style TargetType="{x:Type TextBlock}"
                                                 BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
                                                 <Setter Property="VerticalAlignment" Value="Center"/>
-                                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
+
+                                    <DataGridTextColumn 
+                                        Header="Room"
+                                        Binding="{Binding Room.RoomName}"
+                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button 
+                                                    Padding="0" Width="32"
+                                                    Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.EditSharerCommand}"
+                                                    CommandParameter="{Binding}">
+                                                    <materialDesign:PackIcon Kind="Edit"/>
+                                                </Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
 
                                     <DataGridTemplateColumn>
                                         <DataGridTemplateColumn.CellTemplate>

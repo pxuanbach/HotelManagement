@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace HotelManagement.ViewModels
@@ -197,6 +198,9 @@ namespace HotelManagement.ViewModels
                             id = sharer.ID,
                             name = sharer.Name,
                             gender = sharer.Gender,
+                            birthday = sharer.Birthday,
+                            email = sharer.Email,
+                            phone = sharer.Phone,
                             address = sharer.Address,
                         };
                         context.GUESTs.Add(newGuest);
@@ -207,6 +211,8 @@ namespace HotelManagement.ViewModels
                     {
                         reservation_id = reservation.id,
                         guest_id = sharer.ID,
+                        room_booked_id = context.ROOM_BOOKED.Where(rb => rb.reservation_id == reservation.id && 
+                                            rb.room_id == sharer.Room.RoomID).FirstOrDefault().id,
                     };
                     context.GUEST_BOOKING.Add(guestBooking);
                     context.SaveChanges();
@@ -281,10 +287,7 @@ namespace HotelManagement.ViewModels
         {
             if (e.PropertyName == nameof(GuestViewModel.Birthday))
             {
-                int age = DateTime.Today.Year - (sender as GuestViewModel).Birthday.Year;
-                if (DateTime.Now.DayOfYear < (sender as GuestViewModel).Birthday.DayOfYear)
-                    age = age - 1;
-                if (age < 21)
+                if ((sender as GuestViewModel).Age < 21)
                 {
                     GuestInformation.Birthday = DateTime.Parse("01-01-2000");
                     MessageBox.Show("Guest must be at least 21 years of age for reserving.", "WALKIN / RESERVATION POLICY");
@@ -497,19 +500,27 @@ namespace HotelManagement.ViewModels
         string _email;
         string _phone;
 
+        int _age;
+
+        RoomViewModel _room;
+
         public string ID { get { return _id; } set { _id = value; OnPropertyChanged(); } }
 
         public string Name { get { return _name; } set { _name = value; OnPropertyChanged(); } }
 
         public string Gender { get { return _gender; } set { _gender = value; OnPropertyChanged(); } }
 
-        public DateTime Birthday { get { return _birthday; } set { _birthday = value; OnPropertyChanged(); } }
+        public DateTime Birthday { get { return _birthday; } set { _birthday = value; CalculateAge(); OnPropertyChanged(); } }
 
         public string Address { get { return _address; } set { _address = value; OnPropertyChanged(); } }
 
         public string Email { get { return _email; } set { _email = value; OnPropertyChanged(); } }
 
         public string Phone { get { return _phone; } set { _phone = value; OnPropertyChanged(); } }
+
+        public int Age { get { return _age; } set { _age = value; OnPropertyChanged(); } }
+
+        public RoomViewModel Room { get { return _room; } set { _room = value; OnPropertyChanged(); } }
 
         public bool FilledGuestInformation
         {
@@ -524,6 +535,21 @@ namespace HotelManagement.ViewModels
                     return false;
                 return true;
             }
+        }
+
+        public void CalculateAge()
+        {
+            Age = DateTime.Today.Year - Birthday.Year;
+            if (DateTime.Now.DayOfYear < Birthday.DayOfYear)
+                Age = Age - 1;
+        }
+
+        static public int CalculateAge(DateTime birthday)
+        {
+            int age = DateTime.Today.Year - birthday.Year;
+            if (DateTime.Now.DayOfYear < birthday.DayOfYear)
+                age = age - 1;
+            return age;
         }
     }
 

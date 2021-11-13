@@ -604,8 +604,8 @@
                                     </DataGridTextColumn>
 
                                     <DataGridTextColumn 
-                                        Header="Address" Width="200"
-                                        Binding="{Binding Address}"
+                                        Header="Age"
+                                        Binding="{Binding Age}"
                                         EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
                                         <DataGridTextColumn.HeaderStyle>
                                             <Style TargetType="{x:Type DataGridColumnHeader}"
@@ -619,10 +619,32 @@
                                             <Style TargetType="{x:Type TextBlock}"
                                                 BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
                                                 <Setter Property="VerticalAlignment" Value="Center"/>
-                                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
+
+                                    <DataGridTextColumn 
+                                        Header="Room"
+                                        Binding="{Binding Room.RoomName}"
+                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                                        <DataGridTextColumn.HeaderStyle>
+                                            <Style TargetType="{x:Type DataGridColumnHeader}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.HeaderStyle>
+
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="{x:Type TextBlock}"
+                                                BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+
 
                                     <DataGridTemplateColumn>
                                         <DataGridTemplateColumn.CellTemplate>

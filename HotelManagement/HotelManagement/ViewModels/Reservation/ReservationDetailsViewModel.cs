@@ -182,14 +182,22 @@ namespace HotelManagement.ViewModels
                         id = NewSharer.ID,
                         name = NewSharer.Name,
                         gender = NewSharer.Gender,
+                        birthday = NewSharer.Birthday,
+                        email = NewSharer.Email,
+                        phone = NewSharer.Phone,
                         address = NewSharer.Address,
                     };
                     db.GUESTs.Add(guest);
                 }
                 else
                 {
+                    // TODO: Autofill new sharer by id
+                    // Now describe: If this guest information is existing in database, overriding 
                     existing_guest.name = NewSharer.Name;
                     existing_guest.gender = NewSharer.Gender;
+                    existing_guest.birthday = NewSharer.Birthday;
+                    existing_guest.email = NewSharer.Email;
+                    existing_guest.phone = NewSharer.Phone;
                     existing_guest.address = NewSharer.Address;
                 }
                 db.SaveChanges();
@@ -198,6 +206,8 @@ namespace HotelManagement.ViewModels
                 {
                     reservation_id = StayInformation.ID,
                     guest_id = NewSharer.ID,
+                    room_booked_id = db.ROOM_BOOKED.Where(rb => rb.reservation_id == StayInformation.ID &&
+                                            rb.room_id == NewSharer.Room.RoomID).FirstOrDefault().id,
                 };
                 db.GUEST_BOOKING.Add(guestBooking);
                 db.SaveChanges();
@@ -396,20 +406,18 @@ namespace HotelManagement.ViewModels
 
             Sharers.CollectionChanged += Sharers_CollectionChanged;
             BookedRooms.CollectionChanged += BookedRooms_CollectionChanged;
-            GuestInformation.PropertyChanged += GuestInformation_PropertyChanged;
 
             LoadReservationDetails(ResID);
             LimitDeparture = DateTime.Today.AddYears(1);
+
+            GuestInformation.PropertyChanged += GuestInformation_PropertyChanged;
         }
 
         private void GuestInformation_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(GuestViewModel.Birthday))
             {
-                int age = DateTime.Today.Year - (sender as GuestViewModel).Birthday.Year;
-                if (DateTime.Now.DayOfYear < (sender as GuestViewModel).Birthday.DayOfYear)
-                    age = age - 1;
-                if (age < 21)
+                if ((sender as GuestViewModel).Age < 21)
                 {
                     GuestInformation.Birthday = DateTime.Parse("01-01-2000");
                     MessageBox.Show("Guest must be at least 21 years of age for reserving.", "WALKIN / RESERVATION POLICY");
@@ -482,8 +490,8 @@ namespace HotelManagement.ViewModels
                 Phone = mainGuest.phone,
             };
 
-            LoadGuests(ResID);
             LoadBookedRooms(ResID);
+            LoadGuests(ResID);
         }
 
         void LoadBookedRooms(int ResID)
@@ -530,19 +538,34 @@ namespace HotelManagement.ViewModels
             var sharers = (from g in db.GUESTs
                            join gb in db.GUEST_BOOKING on g.id equals gb.guest_id
                            where gb.reservation_id == ResID
-                           select g).ToList();
+                           select new 
+                           {
+                               ID = g.id,
+                               Name = g.name,
+                               Gender = g.gender,
+                               Birthday = g.birthday,
+                               RoomBooked = gb.room_booked_id
+                           }).ToList();
 
             foreach (var sharer in sharers)
             {
-                if (sharer.id == GuestInformation.ID) BeASharer = true;
+                if (sharer.ID == GuestInformation.ID) BeASharer = true;
 
                 var obj = new GuestViewModel()
                 {
-                    ID = sharer.id,
-                    Name = sharer.name,
-                    Gender = sharer.gender,
-                    Address = sharer.address,
+                    ID = sharer.ID,
+                    Name = sharer.Name,
+                    Birthday = (DateTime)sharer.Birthday,
+                    Gender = sharer.Gender,
+                    Age = GuestViewModel.CalculateAge((DateTime)sharer.Birthday),
                 };
+
+                foreach (var room in BookedRooms)
+                {
+                    int RoomID = db.ROOM_BOOKED.Where(rb => rb.id == sharer.RoomBooked).FirstOrDefault().room_id;
+                    if (room.RoomID == RoomID) obj.Room = room;
+                }
+
                 Sharers.Add(obj);
             }
         }
