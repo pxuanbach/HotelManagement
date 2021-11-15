@@ -188,6 +188,7 @@
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\ReportsViewModel.cs" />
+    <Compile Include="ViewModels\Report\TopServiceViewModel.cs" />
     <Compile Include="ViewModels\Reservation\BindingProxy.cs" />
     <Compile Include="ViewModels\Reservation\NewReservationViewModel.cs" />
     <Compile Include="ViewModels\PageNavigationViewModel.cs" />

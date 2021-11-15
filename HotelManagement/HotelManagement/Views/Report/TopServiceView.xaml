@@ -6,9 +6,16 @@
              xmlns:local="clr-namespace:HotelManagement.Views"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
-             mc:Ignorable="d" 
+             mc:Ignorable="d" FontSize="16"
              d:DesignHeight="500" d:DesignWidth="600">
+    <UserControl.DataContext>
+        <viewModels:TopServiceViewModel/>
+    </UserControl.DataContext>
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
@@ -23,9 +30,27 @@
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" Text="Top services" FontSize="24" FontWeight="Bold" VerticalAlignment="Center"
                     HorizontalAlignment="Stretch" Margin="8 8 0 8" Foreground="{StaticResource PrimaryHueDarkBrush}"/>
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    
-                </StackPanel>
+                <Border Grid.Column="1" BorderBrush="{StaticResource PrimaryHueDarkBrush}" BorderThickness="0.3" Margin="15 10 5 10" MaxWidth="600" HorizontalAlignment="Stretch" CornerRadius="3">
+                    <Grid>
+                        <Grid.Resources>
+                            <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="Transparent"/>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width=".4*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Width="Auto" Height="Auto" Name="btSearchAcc" Padding="0"
+                            Style="{StaticResource MaterialDesignFlatButton}" Foreground="Black">
+                            <TextBlock Text="By" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Button>
+                        <ComboBox Grid.Column="1" x:Name="cbbSearch" BorderThickness="0.2" Padding="8 2 2 2"
+                            BorderBrush="{StaticResource PrimaryHueDarkBrush}" 
+                            ItemsSource="{Binding ReportTypes}" SelectedItem="{Binding SelectedType}"
+                            Style="{StaticResource MaterialDesignOutlinedComboBox}" 
+                            VerticalContentAlignment="Center" Width="auto" >
+                        </ComboBox>
+                    </Grid>
+                </Border>
             </Grid>
             
         </Grid>

@@ -141,8 +141,8 @@
     <DataTemplate x:Key="InvoiceViewTemplate" DataType="{x:Type viewModels:InvoiceViewModel}">
         <views:InvoiceView/>
     </DataTemplate>
-    <DataTemplate x:Key="ReportsViewTemplate" DataType="{x:Type viewModels:ReportsViewModel}">
-        <views:ReportsView/>
+    <DataTemplate x:Key="ReportsViewTemplate" DataType="{x:Type viewModels:TopServiceViewModel}">
+        <views:TopServiceView/>
     </DataTemplate>
     <DataTemplate x:Key="RoomsViewTemplate" DataType="{x:Type viewModels:RoomsViewModels}">
         <views:RoomsView/>
