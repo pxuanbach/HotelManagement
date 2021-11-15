@@ -18,6 +18,7 @@ namespace HotelManagement.Models
         public ROOM_BOOKED()
         {
             this.FOLIOs = new HashSet<FOLIO>();
+            this.GUEST_BOOKING = new HashSet<GUEST_BOOKING>();
         }
     
         public int id { get; set; }
@@ -26,6 +27,8 @@ namespace HotelManagement.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<FOLIO> FOLIOs { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<GUEST_BOOKING> GUEST_BOOKING { get; set; }
         public virtual RESERVATION RESERVATION { get; set; }
         public virtual ROOM ROOM { get; set; }
     }

@@ -83,11 +83,11 @@ namespace HotelManagement.ViewModels
         {
             Color.FromRgb(178, 191, 229),
             Color.FromRgb(178,223, 229),
-            Color.FromRgb(178, 229, 203),
-            Color.FromRgb(184, 229, 178),
             Color.FromRgb(197, 178, 229),
-            Color.FromRgb(216, 229, 178),
             Color.FromRgb(229, 178, 178),
+            Color.FromRgb(208, 208, 208),
+            Color.FromRgb(184, 229, 178),
+            Color.FromRgb(216, 229, 178),
             Color.FromRgb(229,178,197),
             Color.FromRgb(229, 178, 229),
             Color.FromRgb(229, 210, 178),
@@ -163,7 +163,6 @@ namespace HotelManagement.ViewModels
                             var resID = item.id.ToString();
                             sb.AppendLine($"Room type: {booked.ROOM.ROOMTYPE.name}");
                             sb.AppendLine($"Reservation ID: {resID}");
-                            sb.AppendLine($"Status: {status}");
                             sb.AppendLine($"Main guest: {guest} Name: {item.GUEST.name}");
                             sb.AppendLine($"Date: {interval} ({interval.Duration.TotalDays} Days)");
 

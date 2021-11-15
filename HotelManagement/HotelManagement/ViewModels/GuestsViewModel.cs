@@ -5,13 +5,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace HotelManagement.ViewModels
 {
     class GuestsViewModel:BaseViewModel
     {
-        public string Title { get; } = "Guests";
+        private string title;
+        public string Title { get { return title; } set {  title = value; OnPropertyChanged(); } } 
         #region ItemS ource
         private ObservableCollection<GUEST> itemSource = new ObservableCollection<GUEST>();
         public ObservableCollection<GUEST> ItemSource
@@ -47,6 +49,17 @@ namespace HotelManagement.ViewModels
             set
             {
                 isOpenDialog = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool isReadOnly;
+        public bool IsReadOnly
+        {
+            get { return isReadOnly; }
+            set
+            {
+                isReadOnly = value;
                 OnPropertyChanged();
             }
         }
@@ -171,7 +184,7 @@ namespace HotelManagement.ViewModels
         public ICommand AddNewGuestCommand { get; set; }
         public ICommand SaveGuestCommand { get; set; }
         public ICommand EditCommand { get; set; }
-
+        public ICommand ReloadCommand { get; set; }
 
         public GuestsViewModel()
         {
@@ -181,7 +194,13 @@ namespace HotelManagement.ViewModels
             GuestBirthday = DateTime.Now;
             SearchGuestCommand = new RelayCommand<GuestsView>((p) => true, (p) => Search());
             DeleteGuestCommand = new RelayCommand<object>((p) => true, (p) => Delete());
-            AddNewGuestCommand = new RelayCommand<object>((p) => true, (p) => { IsOpenDialog = true; DialogPropertiesChanged(); });
+            AddNewGuestCommand = new RelayCommand<object>((p) => true, (p) => {
+                if (permissionLogin() == true)
+                {
+                    IsOpenDialog = true;
+                    DialogPropertiesChanged(null);
+                }
+            });
             SaveGuestCommand = new RelayCommand<object>((p) =>
             {
                 if (string.IsNullOrEmpty(GuestName) && string.IsNullOrEmpty(GuestName.ToString()))
@@ -191,16 +210,46 @@ namespace HotelManagement.ViewModels
             {
                 SaveGuest();
             });
-            EditCommand = new RelayCommand<object>((p) => true, (p) => { IsOpenDialog = true; DialogPropertiesChanged(); });
+            EditCommand = new RelayCommand<DataGridTemplateColumn>((p) => true, (p) => {
+                if (permissionLogin() == true)
+                {
+                    IsOpenDialog = true;
+                    DialogPropertiesChanged(selectedGuest);
+                }
+            });
+            ReloadCommand = new RelayCommand<GuestsView>((p) => true, (p) => {
+                p.tbSearch.Text = "";
+                ItemSource = new ObservableCollection<GUEST>( DataProvider.Instance.DB.GUESTs.ToList());
+            });
         }
         #endregion
 
         #region New Guest
-        public void DialogPropertiesChanged()
+        public void DialogPropertiesChanged(GUEST p)
         {
             ErrorMessage = "";
-            GuestName = "";
-            GuestName = "";
+            if (p == null)
+            {
+                Title = "New Guest";
+                isReadOnly = true;
+                GuestName = "";
+                GuestAddress = "";
+                GuestEmail = "";
+                guestPhone = "";
+                GuestGender = "";
+            }
+            else
+            {
+                Title = "Edit Guest";
+                isReadOnly = false;
+                GuestID = p.id;
+                GuestName = p.name;
+                GuestAddress = p.address;
+                GuestEmail = p.email;
+                GuestPhone = p.phone;
+                GuestGender = p.gender;
+                GuestBirthday = p.birthday.Value;
+            }
         }
 
         public void SaveGuest()
@@ -284,6 +333,17 @@ namespace HotelManagement.ViewModels
             List<GUEST> res = new List<GUEST>();
             res = DataProvider.Instance.DB.GUESTs.ToList();
             return res;
+        }
+
+        private bool permissionLogin()
+        {
+            string permission = CurrentAccount.Instance.Permission;
+
+            if (permission != "Admin")
+            {
+                return false;
+            }
+            return true;
         }
         #endregion
     }
