@@ -14,9 +14,6 @@
     <UserControl.DataContext>
         <viewModels:AccountViewModel/>
     </UserControl.DataContext>
-    <UserControl.Resources>
-        <viewModels:PassThroughConverter x:Key="passThroughConverter"/>
-    </UserControl.Resources>
     <Grid>
         <materialDesign:DialogHost Name="dialog" Identifier="AccountDialog" CloseOnClickAway="True" 
             DialogTheme="Inherit" IsOpen="{Binding IsOpenDialog}">
