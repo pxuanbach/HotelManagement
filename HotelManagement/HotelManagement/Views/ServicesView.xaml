@@ -83,7 +83,7 @@
                     <RowDefinition Height="1"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0" Background="{StaticResource PrimaryLightBrush}">
+                <Grid Grid.Row="0" Background="White">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
@@ -110,7 +110,7 @@
                     </Grid>
                     <Grid Grid.Column="1">
                         <Button
-                            Background="{StaticResource PrimaryDarkBrush}"
+                            Background="#637BCF"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Right"
                             Margin="35 0"
@@ -122,17 +122,18 @@
                             Command="{Binding AddNewServiceCommand}"/>  
                     </Grid>
                 </Grid>
-                <Grid Grid.Row="1" Background="{StaticResource PrimaryLightBrush}">
-                    <Rectangle Margin="35 0" Fill="{StaticResource PrimaryDarkBrush}"/>
+                <Grid Grid.Row="1" Background="White">
+                    <Rectangle Margin="35 0" Fill="#637BCF"/>
                 </Grid>
-                <Grid Grid.Row="2" Background="{StaticResource PrimaryLightBrush}">
+                <Grid Grid.Row="2" Background="White">
                     <DataGrid
+                        Width="1000"
                  x:Name="dataGridServices" Margin="35"
                  ItemsSource="{Binding Services, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  SelectedItem="{Binding SelectedService, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  CanUserResizeColumns="False" IsReadOnly="False"
                  CanUserAddRows="False" AutoGenerateColumns="False"
-                 BorderThickness="1" BorderBrush="{StaticResource PrimaryDarkBrush}">
+                 BorderThickness="1" BorderBrush="#637BCF">
                         <DataGrid.Columns>
                             <materialDesign:DataGridTextColumn
                             Header="Id" Binding="{Binding ID}" 

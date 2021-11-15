@@ -17,7 +17,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="700"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="500"/>
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
@@ -275,7 +275,7 @@
                             </Grid>-->
                             <Grid Grid.Row="1">
                                 <DataGrid x:Name="dataGridRoomTypes"
-                                          ItemsSource="{Binding ItemRoomTypes, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                          ItemsSource="{Binding RoomTypes, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                           CanUserResizeColumns="False"
                                           IsReadOnly="True"
                                           CanUserAddRows="False"
@@ -285,7 +285,7 @@
                                           BorderBrush="{StaticResource PrimaryDarkBrush}">
                                     <DataGrid.Columns>
                                         <materialDesign:DataGridTextColumn
-                                            Header="RoomType" Binding="{Binding name}" 
+                                            Header="RoomType" Binding="{Binding Name}" 
                                             IsReadOnly="True">
                                             <DataGridTextColumn.HeaderStyle>
                                                 <Style TargetType="{x:Type DataGridColumnHeader}"
@@ -305,7 +305,7 @@
                                         </materialDesign:DataGridTextColumn>
 
                                         <materialDesign:DataGridTextColumn
-                                            Header="Price" Binding="{Binding price}" 
+                                            Header="Price" Binding="{Binding Price}" 
                                             IsReadOnly="True">
                                             <DataGridTextColumn.HeaderStyle>
                                                 <Style TargetType="{x:Type DataGridColumnHeader}"
