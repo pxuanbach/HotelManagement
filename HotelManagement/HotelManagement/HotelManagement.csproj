@@ -163,6 +163,9 @@
     <Compile Include="Models\SERVICE.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Resources\UC\UC_GuestChart.xaml.cs">
+      <DependentUpon>UC_GuestChart.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Resources\UC\UC_Room.xaml.cs">
       <DependentUpon>UC_Room.xaml</DependentUpon>
     </Compile>
@@ -257,6 +260,10 @@
       <DependentUpon>ServicesView.xaml</DependentUpon>
     </Compile>
     <Page Include="Resources\NavigationRail.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\UC\UC_GuestChart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
