@@ -275,7 +275,7 @@
                             </Grid>-->
                             <Grid Grid.Row="1">
                                 <DataGrid x:Name="dataGridRoomTypes"
-                                          ItemsSource="{Binding ItemRoomTypes, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                          ItemsSource="{Binding RoomTypes, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                           CanUserResizeColumns="False"
                                           IsReadOnly="True"
                                           CanUserAddRows="False"
@@ -285,7 +285,7 @@
                                           BorderBrush="{StaticResource PrimaryDarkBrush}">
                                     <DataGrid.Columns>
                                         <materialDesign:DataGridTextColumn
-                                            Header="RoomType" Binding="{Binding name}" 
+                                            Header="RoomType" Binding="{Binding Name}" 
                                             IsReadOnly="True">
                                             <DataGridTextColumn.HeaderStyle>
                                                 <Style TargetType="{x:Type DataGridColumnHeader}"
@@ -305,7 +305,7 @@
                                         </materialDesign:DataGridTextColumn>
 
                                         <materialDesign:DataGridTextColumn
-                                            Header="Price" Binding="{Binding price}" 
+                                            Header="Price" Binding="{Binding Price}" 
                                             IsReadOnly="True">
                                             <DataGridTextColumn.HeaderStyle>
                                                 <Style TargetType="{x:Type DataGridColumnHeader}"
@@ -334,7 +334,7 @@
                 <materialDesign:Card
                     Margin="5 5 5 5" Padding="20"
                     UniformCornerRadius="10">
-                    <lvc:CartesianChart>
+                    <!--<lvc:CartesianChart>
                         <lvc:CartesianChart.AxisX>
                             <lvc:Axis>
                                 <lvc:Axis.Separator>
@@ -347,7 +347,8 @@
 
                             </lvc:Axis>
                         </lvc:CartesianChart.AxisY>
-                    </lvc:CartesianChart>
+                    </lvc:CartesianChart>-->
+                    <Image Source="/Resources/dashboard side.jpg" HorizontalAlignment="Stretch" Stretch="Fill"/>
                 </materialDesign:Card>
             </Grid>
         </Grid>

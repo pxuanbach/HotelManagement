@@ -11,12 +11,23 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Runtime;
 
-namespace HotelManagement.ViewModels
+namespace HotelManagement.ViewModels.Service
 {
     class ServicesViewModel : BaseViewModel
     {
         public string Title { get; } = "Service";
         #region Item Source
+        private ObservableCollection<Service> services = new ObservableCollection<Service>();
+        public ObservableCollection<Service> Services
+        {
+            get => services;
+            set
+            {
+                services = value;
+                OnPropertyChanged();
+            }
+        }
+
         private ObservableCollection<SERVICE> itemSourceServices = new ObservableCollection<SERVICE>();
         public ObservableCollection<SERVICE> ItemSourceServices
         {
@@ -30,8 +41,8 @@ namespace HotelManagement.ViewModels
         #endregion
 
         #region Selected Services
-        private SERVICE selectedService;
-        public SERVICE SelectedService
+        private Service selectedService;
+        public Service SelectedService
         {
             get { return selectedService; }
             set
@@ -137,80 +148,52 @@ namespace HotelManagement.ViewModels
             LoadServices();
             SearchServiceCommand = new RelayCommand<ServicesView>((p) => true, (p) => Search(p));
             DeleteServiceCommand = new RelayCommand<object>((p) => true, (p) => Delete());
-            EditServiceCommand = new RelayCommand<SERVICE>((p) =>
-            {
-                return ItemSourceServices.Count > 0;
-            }, (p) =>
-            {
-                IsOpenDialog = true;
-                DialogPropertiesChanged(SelectedService);
-            });
-            AddNewServiceCommand = new RelayCommand<object>((p) => true, (p) => { IsOpenDialog = true; DialogPropertiesChanged(null); });
+            AddNewServiceCommand = new RelayCommand<object>((p) => true, (p) => { IsOpenDialog = true; DialogPropertiesChanged(); });
             SaveServiceCommand = new RelayCommand<object>((p) =>
             {
-                if (string.IsNullOrEmpty(ServiceName) && string.IsNullOrEmpty(ServicePrice.ToString()))
-                    return false;
-                else return true;
+                return true;
             }, (p) =>
             {
-                SaveService(IsReadOnlyServiceName);
+                SaveService();
             });
         }
         #endregion
 
         #region New Service
-        public void DialogPropertiesChanged(SERVICE p)
+        public void DialogPropertiesChanged()
         {
             ErrorMessage = "";
-            if (p == null)
-            {
-                DialogTitle = "New service";
-                IsReadOnlyServiceName = false;
-                ServiceName = "";
-                ServicePrice = 0;
-            }
-            else
-            {
-                DialogTitle = "Edit service";
-                IsReadOnlyServiceName = true;
-                ServiceName = p.name;
-                ServicePrice = (decimal)p.price;
-            }
+            DialogTitle = "New service";
+            IsReadOnlyServiceName = false;
+            ServiceName = "";
+            ServicePrice = 0;
+            
         }
 
-        public void SaveService(bool isEdit)
+        public void SaveService()
         {
-            if(isEdit)
+            var serviceMount = DataProvider.Instance.DB.SERVICEs.Where(x => x.name == ServiceName && x.isActive == true).Count();
+            if (serviceMount > 0)
             {
-                SERVICE service = SelectedService;
-                service.price = ServicePrice;
-                DataProvider.Instance.DB.SaveChanges();
+                ErrorMessage = "\"" + ServiceName + "\"" + " has already existed";
+                ServiceName = "";
+                return;
+            }
+            else if (String.IsNullOrEmpty(ServiceName))
+            {
+                ErrorMessage = "Please enter service name!";
+                return;
             }
             else
             {
-                var serviceMount = DataProvider.Instance.DB.SERVICEs.Where(x => x.name == ServiceName && x.isActive == true).Count();
-                if (serviceMount > 0)
+                SERVICE service = new SERVICE()
                 {
-                    ErrorMessage = "\"" + ServiceName + "\"" + " has already existed";
-                    ServiceName = "";
-                    return;
-                }
-                else if (String.IsNullOrEmpty(ServiceName))
-                {
-                    ErrorMessage = "Please enter service name!";
-                    return;
-                }
-                else
-                {
-                    SERVICE service = new SERVICE()
-                    {
-                        name = ServiceName,
-                        price = ServicePrice,
-                        isActive = true,
-                    };
-                    DataProvider.Instance.DB.SERVICEs.Add(service);
-                    DataProvider.Instance.DB.SaveChanges();
-                }
+                    name = ServiceName,
+                    price = ServicePrice,
+                    isActive = true,
+                };
+                DataProvider.Instance.DB.SERVICEs.Add(service);
+                DataProvider.Instance.DB.SaveChanges();
             }
             LoadServices();
         }
@@ -219,13 +202,14 @@ namespace HotelManagement.ViewModels
         #region Delete
         private void Delete()
         {
-            SERVICE service = SelectedService;
+            Service service = SelectedService;
+            SERVICE sERVICE = DataProvider.Instance.DB.SERVICEs.Where(x => x.id == service.ID).FirstOrDefault();
             string message = "Do you want to delete this service?";
             string caption = "Delete service";
             DialogResult result = MessageBox.Show(message, caption, MessageBoxButtons.YesNo);
             if (result == DialogResult.Yes) 
             {
-                service.isActive = false;
+                sERVICE.isActive = false;
                 DataProvider.Instance.DB.SaveChanges();
                 LoadServices();
             }
@@ -249,7 +233,17 @@ namespace HotelManagement.ViewModels
             {
                 ItemSourceServices = new ObservableCollection<SERVICE>(
                     DataProvider.Instance.DB.SERVICEs.Where(
-                        x => x.name.ToLower().Contains(ContentSearch.ToLower()) && x.isActive == true));
+                        x => x.name.ToLower().Contains(ContentSearch.ToLower()) ));
+                Services.Clear();
+                foreach (var SERVICE in ItemSourceServices)
+                {
+                    Service service = new Service();
+                    service.ID = SERVICE.id;
+                    service.Name = SERVICE.name;
+                    service.IsActive = (bool)SERVICE.isActive;
+                    service.Price = ConvertToString((long)SERVICE.price);
+                    Services.Add(service);
+                }
             }
         }
         #endregion
@@ -259,11 +253,18 @@ namespace HotelManagement.ViewModels
         {
             IsOpenDialog = false;
             this.ItemSourceServices.Clear();
+            this.Services.Clear();
             List<SERVICE> listSERVICEs = GetSERVICEs();
             foreach (var SERVICE in listSERVICEs)
             {
-                ItemSourceServices.Add(SERVICE);
-            }    
+                ItemSourceServices.Add(SERVICE); 
+                Service service = new Service();
+                service.ID = SERVICE.id;
+                service.Name = SERVICE.name;
+                service.IsActive = (bool)SERVICE.isActive;
+                service.Price = ConvertToString((long)SERVICE.price);
+                Services.Add(service);
+            }
         }
 
         private List<SERVICE> GetSERVICEs()
@@ -273,6 +274,5 @@ namespace HotelManagement.ViewModels
             return res;
         }
         #endregion
-
     }
 }

@@ -15,6 +15,17 @@ namespace HotelManagement.ViewModels
     {
         public string Title { get; } = "Dash Board";
 
+        private ObservableCollection<RoomType> roomTypes = new ObservableCollection<RoomType>();
+        public ObservableCollection<RoomType> RoomTypes
+        {
+            get => roomTypes;
+            set
+            {
+                roomTypes = value;
+                OnPropertyChanged();
+            }
+        }
+
         private ObservableCollection<ROOMTYPE> itemRoomTypes = new ObservableCollection<ROOMTYPE>();
         public ObservableCollection<ROOMTYPE> ItemRoomTypes
         {
@@ -239,10 +250,15 @@ namespace HotelManagement.ViewModels
         private void LoadRoomType()
         {
             this.ItemRoomTypes.Clear();
+            this.RoomTypes.Clear();
             List<ROOMTYPE> listROOMTYPEs = GetROOMTYPEs();
             foreach (var ROOMTYPE in listROOMTYPEs)
             {
                 ItemRoomTypes.Add(ROOMTYPE);
+                RoomType roomType = new RoomType();
+                roomType.Name = ROOMTYPE.name;
+                roomType.Price = ConvertToString((long)ROOMTYPE.price);
+                RoomTypes.Add(roomType);
             }
         }
         #endregion
@@ -279,5 +295,13 @@ namespace HotelManagement.ViewModels
             res = DataProvider.Instance.DB.ROOMs.Where(x => x.isActive == true).ToList();
             return res;
         }
+    }
+    class RoomType
+    {
+        private string name;
+        private string price;
+
+        public string Name { get => name; set => name = value; }
+        public string Price { get => price; set => price = value; }
     }
 }

@@ -10,17 +10,16 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace HotelManagement.Views
 {
     /// <summary>
-    /// Interaction logic for BookingView.xaml
+    /// Interaction logic for AddServicesWindow.xaml
     /// </summary>
-    public partial class BookingView : UserControl
+    public partial class AddServicesWindow : Window
     {
-        public BookingView()
+        public AddServicesWindow()
         {
             InitializeComponent();
         }
