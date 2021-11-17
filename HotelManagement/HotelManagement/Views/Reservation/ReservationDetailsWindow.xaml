@@ -645,6 +645,18 @@
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
 
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button 
+                                                    Padding="0" Width="32"
+                                                    Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.EditSharerCommand}"
+                                                    CommandParameter="{Binding}">
+                                                    <materialDesign:PackIcon Kind="Edit"/>
+                                                </Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
 
                                     <DataGridTemplateColumn>
                                         <DataGridTemplateColumn.CellTemplate>

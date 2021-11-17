@@ -33,7 +33,7 @@ namespace HotelManagement.ViewModels
 
         public bool Guaranteed { get; set; }
 
-        public IEnumerable<string> Gender => new[] { "Male", "Female", "Other" };
+        public IEnumerable<string> Gender => new[] { "Male", "Female" };
 
         #region Command
         // Reserve as sharer
@@ -109,7 +109,7 @@ namespace HotelManagement.ViewModels
         // Confirm add sharer
         public void AddSharer(Window wd)
         {
-            Sharers.Add(NewSharer);
+            if (wd.Title == "Add new sharer") Sharers.Add(NewSharer);
             wd.Close();
         }
 
@@ -119,6 +119,26 @@ namespace HotelManagement.ViewModels
             get
             {
                 return _confirmAddSharerCommand ?? (_confirmAddSharerCommand = new RelayCommand<Window>((p) => NewSharer.FilledGuestInformation, (p) => AddSharer(p)));
+            }
+        }
+
+        // Open edit sharer window
+        public void OpenEditSharerWindow(GuestViewModel guest)
+        {
+            var wd = new AddBookingGuestWindow();
+            NewSharer = guest;
+            wd.Title = "Edit sharer information";
+            wd.txtboxGuestID.IsEnabled = false;
+            wd.DataContext = this;
+            wd.ShowDialog();
+        }
+
+        private ICommand _editSharerCommand;
+        public ICommand EditSharerCommand
+        {
+            get
+            {
+                return _editSharerCommand ?? (_editSharerCommand = new RelayCommand<GuestViewModel>((p) => true, (p) => OpenEditSharerWindow(p)));
             }
         }
 
@@ -135,7 +155,8 @@ namespace HotelManagement.ViewModels
                     if (String.IsNullOrEmpty(row.Name) ||
                         String.IsNullOrEmpty(row.ID) ||
                         String.IsNullOrEmpty(row.Gender) ||
-                        String.IsNullOrEmpty(row.Address))
+                        String.IsNullOrEmpty(row.Address) ||
+                        row.Room == null)
                         return false;
                 }
                 return true;

@@ -19,6 +19,7 @@
             BorderBrush="LightGray" BorderThickness="1.5">
             <StackPanel>
                 <TextBox
+                    x:Name="txtboxGuestID"
                     FontSize="14" Width="230" Margin="0,3,0,3"
                     Text="{Binding Path=NewSharer.ID}"
                     Style="{StaticResource MaterialDesignTextBox}"
@@ -111,6 +112,7 @@
                     materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"/>
 
                 <ComboBox
+                    x:Name="cbbSelectRoom"
                     Grid.Column="0"
                     Width="230" Margin="0,3,0,3"
                     Style="{StaticResource MaterialDesignFloatingHintComboBox}"
@@ -125,8 +127,9 @@
                 </ComboBox>
 
                 <Button
+                    x:Name="btnConfirm"
                     Margin="0,5,0,0"
-                    Content="Add new sharer" FontSize="14"
+                    Content="Confirm" FontSize="14"
                     VerticalAlignment="Bottom"
                     Command="{Binding ConfirmAddSharerCommand}"
                     CommandParameter="{Binding ElementName=windowAddSharer}"/>
