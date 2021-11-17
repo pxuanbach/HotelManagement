@@ -13,8 +13,21 @@
         <viewModels:ReportsViewModel/>
     </UserControl.DataContext>
     <Grid>
-        <UC:UC_GuestChart/>
-
-
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Vertical"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+            <materialDesign:PackIcon HorizontalAlignment="Center"
+                                              Foreground="{StaticResource PrimaryDarkBrush}"
+                                              Width="100" Height="100"
+                                              Kind="FileChart"/>
+            <TextBlock FontSize="40" FontWeight="Bold" 
+                       VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Foreground="{StaticResource PrimaryDarkBrush}"
+                       Text="{Binding Title}"/>
+        </StackPanel>
     </Grid>
 </UserControl>

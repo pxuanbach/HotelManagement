@@ -45,6 +45,10 @@ namespace HotelManagement.ViewModels
         public List<FolioDisplayItem> Folio { get; set; }
         #endregion
 
+        public double OverCapacityFee { get; set; }
+
+        public string OverCapacityFeeMoney { get; set; }
+
         public string RoomTotalMoney { get; set; }
 
         public string FolioTotalMoney { get; set; }
@@ -58,16 +62,19 @@ namespace HotelManagement.ViewModels
             Guests = new List<GUEST>();
             Folio = new List<FolioDisplayItem>();
             var reservation = DataProvider.Instance.DB.RESERVATIONs.SingleOrDefault(x => x.id == ReservationId);
-            var room = DataProvider.Instance.DB.ROOMs.SingleOrDefault(x => x.id == RoomId);
-            var roomType = DataProvider.Instance.DB.ROOMTYPEs.SingleOrDefault(x => x.id == room.roomtype_id);
             var roomBooked = DataProvider.Instance.DB.ROOM_BOOKED.SingleOrDefault(
                 x => x.reservation_id == reservation.id && x.room_id == RoomId);
             var folio = DataProvider.Instance.DB.FOLIOs.Where(x => x.room_booked_id == roomBooked.id).ToList();
             int exactRoomPrice = CalculatorInvoice.ExactRoomPrice(RoomId, reservation.date_created.Value);
+            int exactCapacity = CalculatorInvoice.ExactCapacity(RoomId, reservation.date_created.Value);
             long roomTotalMoney = CalculatorInvoice.RoomTotalMoney(RoomId, reservation);
             long folioTotalMoney = CalculatorInvoice.FolioTotalOfRoom(folio.ToArray());
 
-            foreach(var item in roomBooked.GUEST_BOOKING)
+            if (CalculatorInvoice.IsRoomOverCapacity(roomBooked))
+                OverCapacityFee = CalculatorInvoice.LoadOverCapacityFee(reservation);
+            long overCapacityFeeMoney = (long)(OverCapacityFee/100 * roomTotalMoney);
+
+            foreach (var item in roomBooked.GUEST_BOOKING)
             {
                 Guests.Add(item.GUEST);
             }    
@@ -84,15 +91,16 @@ namespace HotelManagement.ViewModels
             GuestCount = roomBooked.GUEST_BOOKING.Count();
             Arrival = reservation.arrival.Value;
             Departure = reservation.departure.Value;
-            RoomName = room.name;
-            Notes = room.notes;
-            RoomType = roomType.name;
+            RoomName = roomBooked.ROOM.name;
+            Notes = roomBooked.ROOM.notes;
+            RoomType = roomBooked.ROOM.ROOMTYPE.name;
             Price = SeparateThousands(exactRoomPrice.ToString());
-            MaxGuest = roomType.max_guest.Value;
+            MaxGuest = exactCapacity;
 
             RoomTotalMoney = SeparateThousands(roomTotalMoney.ToString());
             FolioTotalMoney = SeparateThousands(folioTotalMoney.ToString());
-            TotalMoney = SeparateThousands((roomTotalMoney + folioTotalMoney).ToString());
+            OverCapacityFeeMoney = SeparateThousands(overCapacityFeeMoney.ToString());
+            TotalMoney = SeparateThousands((roomTotalMoney + folioTotalMoney + overCapacityFeeMoney).ToString());
         }
     }
 }
