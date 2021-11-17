@@ -18,8 +18,8 @@
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="0.43*"/>
+            <ColumnDefinition Width="0.57*"/>
         </Grid.ColumnDefinitions>
         <Grid>
             <Grid.RowDefinitions>
