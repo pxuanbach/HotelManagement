@@ -397,8 +397,8 @@ namespace HotelManagement.ViewModels
         }
         public void OpenFolioWindow(RoomViewModel room)
         {
-            // TODO: QUANGGGGGGGGGGGGGGGGGGGG
-            // room duoc truyen vao la phong duoc click
+            AddServicesWindow addServicesWindow = new AddServicesWindow();
+            addServicesWindow.ShowDialog();
         }
 
         private ICommand _showFolioCommand;
