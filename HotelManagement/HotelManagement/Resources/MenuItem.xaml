@@ -2,6 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:views="clr-namespace:HotelManagement.Views"
                     xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
+                    xmlns:resUC="clr-namespace:HotelManagement.Resources.UC"
                     xmlns:viewModelSerive="clr-namespace:HotelManagement.ViewModels.Service"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <DataTemplate DataType="{x:Type viewModels:DashBoardViewModel}">
@@ -30,5 +31,12 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type viewModelSerive:ServicesViewModel}">
         <views:ServicesView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels:TopServiceViewModel}">
+        <views:TopServiceView/>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:GuestChart}">
+        <resUC:UC_GuestChart/>
     </DataTemplate>
 </ResourceDictionary>
