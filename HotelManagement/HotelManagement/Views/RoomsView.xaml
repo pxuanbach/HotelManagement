@@ -180,7 +180,7 @@
             </Grid>
             <Grid Grid.Row="1"
                   x:Name="grdRoom">
-                <ScrollViewer>
+                <ScrollViewer x:Name="scrRoom">
                     <WrapPanel
                     Margin="10 0 10 0"
                     x:Name="stkRoom" 

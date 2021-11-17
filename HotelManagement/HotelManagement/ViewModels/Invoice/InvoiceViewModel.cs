@@ -125,6 +125,9 @@ namespace HotelManagement.ViewModels
         #endregion
 
         #region Fees + Total Money
+        private double _overCapacityFee;
+        public double OverCapacityFee { get { return _overCapacityFee; } set { _overCapacityFee = value; OnPropertyChanged(); } }
+
         private double _earlyCheckinFee;
         public double EarlyCheckinFee { get { return _earlyCheckinFee; } set { _earlyCheckinFee = value; OnPropertyChanged(); } }
 
@@ -159,6 +162,13 @@ namespace HotelManagement.ViewModels
 
         private double _surchargeDialog;
         public double SurchargeDialog { get { return _surchargeDialog; } set { _surchargeDialog = value; OnPropertyChanged(); } }
+
+        private double _overCapacityFeeDialog;
+        public double OverCapacityFeeDialog
+        {
+            get { return _overCapacityFeeDialog; }
+            set { _overCapacityFeeDialog = value; OnPropertyChanged(); }
+        }
 
         private double _earlyCheckinFeeDialog;
         public double EarlyCheckinFeeDialog 
@@ -290,11 +300,13 @@ namespace HotelManagement.ViewModels
             {
                 var charge = DataProvider.Instance.DB.CHARGES.First();
                 charge.surcharge = SurchargeDialog;
+                charge.over_capacity_fee = OverCapacityFeeDialog;
                 charge.early_checkin_fee = EarlyCheckinFeeDialog;
                 charge.late_checkout_fee = LateCheckoutFeeDialog;
                 DataProvider.Instance.DB.SaveChanges();
 
                 IsOpenDialog = false;
+                InitDialogProperties();
             });
 
             CheckOutCommand = new RelayCommand<System.Windows.Controls.ListView>((p) =>
@@ -337,7 +349,7 @@ namespace HotelManagement.ViewModels
             Folio = new ObservableCollection<FolioDisplayItem>();
             SearchTypes = new List<string>();
             SearchTypes.Add("ID");
-            SearchTypes.Add("Main Guest");
+            SearchTypes.Add("Guest");
 
             StatusSelected = "Operational";
             LoadReservations();
@@ -349,11 +361,12 @@ namespace HotelManagement.ViewModels
 
         void InitDialogProperties()
         {
-            var charge = DataProvider.Instance.DB.CHARGES.First();
+            var charges = DataProvider.Instance.DB.CHARGES.First();
             ErrorMessageDialog = "";
-            SurchargeDialog = charge.surcharge.Value;
-            EarlyCheckinFeeDialog = charge.early_checkin_fee.Value;
-            LateCheckoutFeeDialog = charge.late_checkout_fee.Value;
+            SurchargeDialog = charges.surcharge.Value;
+            OverCapacityFeeDialog = charges.over_capacity_fee.Value;
+            EarlyCheckinFeeDialog = charges.early_checkin_fee.Value;
+            LateCheckoutFeeDialog = charges.late_checkout_fee.Value;
         }
 
         void ClearDetailProperties()
@@ -386,6 +399,7 @@ namespace HotelManagement.ViewModels
                 Folio.Clear();
 
             //Fees + Total Money
+            OverCapacityFee = 0;
             EarlyCheckinFee = 0;
             LateCheckoutFee = 0;
             Surcharge = 0;
@@ -463,8 +477,8 @@ namespace HotelManagement.ViewModels
             }
 
             ReservationIdSelected = p.id;
-            Arrival = p.arrival.Value.ToString("dd/MM/yyyy");
-            Departure = p.departure.Value.ToString("dd/MM/yyyy");
+            Arrival = p.arrival.Value.ToString();
+            Departure = p.departure.Value.ToString();
             Identity = p.main_guest;
             Name = mainGuest.name;
             Phone = mainGuest.phone;
@@ -473,11 +487,14 @@ namespace HotelManagement.ViewModels
             RoomCount = roomBookedList.Count();
             FolioCount = Folio.Count();
 
-            //Calculate money
-            RoomsTotalMoney = SeparateThousands(CalculatorInvoice.RoomsTotalMoney(p).ToString());
-            FolioTotalMoney = SeparateThousands(CalculatorInvoice.FolioTotalMoney(p).ToString());
-
             LoadFeeByStatus(p);
+
+            long roomsTotalMoney = CalculatorInvoice.RoomsTotalMoney(p) 
+                + CalculatorInvoice.OverCapacityFeeOfRooms(p, OverCapacityFee);
+
+            //Calculate money
+            RoomsTotalMoney = SeparateThousands(roomsTotalMoney.ToString());
+            FolioTotalMoney = SeparateThousands(CalculatorInvoice.FolioTotalMoney(p).ToString());
             TotalMoneyNumber = CalculatorInvoice.TotalMoneyWithFee(p);
             TotalMoney = SeparateThousands(TotalMoneyNumber.ToString());
         }
@@ -486,6 +503,10 @@ namespace HotelManagement.ViewModels
         {
             if (StatusSelected == "Operational")
             {
+                if (CalculatorInvoice.IsReservationContainsRoomOverCapacity(p))
+                {
+                    OverCapacityFee = DataProvider.Instance.DB.CHARGES.First().over_capacity_fee.Value;
+                }    
                 if (p.early_checkin.Value)
                 {
                     EarlyCheckinFee = DataProvider.Instance.DB.CHARGES.First().early_checkin_fee.Value;
@@ -501,6 +522,7 @@ namespace HotelManagement.ViewModels
             {
                 var invoice = DataProvider.Instance.DB.INVOICEs.SingleOrDefault(x => x.reservation_id == p.id);
 
+                OverCapacityFee = invoice.over_capacity_fee.Value;
                 EarlyCheckinFee = invoice.early_checkin_fee.Value;
                 LateCheckoutFee = invoice.late_checkout_fee.Value;
                 Surcharge = invoice.surcharge.Value;
@@ -672,6 +694,7 @@ namespace HotelManagement.ViewModels
                 reservation_id = p.id,
                 total_money = Convert.ToDecimal(TotalMoneyNumber),
                 surcharge = Surcharge,
+                over_capacity_fee = OverCapacityFee,
                 early_checkin_fee = EarlyCheckinFee,
                 late_checkout_fee = LateCheckoutFee,
             };

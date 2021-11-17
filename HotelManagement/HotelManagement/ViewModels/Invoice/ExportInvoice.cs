@@ -141,6 +141,7 @@ namespace HotelManagement.ViewModels
 
         public void FormatListRoom_Folio(Document pdfDoc, RESERVATION reservation)
         {
+            double overCapacityFee = CalculatorInvoice.LoadOverCapacityFee(reservation);
             float[] widths = new float[] { 1.3f, 3f, 0.7f, 1f, 1f}; //length = num of columns
             PdfPTable roomTable = new PdfPTable(widths);
             roomTable.WidthPercentage = 100;
@@ -161,10 +162,22 @@ namespace HotelManagement.ViewModels
             foreach (ROOM_BOOKED obj in reservation.ROOM_BOOKED)
             {
                 var folio = obj.FOLIOs.ToArray();
+                //List room type with the same name
+                var roomTypeList = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == obj.ROOM.ROOMTYPE.name).ToList();
+                int exactRoomPrice = CalculatorInvoice.ExactRoomPrice(roomTypeList, reservation.date_created.Value);
+                long roomTotal = CalculatorInvoice.RoomTotalMoney(obj.room_id, obj.RESERVATION)
+                    + CalculatorInvoice.OverCapacityFeeOfRoom(obj, overCapacityFee);
+                long total = roomTotal + CalculatorInvoice.FolioTotalOfRoom(folio);
+
                 if (folio.Length > 0)
                 {
                     //Room Name
-                    roomTable.AddCell(CellLeftFormat(obj.ROOM.name + "\n" + obj.ROOM.ROOMTYPE.name, f11, folio.Length + 1));
+                    if (CalculatorInvoice.IsRoomOverCapacity(obj))
+                        roomTable.AddCell(CellLeftFormat(
+                            obj.ROOM.name + "\n" + obj.ROOM.ROOMTYPE.name + 
+                            "\n(Over Capacity)", f11, folio.Length + 1));
+                    else
+                        roomTable.AddCell(CellLeftFormat(obj.ROOM.name + "\n" + obj.ROOM.ROOMTYPE.name, f11, folio.Length + 1));
 
                     //Folio
                     int price = (int)folio[0].SERVICE.price;
@@ -172,15 +185,8 @@ namespace HotelManagement.ViewModels
                     roomTable.AddCell(CellCenterFormat(folio[0].amount.ToString(), f11));
                     roomTable.AddCell(CellRightFormat(SeparateThousands(price.ToString()), f11));
 
-                    //List room type with the same name
-                    var roomTypeList = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == obj.ROOM.ROOMTYPE.name).ToList();
-                    int exactRoomPrice = CalculatorInvoice.ExactRoomPrice(roomTypeList, reservation.date_created.Value);
-                    long roomTotal = exactRoomPrice * CalculatorInvoice.TotalNumOfDays(reservation);
-                    long total = roomTotal + CalculatorInvoice.FolioTotalOfRoom(folio);
-
                     //Price/Day
-                    roomTable.AddCell(CellRightFormat(SeparateThousands(
-                        CalculatorInvoice.ExactRoomPrice(obj.room_id, reservation.date_created.Value).ToString()), f11, folio.Length));
+                    roomTable.AddCell(CellRightFormat(SeparateThousands(exactRoomPrice.ToString()), f11, folio.Length));
 
                     for (int i = 1; i < folio.Length; i++)
                     {
@@ -192,42 +198,57 @@ namespace HotelManagement.ViewModels
                         roomTable.AddCell(CellRightFormat(SeparateThousands(price.ToString()), f11));
                     }
 
-                    roomTable.AddCell(CellLeftFormat("Total", f11B, 1, 2));
+                    if (CalculatorInvoice.IsRoomOverCapacity(obj))
+                        roomTable.AddCell(CellLeftFormat("Total (+" + overCapacityFee + "% Room Price/Guest)", f11B, 1, 2));
+                    else
+                        roomTable.AddCell(CellLeftFormat("Total", f11B, 1, 2));
+
                     roomTable.AddCell(CellRightFormat(SeparateThousands(
                         CalculatorInvoice.FolioTotalOfRoom(folio).ToString()), f11B));
-                    roomTable.AddCell(CellRightFormat(SeparateThousands(
-                        CalculatorInvoice.RoomTotalMoney(obj.room_id, reservation).ToString()), f11B));
+                    roomTable.AddCell(CellRightFormat(SeparateThousands(roomTotal.ToString()), f11B));
                 }
                 else
                 {
-                    roomTable.AddCell(CellLeftFormat(obj.ROOM.name + "\n" + obj.ROOM.ROOMTYPE.name, f11, 2));
+                    //Room Name
+                    if (CalculatorInvoice.IsRoomOverCapacity(obj))
+                        roomTable.AddCell(CellLeftFormat(
+                            obj.ROOM.name + "\n" + obj.ROOM.ROOMTYPE.name +
+                            "\n(Over Capacity)", f11, 2));
+                    else
+                        roomTable.AddCell(CellLeftFormat(obj.ROOM.name + "\n" + obj.ROOM.ROOMTYPE.name, f11, 2));
 
                     //folio
                     roomTable.AddCell(CellLeftFormat("", f11));
                     roomTable.AddCell(CellCenterFormat("0", f11));
                     roomTable.AddCell(CellRightFormat("0", f11));
 
-                    //List room type with the same name
-                    var roomTypeList = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == obj.ROOM.ROOMTYPE.name).ToList();
-                    int exactRoomPrice = CalculatorInvoice.ExactRoomPrice(roomTypeList, reservation.date_created.Value);
-
                     roomTable.AddCell(CellRightFormat(SeparateThousands(exactRoomPrice.ToString()), f11));
 
-                    roomTable.AddCell(CellLeftFormat("Total", f11B, 1, 2));
-                    roomTable.AddCell(CellRightFormat(SeparateThousands(CalculatorInvoice.FolioTotalOfRoom(folio).ToString()), f11B));
+                    if (CalculatorInvoice.IsRoomOverCapacity(obj))
+                        roomTable.AddCell(CellLeftFormat("Total (+" + overCapacityFee + "% Room Price/Guest)", f11B, 1, 2));
+                    else
+                        roomTable.AddCell(CellLeftFormat("Total", f11B, 1, 2));
+
                     roomTable.AddCell(CellRightFormat(SeparateThousands(
-                        CalculatorInvoice.RoomTotalMoney(obj.room_id, reservation).ToString()), f11B));
+                        CalculatorInvoice.FolioTotalOfRoom(folio).ToString()), f11B));
+                    roomTable.AddCell(CellRightFormat(SeparateThousands(
+                        roomTotal.ToString()), f11B));
                 }    
                 
             }
+            long totalRoomAndFee = CalculatorInvoice.RoomsTotalMoney(reservation) 
+                + CalculatorInvoice.OverCapacityFeeOfRooms(reservation, overCapacityFee);
             PdfPCell cell = new PdfPCell(new Phrase("Total  ", f11B));
             cell.HorizontalAlignment = Element.ALIGN_RIGHT;
             cell.Border = 0;
             cell.Colspan = 3;
 
+
             roomTable.AddCell(cell);
-            roomTable.AddCell(CellRightFormat(SeparateThousands(CalculatorInvoice.FolioTotalMoney(reservation).ToString()), f11B));
-            roomTable.AddCell(CellRightFormat(SeparateThousands(CalculatorInvoice.RoomsTotalMoney(reservation).ToString()), f11B));
+            roomTable.AddCell(CellRightFormat(SeparateThousands(
+                CalculatorInvoice.FolioTotalMoney(reservation).ToString()), f11B));
+            roomTable.AddCell(CellRightFormat(SeparateThousands(
+                totalRoomAndFee.ToString()), f11B));
 
             pdfDoc.Add(roomTable);
             pdfDoc.Add(new Paragraph("                                  ", f11));
@@ -382,6 +403,20 @@ namespace HotelManagement.ViewModels
 
             if (isBackground)
                 cell.BackgroundColor = BaseColor.GRAY;
+
+            return cell;
+        }
+
+        PdfPCell CellRedLeftFormat(string content, Font font, int rowSpan = 1, int colSpan = 1)
+        {
+            
+            PdfPCell cell = new PdfPCell(new Phrase(content, font));
+            cell.HorizontalAlignment = Element.ALIGN_LEFT;
+            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+            cell.Colspan = colSpan;
+            cell.Rowspan = rowSpan;
+
+            cell.BackgroundColor = BaseColor.RED;
 
             return cell;
         }
