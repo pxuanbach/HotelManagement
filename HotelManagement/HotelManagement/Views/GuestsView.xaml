@@ -67,7 +67,7 @@
                         <DatePicker Grid.Row="5" Margin="5 15"
                             Style="{StaticResource MaterialDesignOutlinedDatePicker}"
                             VerticalAlignment="Top" 
-                            Text="{Binding Path=GuestBirthday, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True}"
+                            Text="{Binding Path=GuestBirthday, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True, NotifyOnValidationError=True, Mode=TwoWay}"
                             materialDesign:HintAssist.Hint="Guest's birthday"/>
 
                         <TextBox Grid.Row="6" Margin="5 15"
