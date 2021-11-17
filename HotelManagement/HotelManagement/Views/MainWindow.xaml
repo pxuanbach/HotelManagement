@@ -33,7 +33,7 @@
                     </Grid.RowDefinitions>
 
                     <Grid Grid.Row="0">
-                        <ToggleButton x:Name="Tg_Btn" Grid.Column="1" VerticalAlignment="Center" Style="{DynamicResource iToggleButtonStyle}" HorizontalAlignment="Left" BorderThickness="0" Background="Transparent" Margin="15,15,0,15" Height="30" Width="30">
+                        <ToggleButton x:Name="btnMenu" Grid.Column="1" VerticalAlignment="Center" Style="{DynamicResource iToggleButtonStyle}" HorizontalAlignment="Left" BorderThickness="0" Background="Transparent" Margin="15,15,0,15" Height="30" Width="30">
                             <ToggleButton.Triggers>
                                 <EventTrigger RoutedEvent="ToggleButton.Unchecked">
                                     <BeginStoryboard>
@@ -283,7 +283,7 @@
                 <!-- End: Button Close | Title -->
                 <Grid Grid.Row="1" Background="{StaticResource PrimaryDarkBrush}"/>
                 <Grid Grid.Row="2">
-                    <ContentControl Grid.Row="0" Content="{Binding DataTemplate}"/>
+                    <ContentControl x:Name="contentView" Grid.Row="0" Content="{Binding DataTemplate}"/>
                 </Grid>
             </Grid>
         </Grid>

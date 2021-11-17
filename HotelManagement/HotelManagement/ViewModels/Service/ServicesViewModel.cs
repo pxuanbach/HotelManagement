@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Runtime;
 
-namespace HotelManagement.ViewModels
+namespace HotelManagement.ViewModels.Service
 {
     class ServicesViewModel : BaseViewModel
     {
@@ -274,17 +274,5 @@ namespace HotelManagement.ViewModels
             return res;
         }
         #endregion
-    }
-    class Service
-    {
-        private int id;
-        private string name;
-        private string price;
-        private bool isActive;
-
-        public int ID { get => id; set => id = value; }
-        public string Name { get => name; set => name = value; }
-        public string Price { get => price; set => price = value; }
-        public bool IsActive { get => isActive; set => isActive = value; }
     }
 }

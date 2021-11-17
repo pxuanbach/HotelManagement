@@ -17,7 +17,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="700"/>
-            <ColumnDefinition Width="500"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
@@ -334,7 +334,7 @@
                 <materialDesign:Card
                     Margin="5 5 5 5" Padding="20"
                     UniformCornerRadius="10">
-                    <lvc:CartesianChart>
+                    <!--<lvc:CartesianChart>
                         <lvc:CartesianChart.AxisX>
                             <lvc:Axis>
                                 <lvc:Axis.Separator>
@@ -347,7 +347,8 @@
 
                             </lvc:Axis>
                         </lvc:CartesianChart.AxisY>
-                    </lvc:CartesianChart>
+                    </lvc:CartesianChart>-->
+                    <Image Source="/Resources/dashboard side.jpg" HorizontalAlignment="Stretch" Stretch="Fill"/>
                 </materialDesign:Card>
             </Grid>
         </Grid>

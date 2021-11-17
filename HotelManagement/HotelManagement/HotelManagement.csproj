@@ -175,6 +175,7 @@
       <DependentUpon>UC_RoomType.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\AccountViewModel.cs" />
+    <Compile Include="ViewModels\Service\AddServicesViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\CalendarViewModel.cs" />
     <Compile Include="ViewModels\Converter.cs" />
@@ -197,12 +198,16 @@
     <Compile Include="ViewModels\Reservation\ReservationListViewModel.cs" />
     <Compile Include="ViewModels\RoomsViewModels.cs" />
     <Compile Include="ViewModels\SchedulerDataSource.cs" />
-    <Compile Include="ViewModels\ServicesViewModel.cs" />
+    <Compile Include="ViewModels\Service\Service.cs" />
+    <Compile Include="ViewModels\Service\ServicesViewModel.cs" />
     <Compile Include="Views\AccountsView.xaml.cs">
       <DependentUpon>AccountsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\AddRoomWindow.xaml.cs">
       <DependentUpon>AddRoomWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AddServicesWindow.xaml.cs">
+      <DependentUpon>AddServicesWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\AddTypeWindow.xaml.cs">
       <DependentUpon>AddTypeWindow.xaml</DependentUpon>
@@ -288,6 +293,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\AddRoomWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AddServicesWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
