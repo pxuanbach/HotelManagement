@@ -82,13 +82,13 @@ namespace HotelManagement.ViewModels
         private readonly Color[] m_colors =
         {
             Color.FromRgb(178, 191, 229),
-            Color.FromRgb(178,223, 229),
-            Color.FromRgb(197, 178, 229),
-            Color.FromRgb(229, 178, 178),
+            Color.FromRgb(33, 150, 243),
+            Color.FromRgb(171, 71, 188),
+            Color.FromRgb(255, 61, 0),
             Color.FromRgb(208, 208, 208),
-            Color.FromRgb(184, 229, 178),
-            Color.FromRgb(216, 229, 178),
-            Color.FromRgb(229,178,197),
+            Color.FromRgb(124, 179, 66),
+            Color.FromRgb(253, 216, 53),
+            Color.FromRgb(239, 83, 80),
             Color.FromRgb(229, 178, 229),
             Color.FromRgb(229, 210, 178),
         };
@@ -123,7 +123,7 @@ namespace HotelManagement.ViewModels
                             
                             var color = m_colors[1];
                             var borderColor = Lerp(color, Colors.Black, 0.2f);
-                            var fontColor = Color.FromRgb(110, 110, 110);
+                            var fontColor = Color.FromRgb(255, 255, 255);
                             string _status = item.status;
                             string status = "";
                             switch (_status)

@@ -9,7 +9,7 @@
         mc:Ignorable="d" FontSize="14"
         Name="folioOfRoomWindow"
         WindowStartupLocation="CenterScreen"
-        Title="Folio Of Room" MinHeight="500" MinWidth="900" Height="700" Width="850">
+        Title="Folio Of Room" MinHeight="700" MinWidth="1000" Height="700" Width="1000">
     <Window.DataContext>
         <viewModels:FolioOfRoomViewModel/>
     </Window.DataContext>
@@ -262,6 +262,13 @@
         <!-- Total Money of Folio -->
         <Grid Grid.Row="3">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Over Capacity Fee (" FontSize="16" FontWeight="Bold" 
+                    VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding OverCapacityFee}" FontSize="16" FontWeight="Bold" 
+                    VerticalAlignment="Center"/>
+                <TextBlock Text="%): " FontSize="16" FontWeight="Bold" 
+                    VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding OverCapacityFeeMoney}" FontSize="16" Margin="4 8 20 8" VerticalAlignment="Center"/>
                 <TextBlock Text="Room total:" FontSize="18" FontWeight="Bold" 
                     Foreground="{StaticResource PrimaryHueDarkBrush}" 
                     VerticalAlignment="Center"/>

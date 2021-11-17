@@ -70,7 +70,7 @@ namespace HotelManagement.ViewModels
             CurrentPageReservations = new ObservableCollection<ReservationItemViewModel>();
 
             PageNavigationViewModel = new PageNavigationViewModel();
-            PageNavigationViewModel.PageSize = 2;
+            PageNavigationViewModel.PageSize = 4;
 
             PageNavigationViewModel.PropertyChanged += PageNavigationViewModel_PropertyChanged;
             ResetFilter();

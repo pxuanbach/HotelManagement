@@ -180,7 +180,7 @@
             </Grid>
             <Grid Grid.Row="1"
                   x:Name="grdRoom">
-                <ScrollViewer>
+                <ScrollViewer x:Name="scrRoom">
                     <WrapPanel
                     Margin="10 0 10 0"
                     x:Name="stkRoom" 
@@ -209,7 +209,7 @@
                 Width="20"
                 Height="20"
                 HorizontalAlignment="Center"
-                Background="#B2DFE5"/>
+                Background="#2196F3"/>
                 <TextBlock 
                 Text="Due Out"
                 Grid.Column="1"
@@ -221,7 +221,7 @@
                 Width="20"
                 Height="20"
                 HorizontalAlignment="Right"
-                Background="#C5B2E5"/>
+                Background="#AB47BC"/>
                 <TextBlock 
                 Text="Occupied"
                 Grid.Column="3"
@@ -232,7 +232,7 @@
                 Width="20"
                 Height="20"
                 HorizontalAlignment="Right"
-                Background="#E5B2B2"/>
+                Background="#FF3D00"/>
                 <TextBlock 
                 Text="No Show"
                 Grid.Column="5"
@@ -254,7 +254,7 @@
                 Width="20"
                 Height="20"
                 HorizontalAlignment="Right"
-                Background="#B8E5B2"/>
+                Background="#7CB342"/>
                 <TextBlock 
                 Text="Reserved"
                 Grid.Column="9"
@@ -265,7 +265,7 @@
                 Width="20"
                 Height="20"
                 HorizontalAlignment="Right"
-                Background="#D8E5B2"/>
+                Background="#FDD835"/>
                 <TextBlock 
                 Text="Dirty"
                 Grid.Column="11"
@@ -276,7 +276,7 @@
                 Width="20"
                 Height="20"
                 HorizontalAlignment="Right"
-                Background="#E5D2B2"/>
+                Background="#EF5350"/>
                 <TextBlock 
                 Text="OutService"
                 Grid.Column="13"

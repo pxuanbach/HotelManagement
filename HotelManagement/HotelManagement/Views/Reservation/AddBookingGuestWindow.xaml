@@ -10,6 +10,7 @@
         mc:Ignorable="d"
         Name="windowAddSharer"
         Background="WhiteSmoke"
+        WindowStartupLocation="CenterScreen"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
         Title="Add new sharer">
@@ -18,6 +19,7 @@
             BorderBrush="LightGray" BorderThickness="1.5">
             <StackPanel>
                 <TextBox
+                    x:Name="txtboxGuestID"
                     FontSize="14" Width="230" Margin="0,3,0,3"
                     Text="{Binding Path=NewSharer.ID}"
                     Style="{StaticResource MaterialDesignTextBox}"
@@ -30,6 +32,16 @@
                             <ei:CallMethodAction TargetObject="{Binding}" MethodName="NumberValidationTextBox"/>
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
+                </TextBox>
+
+                <TextBox
+                    FontSize="14" Width="230" Margin="0,3,0,3"
+                    Style="{StaticResource MaterialDesignTextBox}"
+                    Text="{Binding Path=NewSharer.Name}"
+                    materialDesign:HintAssist.Hint="Name"
+                    materialDesign:HintAssist.IsFloating="True"
+                    materialDesign:TextFieldAssist.HasClearButton="True"
+                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}">
                 </TextBox>
 
                 <Grid>
@@ -59,21 +71,6 @@
                         materialDesign:HintAssist.Hint="Birthday"
                         materialDesign:HintAssist.IsFloating="True"/>
                 </Grid>
-
-                <TextBox
-                    FontSize="14" Width="230" Margin="0,3,0,3"
-                    Style="{StaticResource MaterialDesignTextBox}"
-                    Text="{Binding Path=NewSharer.Name}"
-                    materialDesign:HintAssist.Hint="Name"
-                    materialDesign:HintAssist.IsFloating="True"
-                    materialDesign:TextFieldAssist.HasClearButton="True"
-                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="PreviewTextInput">
-                            <ei:CallMethodAction TargetObject="{Binding}" MethodName="AlphabetValidationTextBox"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </TextBox>
 
                 <TextBox 
                     FontSize="14" Width="230" Margin="0,3,0,3"
@@ -109,9 +106,25 @@
                     materialDesign:TextFieldAssist.HasClearButton="True"
                     materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"/>
 
+                <ComboBox
+                    x:Name="cbbSelectRoom"
+                    Grid.Column="0"
+                    Width="230" Margin="0,3,0,3"
+                    Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"
+                    materialDesign:ColorZoneAssist.Mode="SecondaryLight"
+                    materialDesign:HintAssist.Hint="Select room"
+                    materialDesign:HintAssist.IsFloating="True"
+                    FontSize="14" VerticalContentAlignment="Center"
+                    SelectedValue="{Binding Path=NewSharer.Room}"
+                    ItemsSource="{Binding Path=SelectedRooms}"
+                    DisplayMemberPath="RoomName">
+                </ComboBox>
+
                 <Button
+                    x:Name="btnConfirm"
                     Margin="0,5,0,0"
-                    Content="Add new sharer" FontSize="14"
+                    Content="Confirm" FontSize="14"
                     VerticalAlignment="Bottom"
                     Command="{Binding ConfirmAddSharerCommand}"
                     CommandParameter="{Binding ElementName=windowAddSharer}"/>

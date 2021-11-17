@@ -133,11 +133,11 @@ namespace HotelManagement.ViewModels
                         item.Background = loadColor(item.txbStatus.Text);
                         if (room.dirty == true)
                         {
-                            item.Background = (Brush)new BrushConverter().ConvertFrom("#D8E5B2");
+                            item.Background = (Brush)new BrushConverter().ConvertFrom("#FDD835");
                         }
                         if (room.out_of_service == true)
                         {
-                            item.Background = (Brush)new BrushConverter().ConvertFrom("#E5D2B2");
+                            item.Background = (Brush)new BrushConverter().ConvertFrom("#EF5350");
                         }
                     }
                 }
@@ -172,11 +172,11 @@ namespace HotelManagement.ViewModels
                         item.Background = loadColor(item.txbStatus.Text);
                         if (room.dirty == true)
                         {
-                            item.Background = (Brush)new BrushConverter().ConvertFrom("#D8E5B2");
+                            item.Background = (Brush)new BrushConverter().ConvertFrom("#FDD835");
                         }
                         if (room.out_of_service == true)
                         {
-                            item.Background = (Brush)new BrushConverter().ConvertFrom("#E5D2B2");
+                            item.Background = (Brush)new BrushConverter().ConvertFrom("#EF5350");
                         }
                     }
                 }
@@ -250,149 +250,155 @@ namespace HotelManagement.ViewModels
 
         private void SaveType(AddTypeWindow para)
         {
-            if (para.title.Text == "NEW TYPE")
+            if (CheckSaveType(para))
             {
-                ROOMTYPE type = new ROOMTYPE();
-
-                type.name = para.txtName.Text;
-                type.price = decimal.Parse(para.txtPrice.Text);
-                type.max_guest = int.Parse(para.txtMax.Text);
-                type.date_created = DateTime.Now;
-                type.date_updated = null;
-
-                DataProvider.Instance.DB.ROOMTYPEs.Add(type);
-                DataProvider.Instance.DB.SaveChanges();
-
-                MessageBox.Show("Completed!!!", "Notify", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                UC_RoomType item = new UC_RoomType();
-                item.txbID.Text = para.txtIDType.Text;
-                item.txbName.Text = para.txtName.Text;
-                item.txbPrice.Text = para.txtPrice.Text;
-                item.txbMax.Text = para.txtMax.Text;
-                item.txbDateCreate.Text = type.date_created.ToString();
-                item.txbcOUNT.Text = "0";
-
-                item.Height = 40;
-                item.Width = para.rooms.stkType.Width;
-
-                para.rooms.stkType.Children.Add(item);
-                para.Close();
-
-                
-            }
-            else
-            {
-                ROOMTYPE type = new ROOMTYPE();
-                int id = int.Parse(para.txtIDType.Text);
-
-                type = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.id == id).FirstOrDefault();
-                type.date_updated = DateTime.Now;
-
-                DataProvider.Instance.DB.ROOMTYPEs.AddOrUpdate(type);
-                DataProvider.Instance.DB.SaveChanges();
-
-                foreach (UC_RoomType uc in para.rooms.stkType.Children)
+                if (para.title.Text == "NEW TYPE")
                 {
-                    if (uc.txbID.Text == para.txtIDType.Text)
-                    {
-                        para.rooms.stkType.Children.Remove(uc);
-                        break;
-                    }
-                }
+                    ROOMTYPE type = new ROOMTYPE();
 
-                ROOMTYPE newType = new ROOMTYPE();
-                newType.name = para.txtName.Text;
-                newType.price = decimal.Parse(para.txtPrice.Text);
-                newType.max_guest = int.Parse(para.txtMax.Text);
-                newType.date_created = DateTime.Now;
-                newType.date_updated = null;
+                    type.name = para.txtName.Text;
+                    type.price = decimal.Parse(para.txtPrice.Text);
+                    type.max_guest = int.Parse(para.txtMax.Text);
+                    type.date_created = DateTime.Now;
+                    type.date_updated = null;
 
-                DataProvider.Instance.DB.ROOMTYPEs.Add(newType);
-                DataProvider.Instance.DB.SaveChanges();
-
-                List<ROOM> rooms = DataProvider.Instance.DB.ROOMs.Where(x => x.roomtype_id == id).ToList();
-                foreach  (ROOM room in rooms)
-                {
-                    room.roomtype_id = newType.id;
-
-                    DataProvider.Instance.DB.ROOMs.AddOrUpdate(room);
+                    DataProvider.Instance.DB.ROOMTYPEs.Add(type);
                     DataProvider.Instance.DB.SaveChanges();
+
+                    MessageBox.Show("Completed!!!", "Notify", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    UC_RoomType item = new UC_RoomType();
+                    item.txbID.Text = para.txtIDType.Text;
+                    item.txbName.Text = para.txtName.Text;
+                    item.txbPrice.Text = para.txtPrice.Text;
+                    item.txbMax.Text = para.txtMax.Text;
+                    item.txbDateCreate.Text = type.date_created.ToString();
+                    item.txbcOUNT.Text = "0";
+
+                    item.Height = 40;
+                    item.Width = para.rooms.stkType.Width;
+
+                    para.rooms.stkType.Children.Add(item);
+                    para.Close();
+
+
+                }
+                else
+                {
+                    ROOMTYPE type = new ROOMTYPE();
+                    int id = int.Parse(para.txtIDType.Text);
+
+                    type = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.id == id).FirstOrDefault();
+                    type.date_updated = DateTime.Now;
+
+                    DataProvider.Instance.DB.ROOMTYPEs.AddOrUpdate(type);
+                    DataProvider.Instance.DB.SaveChanges();
+
+                    foreach (UC_RoomType uc in para.rooms.stkType.Children)
+                    {
+                        if (uc.txbID.Text == para.txtIDType.Text)
+                        {
+                            para.rooms.stkType.Children.Remove(uc);
+                            break;
+                        }
+                    }
+
+                    ROOMTYPE newType = new ROOMTYPE();
+                    newType.name = para.txtName.Text;
+                    newType.price = decimal.Parse(para.txtPrice.Text);
+                    newType.max_guest = int.Parse(para.txtMax.Text);
+                    newType.date_created = DateTime.Now;
+                    newType.date_updated = null;
+
+                    DataProvider.Instance.DB.ROOMTYPEs.Add(newType);
+                    DataProvider.Instance.DB.SaveChanges();
+
+                    List<ROOM> rooms = DataProvider.Instance.DB.ROOMs.Where(x => x.roomtype_id == id).ToList();
+                    foreach (ROOM room in rooms)
+                    {
+                        room.roomtype_id = newType.id;
+
+                        DataProvider.Instance.DB.ROOMs.AddOrUpdate(room);
+                        DataProvider.Instance.DB.SaveChanges();
+                    }
+
+                    MessageBox.Show("Completed!!!", "Notify", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    UC_RoomType item = new UC_RoomType();
+                    item.txbID.Text = para.txtIDType.Text;
+                    item.txbName.Text = para.txtName.Text;
+                    item.txbPrice.Text = para.txtPrice.Text;
+                    item.txbMax.Text = para.txtMax.Text;
+                    item.txbDateCreate.Text = type.date_created.ToString();
+                    item.txbcOUNT.Text = "0";
+
+                    item.Height = 40;
+                    item.Width = para.rooms.stkType.Width;
+
+                    para.rooms.stkType.Children.Add(item);
+                    para.Close();
                 }
 
-                MessageBox.Show("Completed!!!", "Notify", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                UC_RoomType item = new UC_RoomType();
-                item.txbID.Text = para.txtIDType.Text;
-                item.txbName.Text = para.txtName.Text;
-                item.txbPrice.Text = para.txtPrice.Text;
-                item.txbMax.Text = para.txtMax.Text;
-                item.txbDateCreate.Text = type.date_created.ToString();
-                item.txbcOUNT.Text = "0";
-
-                item.Height = 40;
-                item.Width = para.rooms.stkType.Width;
-
-                para.rooms.stkType.Children.Add(item);
-                para.Close();
+                para.rooms.stkType.Children.Clear();
+                LoadType(para.rooms);
             }
-           
-            para.rooms.stkType.Children.Clear();
-            LoadType(para.rooms);
         }
 
         private void SaveRoom(AddRoomWindow para)
         {
-            if (para.title.Text == "NEW ROOM")
+            if (CheckSaveRoom(para))
             {
-                ROOM room = new ROOM();
-
-                room.name = para.txtNameRoom.Text;
-                room.roomtype_id = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == para.cbbType.Text && x.date_updated == null).FirstOrDefault().id;
-                room.notes = para.txtNote.Text;
-                room.dirty = false;
-                room.out_of_service = false;
-                room.isActive = true;
-
-                DataProvider.Instance.DB.ROOMs.Add(room);
-                DataProvider.Instance.DB.SaveChanges();
-
-                MessageBox.Show("Completed!!!", "Notify", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                UC_Room item = new UC_Room();
-                item.txbName.Text = room.name;
-                item.txbID.Text = para.txtIDRoom.Text;
-                item.txbType.Text = para.cbbType.Text;
-                item.txbStatus.Text = "Available";
-                item.Width = 100;
-                item.Height = 100;
-
-                para.rooms.stkRoom.Children.Add(item);
-                para.Close();
-            }
-            else
-            {
-                ROOM room = new ROOM();
-                int id = int.Parse(para.txtIDRoom.Text);
-
-                room = DataProvider.Instance.DB.ROOMs.Where(x => x.id == id).FirstOrDefault();
-                room.name = para.txtNameRoom.Text;
-                room.roomtype_id = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == para.cbbType.Text && x.date_updated == null).FirstOrDefault().id;
-                room.notes = para.txtNote.Text;
-                DataProvider.Instance.DB.ROOMs.AddOrUpdate(room);
-                DataProvider.Instance.DB.SaveChanges();
-
-                MessageBox.Show("Completed!!!", "Notify", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                foreach (UC_Room item in para.rooms.stkRoom.Children)
+                if (para.title.Text == "NEW ROOM")
                 {
-                    if (item.txbID.Text == para.txtIDRoom.Text)
-                    {
-                        item.txbName.Text = para.txtNameRoom.Text;
-                        item.txbType.Text = para.cbbType.Text;
-                    }
+                    ROOM room = new ROOM();
+
+                    room.name = para.txtNameRoom.Text;
+                    room.roomtype_id = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == para.cbbType.Text && x.date_updated == null).FirstOrDefault().id;
+                    room.notes = para.txtNote.Text;
+                    room.dirty = false;
+                    room.out_of_service = false;
+                    room.isActive = true;
+
+                    DataProvider.Instance.DB.ROOMs.Add(room);
+                    DataProvider.Instance.DB.SaveChanges();
+
+                    MessageBox.Show("Completed!!!", "Notify", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    UC_Room item = new UC_Room();
+                    item.txbName.Text = room.name;
+                    item.txbID.Text = para.txtIDRoom.Text;
+                    item.txbType.Text = para.cbbType.Text;
+                    item.txbStatus.Text = "Available";
+                    item.Width = 100;
+                    item.Height = 100;
+
+                    para.rooms.stkRoom.Children.Add(item);
+                    para.Close();
                 }
-                para.Close();
+                else
+                {
+                    ROOM room = new ROOM();
+                    int id = int.Parse(para.txtIDRoom.Text);
+
+                    room = DataProvider.Instance.DB.ROOMs.Where(x => x.id == id).FirstOrDefault();
+                    room.name = para.txtNameRoom.Text;
+                    room.roomtype_id = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == para.cbbType.Text && x.date_updated == null).FirstOrDefault().id;
+                    room.notes = para.txtNote.Text;
+                    DataProvider.Instance.DB.ROOMs.AddOrUpdate(room);
+                    DataProvider.Instance.DB.SaveChanges();
+
+                    MessageBox.Show("Completed!!!", "Notify", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    foreach (UC_Room item in para.rooms.stkRoom.Children)
+                    {
+                        if (item.txbID.Text == para.txtIDRoom.Text)
+                        {
+                            item.txbName.Text = para.txtNameRoom.Text;
+                            item.txbType.Text = para.cbbType.Text;
+                        }
+                    }
+                    para.Close();
+                }
             }
         }
 
@@ -487,6 +493,7 @@ namespace HotelManagement.ViewModels
             para.btnReset.IsEnabled = false;
             para.btnSearch.IsEnabled = false;
             para.stkRoom.Visibility = System.Windows.Visibility.Collapsed;
+            para.scrRoom.Visibility = Visibility.Collapsed;
             para.btnAddRoom.Visibility = System.Windows.Visibility.Collapsed;
 
             para.grdStatus.Visibility = Visibility.Collapsed;
@@ -526,6 +533,7 @@ namespace HotelManagement.ViewModels
             para.btnReset.IsEnabled = true;
             para.btnSearch.IsEnabled = true;
             para.stkRoom.Visibility = System.Windows.Visibility.Visible;
+            para.scrRoom.Visibility = Visibility.Visible;
             para.btnAddRoom.Visibility = System.Windows.Visibility.Visible;
             para.grdStatus.Visibility = Visibility.Visible;
         }
@@ -583,6 +591,12 @@ namespace HotelManagement.ViewModels
         private void SearchRoom(RoomsView para)
         {
             bool flag = true;
+            if (para.cbbType.Text == "")
+                para.cbbType.SelectedIndex = 0;
+            if (para.cbbFloor.Text == "")
+                para.cbbFloor.SelectedIndex = 0; 
+            if (para.cbbStatus.Text == "")
+                para.cbbStatus.SelectedIndex = 0;
             foreach (UC_Room item in para.stkRoom.Children)
             {
                 flag = true;
@@ -678,16 +692,16 @@ namespace HotelManagement.ViewModels
                                 if (reser.departure.Value.Day == DateTime.Now.Day && reser.departure.Value.Month == DateTime.Now.Month && reser.departure.Value.Year == DateTime.Now.Year)
                                 {
                                     room.txbStatus.Text = "Due Out";
-                                    room.Background = (Brush)new BrushConverter().ConvertFrom("#B2DFE5");
+                                    room.Background = (Brush)new BrushConverter().ConvertFrom("#2196F3");
                                 } else
                                 {
                                     room.txbStatus.Text = "Occupied";
-                                    room.Background = (Brush)new BrushConverter().ConvertFrom("#C5B2E5");
+                                    room.Background = (Brush)new BrushConverter().ConvertFrom("#AB47BC");
                                 }
                                 break;
                             case "No Show":
                                 room.txbStatus.Text = "No Show";
-                                room.Background = (Brush)new BrushConverter().ConvertFrom("#E5B2B2");
+                                room.Background = (Brush)new BrushConverter().ConvertFrom("#FF3D00");
                                 break;
                             case "Completed":
                             case "Cancelled":
@@ -697,7 +711,7 @@ namespace HotelManagement.ViewModels
                             case "Confirmed":
                             case "On Request":
                                 room.txbStatus.Text = "Reserved";
-                                room.Background = (Brush)new BrushConverter().ConvertFrom("#B8E5B2");
+                                room.Background = (Brush)new BrushConverter().ConvertFrom("#7CB342");
                                 break;
                             default:
                                 break;
@@ -709,11 +723,11 @@ namespace HotelManagement.ViewModels
 
                     if (item.dirty == true)
                     {
-                        room.Background = (Brush)new BrushConverter().ConvertFrom("#D8E5B2");
+                        room.Background = (Brush)new BrushConverter().ConvertFrom("#FDD835");
                     }
                     if (item.out_of_service == true)
                     {
-                        room.Background = (Brush)new BrushConverter().ConvertFrom("#E5D2B2");
+                        room.Background = (Brush)new BrushConverter().ConvertFrom("#EF5350");
                     }
                 }
                 para.stkRoom.Children.Add(room);
@@ -775,17 +789,44 @@ namespace HotelManagement.ViewModels
             switch (status)
             {
                 case "Due out":
-                    return (Brush)new BrushConverter().ConvertFrom("#B2DFE5");
+                    return (Brush)new BrushConverter().ConvertFrom("#2196F3");
                 case "Occupied":
-                    return (Brush)new BrushConverter().ConvertFrom("#C5B2E5");
+                    return (Brush)new BrushConverter().ConvertFrom("#AB47BC");
                 case "No Show":
-                    return (Brush)new BrushConverter().ConvertFrom("#E5B2B2");
+                    return (Brush)new BrushConverter().ConvertFrom("#FF3D00");
                 case "Available":
                     return (Brush)new BrushConverter().ConvertFrom("#FFD0D0D0");
                 case "Reserved":
-                    return (Brush)new BrushConverter().ConvertFrom("#B8E5B2");
+                    return (Brush)new BrushConverter().ConvertFrom("#7CB342");
             }
             return null;
         }
+
+        public bool CheckSaveRoom(AddRoomWindow para)
+        {
+            if (string.IsNullOrEmpty(para.txtNameRoom.Text) || string.IsNullOrEmpty(para.cbbType.Text))
+            {
+                para.txbError.Visibility = Visibility.Visible;
+                return false;
+            }
+            else
+                para.txbError.Visibility = Visibility.Hidden;
+            return true;
+
+        }
+
+        public bool CheckSaveType(AddTypeWindow para)
+        {
+            if (string.IsNullOrEmpty(para.txtName.Text) || string.IsNullOrEmpty(para.txtPrice.Text) || string.IsNullOrEmpty(para.txtMax.Text))
+            {
+                para.txbError.Visibility = Visibility.Visible;
+                return false;
+            }
+            else
+                para.txbError.Visibility = Visibility.Hidden;
+            return true;
+
+        }
+
     }
 }

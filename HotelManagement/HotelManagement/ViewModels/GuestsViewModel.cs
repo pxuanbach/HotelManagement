@@ -3,6 +3,7 @@ using HotelManagement.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls;
@@ -10,7 +11,7 @@ using System.Windows.Input;
 
 namespace HotelManagement.ViewModels
 {
-    class GuestsViewModel:BaseViewModel
+    class GuestsViewModel:BaseViewModel, IDataErrorInfo
     {
         private string title;
         public string Title { get { return title; } set {  title = value; OnPropertyChanged(); } } 
@@ -185,6 +186,52 @@ namespace HotelManagement.ViewModels
         public ICommand SaveGuestCommand { get; set; }
         public ICommand EditCommand { get; set; }
         public ICommand ReloadCommand { get; set; }
+
+        #region error
+        public string Error
+        {
+            get { return null; }
+        }
+
+        public string this[string columnName]
+        {
+            get
+            {
+                string error = null;
+                switch (columnName)
+                {
+                    case "GuestID":
+                        if (string.IsNullOrEmpty(GuestID))
+                            error = "Please enter guest ID";
+                        break;
+                    case "GuestName":
+                        if (string.IsNullOrEmpty(GuestName))
+                            error = "Please enter guest's name";
+                        break;
+                    case "GuestGender":
+                        if (string.IsNullOrEmpty(GuestGender))
+                            error = "Please enter guest's gender";
+                        break;
+                    case "GuestBirthday":
+                        int age = DateTime.Now.Year - GuestBirthday.Year;
+                        if (age < 2)
+                            error = "Guest's age must be more than 2 years old";
+                        break;
+                    case "GuestEmail":
+                        if (!string.IsNullOrEmpty(GuestEmail))
+                        {
+                            if (!GuestEmail.Contains('@'))
+                                error = "Email is not valid";
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                return error;
+            }
+        }
+
+        #endregion
 
         public GuestsViewModel()
         {

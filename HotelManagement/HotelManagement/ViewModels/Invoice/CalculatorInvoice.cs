@@ -12,6 +12,7 @@ namespace HotelManagement.ViewModels
         #region Room
         public static int ExactRoomPrice(List<ROOMTYPE> roomTypeList, DateTime dateCreated)
         {
+            //in ascending order according to a key
             List<ROOMTYPE> sortList = roomTypeList.OrderBy(x => x.id).ToList();
             foreach (var item in sortList)
             {
@@ -28,6 +29,10 @@ namespace HotelManagement.ViewModels
                     {
                         return (int)item.price;
                     }
+                }
+                else
+                {
+                    break;
                 }
             }
             return 0;
@@ -40,6 +45,7 @@ namespace HotelManagement.ViewModels
             List<ROOMTYPE> roomTypeList = 
                 DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == room.ROOMTYPE.name).ToList();
 
+            //in ascending order according to a key
             List<ROOMTYPE> sortList = roomTypeList.OrderBy(x => x.id).ToList();
             foreach (var item in sortList)
             {
@@ -57,6 +63,43 @@ namespace HotelManagement.ViewModels
                         return (int)item.price;
                     }
                 }
+                else
+                {
+                    break;
+                }
+            }
+            return 0;
+        }
+
+        public static int ExactCapacity(int roomId, DateTime dateCreated)
+        {
+            var room = DataProvider.Instance.DB.ROOMs.SingleOrDefault(x => x.id == roomId);
+
+            List<ROOMTYPE> roomTypeList =
+                DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == room.ROOMTYPE.name).ToList();
+
+            //in ascending order according to a key
+            List<ROOMTYPE> sortList = roomTypeList.OrderBy(x => x.id).ToList();
+            foreach (var item in sortList)
+            {
+                if (item.date_created <= dateCreated)
+                {
+                    if (item.date_updated.HasValue)
+                    {
+                        if (dateCreated <= item.date_updated)
+                        {
+                            return item.max_guest.Value;
+                        }
+                    }
+                    else
+                    {
+                        return item.max_guest.Value;
+                    }
+                }
+                else
+                {
+                    break;
+                }    
             }
             return 0;
         }
@@ -117,6 +160,72 @@ namespace HotelManagement.ViewModels
         }
         #endregion
 
+        #region Charges + Total Money
+        public static double LoadOverCapacityFee(RESERVATION reservation)
+        {
+            if (reservation.status == "Operational")
+            {
+                if (IsReservationContainsRoomOverCapacity(reservation))
+                {
+                    return DataProvider.Instance.DB.CHARGES.First().over_capacity_fee.Value;
+                }
+            }
+            if (reservation.status == "Completed")
+            {
+                var invoice = DataProvider.Instance.DB.INVOICEs.SingleOrDefault(x => x.reservation_id == reservation.id);
+
+                return invoice.over_capacity_fee.Value;
+            }
+            return 0;
+        }
+
+        public static bool IsRoomOverCapacity(ROOM_BOOKED room_booked)
+        {
+            int capacity = room_booked.ROOM.ROOMTYPE.max_guest.Value;
+            int currentCapacity = room_booked.GUEST_BOOKING.Count();
+            if (capacity < currentCapacity)
+                return true;
+            return false;
+        }
+
+        public static bool IsReservationContainsRoomOverCapacity(RESERVATION reservation)
+        {
+            foreach(var room_booked in reservation.ROOM_BOOKED)
+            {
+                if (IsRoomOverCapacity(room_booked))
+                    return true;
+            }
+            return false;
+        }
+
+        //Lượng tiền "phí số người tối đa" của 1 phòng trong phiếu thuê tăng thêm
+        public static long OverCapacityFeeOfRoom(ROOM_BOOKED room_booked, double overCapacityFee)
+        {
+            long feeMoney = 0;
+            int diffCapacity = room_booked.GUEST_BOOKING.Count() - room_booked.ROOM.ROOMTYPE.max_guest.Value;
+
+            if (diffCapacity > 0)
+            {
+                feeMoney = feeMoney + (long)((overCapacityFee / 100) 
+                    * RoomTotalMoney(room_booked.room_id, room_booked.RESERVATION));
+            }
+
+            return feeMoney;
+        }
+
+        //Lượng tiền "phí số người tối đa" của tất cả phòng trong phiếu thuê tăng thêm
+        public static long OverCapacityFeeOfRooms(RESERVATION reservation, double overCapacityFee)
+        {
+            long feeMoney = 0;
+
+            foreach(var room_booked in reservation.ROOM_BOOKED)
+            {
+                feeMoney = feeMoney + OverCapacityFeeOfRoom(room_booked, overCapacityFee);
+            }    
+
+            return feeMoney;
+        }
+
         public static long TotalMoneyNoFee(RESERVATION reservation)
         {
             return RoomsTotalMoney(reservation) + FolioTotalMoney(reservation);
@@ -125,7 +234,9 @@ namespace HotelManagement.ViewModels
         public static long TotalMoneyWithFee(RESERVATION reservation)
         {
             var invoice = DataProvider.Instance.DB.INVOICEs.SingleOrDefault(x => x.reservation_id == reservation.id);
+            var charges = DataProvider.Instance.DB.CHARGES.First();
             double fee = 0;
+            double overCapacityFee = 0;
             double earlyCheckinFee = 0;
             double lateCheckoutFee = 0;
             double surcharge = 0;
@@ -137,20 +248,26 @@ namespace HotelManagement.ViewModels
             }
             else
             {
+                if (IsReservationContainsRoomOverCapacity(reservation))
+                {
+                    overCapacityFee = charges.over_capacity_fee.Value;
+                }
                 if (reservation.early_checkin.Value)
                 {
-                    earlyCheckinFee = DataProvider.Instance.DB.CHARGES.First().early_checkin_fee.Value;
+                    earlyCheckinFee = charges.early_checkin_fee.Value;
                 }
                 if (reservation.late_checkout.Value)
                 {
-                    lateCheckoutFee = DataProvider.Instance.DB.CHARGES.First().late_checkout_fee.Value;
+                    lateCheckoutFee = charges.late_checkout_fee.Value;
                 }
-                surcharge = DataProvider.Instance.DB.CHARGES.First().surcharge.Value;
+                surcharge = charges.surcharge.Value;
             }
 
             fee = TotalRoomPriceOfReservation(reservation) * (earlyCheckinFee + lateCheckoutFee) / 100;
+
             totalMoney = (RoomsTotalMoney(reservation) + FolioTotalMoney(reservation)) * (100 + surcharge) / 100;
-            return (long)(totalMoney + fee);
+            return (long)(totalMoney + fee + OverCapacityFeeOfRooms(reservation, overCapacityFee));
         }
+        #endregion
     }
 }
