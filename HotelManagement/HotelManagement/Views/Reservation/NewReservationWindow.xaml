@@ -109,11 +109,6 @@
                                     Text="{Binding Path=GuestInformation.Name}"
                                     materialDesign:TextFieldAssist.HasClearButton="True"
                                     materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="PreviewTextInput">
-                                            <ei:CallMethodAction TargetObject="{Binding}" MethodName="AlphabetValidationTextBox"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
                                 </TextBox>
 
                                 <!--Birthday-->

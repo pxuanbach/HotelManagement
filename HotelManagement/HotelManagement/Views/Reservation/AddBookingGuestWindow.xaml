@@ -34,6 +34,16 @@
                     </i:Interaction.Triggers>
                 </TextBox>
 
+                <TextBox
+                    FontSize="14" Width="230" Margin="0,3,0,3"
+                    Style="{StaticResource MaterialDesignTextBox}"
+                    Text="{Binding Path=NewSharer.Name}"
+                    materialDesign:HintAssist.Hint="Name"
+                    materialDesign:HintAssist.IsFloating="True"
+                    materialDesign:TextFieldAssist.HasClearButton="True"
+                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}">
+                </TextBox>
+
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
@@ -61,21 +71,6 @@
                         materialDesign:HintAssist.Hint="Birthday"
                         materialDesign:HintAssist.IsFloating="True"/>
                 </Grid>
-
-                <TextBox
-                    FontSize="14" Width="230" Margin="0,3,0,3"
-                    Style="{StaticResource MaterialDesignTextBox}"
-                    Text="{Binding Path=NewSharer.Name}"
-                    materialDesign:HintAssist.Hint="Name"
-                    materialDesign:HintAssist.IsFloating="True"
-                    materialDesign:TextFieldAssist.HasClearButton="True"
-                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="PreviewTextInput">
-                            <ei:CallMethodAction TargetObject="{Binding}" MethodName="AlphabetValidationTextBox"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </TextBox>
 
                 <TextBox 
                     FontSize="14" Width="230" Margin="0,3,0,3"
