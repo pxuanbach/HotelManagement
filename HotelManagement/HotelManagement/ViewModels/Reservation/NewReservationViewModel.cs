@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace HotelManagement.ViewModels
@@ -32,7 +33,7 @@ namespace HotelManagement.ViewModels
 
         public bool Guaranteed { get; set; }
 
-        public IEnumerable<string> Gender => new[] { "Male", "Female", "Other" };
+        public IEnumerable<string> Gender => new[] { "Male", "Female" };
 
         #region Command
         // Reserve as sharer
@@ -88,45 +89,6 @@ namespace HotelManagement.ViewModels
                 return _addSharerCommand ?? (_addSharerCommand = new RelayCommand<object>((p) => CanAddSharer, (p) => OpenAddSharerWindow()));
             }
         }
-        #endregion
-
-        public NewReservationViewModel(ReservationListViewModel _instance)
-        {
-            Instance = _instance;
-
-            Sharers = new ObservableCollection<GuestViewModel>();
-            GuestInformation = new GuestViewModel();
-            StayInformation = new ReservationViewModel();
-            AvailableRooms = new ObservableCollection<RoomViewModel>();
-            SelectedRooms = new ObservableCollection<RoomViewModel>(); 
-
-            StayInformation.PropertyChanged += StayInformation_PropertyChanged;
-            Sharers.CollectionChanged += Sharers_CollectionChanged;
-            SelectedRooms.CollectionChanged += SelectedRooms_CollectionChanged;
-
-            BeASharer = false;
-            GuestInformation.Birthday = DateTime.Parse("01-01-2000");
-            StayInformation.Arrival = DateTime.Today;
-            StayInformation.Departure = DateTime.Today.AddDays(1);
-        }
-        public NewReservationViewModel()
-        {
-            Sharers = new ObservableCollection<GuestViewModel>();
-            GuestInformation = new GuestViewModel();
-            StayInformation = new ReservationViewModel();
-            AvailableRooms = new ObservableCollection<RoomViewModel>();
-            SelectedRooms = new ObservableCollection<RoomViewModel>();
-
-            StayInformation.PropertyChanged += StayInformation_PropertyChanged;
-            Sharers.CollectionChanged += Sharers_CollectionChanged;
-            SelectedRooms.CollectionChanged += SelectedRooms_CollectionChanged;
-
-            BeASharer = false;
-            GuestInformation.Birthday = DateTime.Parse("01-01-2000");
-            StayInformation.Arrival = DateTime.Today;
-            StayInformation.Departure = DateTime.Today.AddDays(1);
-        }
-
 
         // Remove sharer
         public void RemoveSelectedSharer(GuestViewModel sharer)
@@ -147,7 +109,7 @@ namespace HotelManagement.ViewModels
         // Confirm add sharer
         public void AddSharer(Window wd)
         {
-            Sharers.Add(NewSharer);
+            if (wd.Title == "Add new sharer") Sharers.Add(NewSharer);
             wd.Close();
         }
 
@@ -157,6 +119,26 @@ namespace HotelManagement.ViewModels
             get
             {
                 return _confirmAddSharerCommand ?? (_confirmAddSharerCommand = new RelayCommand<Window>((p) => NewSharer.FilledGuestInformation, (p) => AddSharer(p)));
+            }
+        }
+
+        // Open edit sharer window
+        public void OpenEditSharerWindow(GuestViewModel guest)
+        {
+            var wd = new AddBookingGuestWindow();
+            NewSharer = guest;
+            wd.Title = "Edit sharer information";
+            wd.txtboxGuestID.IsEnabled = false;
+            wd.DataContext = this;
+            wd.ShowDialog();
+        }
+
+        private ICommand _editSharerCommand;
+        public ICommand EditSharerCommand
+        {
+            get
+            {
+                return _editSharerCommand ?? (_editSharerCommand = new RelayCommand<GuestViewModel>((p) => true, (p) => OpenEditSharerWindow(p)));
             }
         }
 
@@ -173,7 +155,8 @@ namespace HotelManagement.ViewModels
                     if (String.IsNullOrEmpty(row.Name) ||
                         String.IsNullOrEmpty(row.ID) ||
                         String.IsNullOrEmpty(row.Gender) ||
-                        String.IsNullOrEmpty(row.Address))
+                        String.IsNullOrEmpty(row.Address) ||
+                        row.Room == null)
                         return false;
                 }
                 return true;
@@ -236,6 +219,9 @@ namespace HotelManagement.ViewModels
                             id = sharer.ID,
                             name = sharer.Name,
                             gender = sharer.Gender,
+                            birthday = sharer.Birthday,
+                            email = sharer.Email,
+                            phone = sharer.Phone,
                             address = sharer.Address,
                         };
                         context.GUESTs.Add(newGuest);
@@ -246,6 +232,8 @@ namespace HotelManagement.ViewModels
                     {
                         reservation_id = reservation.id,
                         guest_id = sharer.ID,
+                        room_booked_id = context.ROOM_BOOKED.Where(rb => rb.reservation_id == reservation.id && 
+                                            rb.room_id == sharer.Room.RoomID).FirstOrDefault().id,
                     };
                     context.GUEST_BOOKING.Add(guestBooking);
                     context.SaveChanges();
@@ -274,7 +262,60 @@ namespace HotelManagement.ViewModels
                 return _cancelCommand ?? (_cancelCommand = new RelayCommand<Window>((p) => true, (p) => p.Close()));
             }
         }
-        
+        #endregion
+
+        public NewReservationViewModel(ReservationListViewModel _instance)
+        {
+            Instance = _instance;
+
+            Sharers = new ObservableCollection<GuestViewModel>();
+            GuestInformation = new GuestViewModel();
+            StayInformation = new ReservationViewModel();
+            AvailableRooms = new ObservableCollection<RoomViewModel>();
+            SelectedRooms = new ObservableCollection<RoomViewModel>(); 
+
+            StayInformation.PropertyChanged += StayInformation_PropertyChanged;
+            GuestInformation.PropertyChanged += GuestInformation_PropertyChanged;
+            Sharers.CollectionChanged += Sharers_CollectionChanged;
+            SelectedRooms.CollectionChanged += SelectedRooms_CollectionChanged;
+
+            BeASharer = false;
+            GuestInformation.Birthday = DateTime.Parse("01-01-2000");
+            StayInformation.Arrival = DateTime.Today;
+            StayInformation.Departure = DateTime.Today.AddDays(1);
+        }
+
+        public NewReservationViewModel()
+        {
+            Sharers = new ObservableCollection<GuestViewModel>();
+            GuestInformation = new GuestViewModel();
+            StayInformation = new ReservationViewModel();
+            AvailableRooms = new ObservableCollection<RoomViewModel>();
+            SelectedRooms = new ObservableCollection<RoomViewModel>();
+
+            StayInformation.PropertyChanged += StayInformation_PropertyChanged;
+            GuestInformation.PropertyChanged += GuestInformation_PropertyChanged;
+            Sharers.CollectionChanged += Sharers_CollectionChanged;
+            SelectedRooms.CollectionChanged += SelectedRooms_CollectionChanged;
+
+            BeASharer = false;
+            GuestInformation.Birthday = DateTime.Parse("01-01-2000");
+            StayInformation.Arrival = DateTime.Today;
+            StayInformation.Departure = DateTime.Today.AddDays(1);
+        }
+
+        private void GuestInformation_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(GuestViewModel.Birthday))
+            {
+                if ((sender as GuestViewModel).Age < 21)
+                {
+                    GuestInformation.Birthday = DateTime.Parse("01-01-2000");
+                    MessageBox.Show("Guest must be at least 21 years of age for reserving.", "WALKIN / RESERVATION POLICY");
+                }
+            }
+        }
+
         private void SelectedRooms_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             StayInformation.Rooms = SelectedRooms.Count;
@@ -480,19 +521,27 @@ namespace HotelManagement.ViewModels
         string _email;
         string _phone;
 
+        int _age;
+
+        RoomViewModel _room;
+
         public string ID { get { return _id; } set { _id = value; OnPropertyChanged(); } }
 
         public string Name { get { return _name; } set { _name = value; OnPropertyChanged(); } }
 
         public string Gender { get { return _gender; } set { _gender = value; OnPropertyChanged(); } }
 
-        public DateTime Birthday { get { return _birthday; } set { _birthday = value; OnPropertyChanged(); } }
+        public DateTime Birthday { get { return _birthday; } set { _birthday = value; CalculateAge(); OnPropertyChanged(); } }
 
         public string Address { get { return _address; } set { _address = value; OnPropertyChanged(); } }
 
         public string Email { get { return _email; } set { _email = value; OnPropertyChanged(); } }
 
         public string Phone { get { return _phone; } set { _phone = value; OnPropertyChanged(); } }
+
+        public int Age { get { return _age; } set { _age = value; OnPropertyChanged(); } }
+
+        public RoomViewModel Room { get { return _room; } set { _room = value; OnPropertyChanged(); } }
 
         public bool FilledGuestInformation
         {
@@ -507,6 +556,21 @@ namespace HotelManagement.ViewModels
                     return false;
                 return true;
             }
+        }
+
+        public void CalculateAge()
+        {
+            Age = DateTime.Today.Year - Birthday.Year;
+            if (DateTime.Now.DayOfYear < Birthday.DayOfYear)
+                Age = Age - 1;
+        }
+
+        static public int CalculateAge(DateTime birthday)
+        {
+            int age = DateTime.Today.Year - birthday.Year;
+            if (DateTime.Now.DayOfYear < birthday.DayOfYear)
+                age = age - 1;
+            return age;
         }
     }
 
