@@ -27,8 +27,8 @@ namespace HotelManagement.ViewModels
             }
         }
 
-        private string[] labels;
-        public string[] Labels
+        private List<string> labels;
+        public List<string> Labels
         {
             get => labels;
             set
@@ -62,13 +62,33 @@ namespace HotelManagement.ViewModels
 
         public ICommand InitCommand { get; set; }
         public ICommand ChooseItemCommand { get; set; }
+        public ICommand ChangeTypeCommand { get; set; }
 
         public ReportsViewModel()
         {
             InitCommand = new RelayCommand<UC_GuestChart>((para) => true, (para) => Init(para));
             ChooseItemCommand = new RelayCommand<ListBox>((para) => true, (para) => ChooseItem(para));
+            ChangeTypeCommand = new RelayCommand<UC_GuestChart>((para) => true, (para) => ChangeType(para));
 
             Years = DataProvider.Instance.DB.RESERVATIONs.Select(x => x.arrival.Value.Year).Distinct().ToList();
+        }
+
+        private void ChangeType(UC_GuestChart para)
+        {
+            if (para.cbbChangeType.SelectedIndex == 0)
+            {
+                LoadChartMonth(para);
+                para.txtNameChart.Text = "Chart of Visitors by Month";
+                para.grdYears.Visibility = Visibility.Visible;
+                para.titleX.Title = "Month";
+            }
+            else
+            {
+                LoadChartYear(para);
+                para.txtNameChart.Text = "Chart of Visitors by Year";
+                para.grdYears.Visibility = Visibility.Collapsed;
+                para.titleX.Title = "Year";
+            }
         }
 
         private void ChooseItem(ListBox para)
@@ -91,7 +111,7 @@ namespace HotelManagement.ViewModels
                         SeriesCollection.Add(new LineSeries
                         {
                             Title = item.Content.ToString(),
-                            Values = getValueOfYear(int.Parse(item.Content.ToString()))
+                            Values = getValueOfMonth(int.Parse(item.Content.ToString()))
                         });
                     }
                 }
@@ -109,15 +129,23 @@ namespace HotelManagement.ViewModels
         }
         private void Init(UC_GuestChart para)
         {
-            SeriesCollection = new SeriesCollection();
+            Labels = new List<string>();
 
+            LoadChartMonth(para);
+
+        }
+
+        public void LoadChartMonth(UC_GuestChart para)
+        {
+            para.lbGuestChart.Items.Clear();
+            SeriesCollection = new SeriesCollection();
             foreach (int item in Years)
             {
                 para.lbGuestChart.Items.Add(new ListBoxItem() { Content = item.ToString() });
                 SeriesCollection.Add(new LineSeries
                 {
                     Title = item.ToString(),
-                    Values = getValueOfYear(item)
+                    Values = getValueOfMonth(item)
                 });
             }
 
@@ -125,13 +153,43 @@ namespace HotelManagement.ViewModels
             {
                 item.IsSelected = true;
             }
+
+            Labels.Clear();
+            string[] labelMonth= new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+            Labels = labelMonth.ToList();
             
-            Labels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
             YFormatter = value => value.ToString();
         }
 
+        public void LoadChartYear(UC_GuestChart para)
+        {
+            SeriesCollection = new SeriesCollection();
+            SeriesCollection.Add(new LineSeries
+            {
+                Title = "",
+                Values = getValueOfYears()
+            });
+            Labels.Clear();
+            foreach (int item in Years)
+            {
+                Labels.Add(item.ToString());
+            }
 
-        private ChartValues<Double> getValueOfYear(int year)
+            YFormatter = value => value.ToString();
+        }
+
+        private ChartValues<Double> getValueOfYears()
+        {
+            ChartValues<Double> values = new ChartValues<double>();
+            foreach (int item in Years)
+            {
+                values.Add(CountGuestbyYear(item));
+            }
+            return values;
+        }
+
+
+        private ChartValues<Double> getValueOfMonth(int year)
         {
             return new ChartValues<Double>
                 {
@@ -155,6 +213,20 @@ namespace HotelManagement.ViewModels
             double count = 0;
 
             List<RESERVATION> listRes = DataProvider.Instance.DB.RESERVATIONs.Where(y => y.arrival.Value.Month == month && y.arrival.Value.Year == year).ToList();
+
+            foreach (RESERVATION item in listRes)
+            {
+                count += DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == item.id).Count();
+            }
+
+            return count;
+        }
+
+        private double CountGuestbyYear(int year)
+        {
+            double count = 0;
+
+            List<RESERVATION> listRes = DataProvider.Instance.DB.RESERVATIONs.Where(y => y.arrival.Value.Year == year).ToList();
 
             foreach (RESERVATION item in listRes)
             {
