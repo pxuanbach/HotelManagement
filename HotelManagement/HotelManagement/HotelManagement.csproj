@@ -163,6 +163,7 @@
     <Compile Include="Models\SERVICE.cs">
       <DependentUpon>Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ServiceReportItem.cs" />
     <Compile Include="Resources\UC\UC_Room.xaml.cs">
       <DependentUpon>UC_Room.xaml</DependentUpon>
     </Compile>
@@ -176,7 +177,7 @@
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\BookingViewModel.cs" />
     <Compile Include="ViewModels\CalendarViewModel.cs" />
-    <Compile Include="ViewModels\Converter.cs" />
+    <Compile Include="Resources\Converter.cs" />
     <Compile Include="Models\CurrentAccount.cs" />
     <Compile Include="ViewModels\DashBoardViewModel.cs" />
     <Compile Include="ViewModels\GuestsViewModel.cs" />
@@ -188,6 +189,7 @@
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\ReportsViewModel.cs" />
+    <Compile Include="ViewModels\Report\TopServiceViewModel.cs" />
     <Compile Include="ViewModels\Reservation\BindingProxy.cs" />
     <Compile Include="ViewModels\Reservation\NewReservationViewModel.cs" />
     <Compile Include="ViewModels\PageNavigationViewModel.cs" />
@@ -217,6 +219,7 @@
     <Compile Include="Views\GuestsView.xaml.cs">
       <DependentUpon>GuestsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Resources\DatePickerCalendar.cs" />
     <Compile Include="Views\Invoice\FolioOfRoomWindow.xaml.cs">
       <DependentUpon>FolioOfRoomWindow.xaml</DependentUpon>
     </Compile>
@@ -231,6 +234,10 @@
     </Compile>
     <Compile Include="Views\ReportsView.xaml.cs">
       <DependentUpon>ReportsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\DatePickerDateFormat.cs" />
+    <Compile Include="Views\Report\TopServiceView.xaml.cs">
+      <DependentUpon>TopServiceView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Reservation\AddBookedRoomWindow.xaml.cs">
       <DependentUpon>AddBookedRoomWindow.xaml</DependentUpon>
@@ -329,6 +336,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ReportsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Report\TopServiceView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
