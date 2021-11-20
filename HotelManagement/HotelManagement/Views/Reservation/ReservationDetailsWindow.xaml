@@ -70,20 +70,38 @@
                                     Margin="0,0,32,0" VerticalAlignment="Center"
                                     Text="ID No." FontSize="16"/>
 
-                                <TextBox
-                                    Grid.Row="0" Grid.Column="1"
-                                    FontSize="14" Width="230" Margin="0,3,0,3"
-                                    Text="{Binding Path=GuestInformation.ID}"
-                                    Style="{StaticResource MaterialDesignTextBox}"
-                                    materialDesign:TextFieldAssist.HasClearButton="True"
-                                    materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}">
-                                    <i:Interaction.Triggers>
-                                        <i:EventTrigger EventName="PreviewTextInput">
-                                            <ei:CallMethodAction TargetObject="{Binding}" MethodName="NumberValidationTextBox"/>
-                                        </i:EventTrigger>
-                                    </i:Interaction.Triggers>
-                                </TextBox>
+                                <StackPanel Grid.Row="0" Grid.Column="1">
+                                    <TextBox 
+                                        x:Name="autoTextBox"
+                                        FontSize="14" Width="230" Margin="0,3,0,3"
+                                        Text="{Binding Path=GuestInformation.ID}"
+                                        MaxLength="10"
+                                        materialDesign:TextFieldAssist.CharacterCounterVisibility="Hidden"
+                                        Style="{StaticResource MaterialDesignTextBox}"
+                                        materialDesign:TextFieldAssist.HasClearButton="True"
+                                        materialDesign:TextFieldAssist.UnderlineBrush="{DynamicResource PrimaryHueMidBrush}"
+                                        TextChanged="TextBox_TextChanged">
+                                        <i:Interaction.Triggers>
+                                            <i:EventTrigger EventName="PreviewTextInput">
+                                                <ei:CallMethodAction TargetObject="{Binding}" MethodName="NumberValidationTextBox"/>
+                                            </i:EventTrigger>
+                                        </i:Interaction.Triggers>
+                                    </TextBox>
 
+                                    <Popup
+                                        x:Name="autoListPopup"
+                                        Width="230" MaxHeight="150"
+                                        Visibility="Collapsed"
+                                        StaysOpen="False"
+                                        Placement="Bottom">
+                                        <ListBox 
+                                            x:Name="autoList"
+                                            Background="White"
+                                            Visibility="Collapsed"
+                                            SelectionChanged="ListBox_SelectionChanged"/>
+                                    </Popup>
+                                </StackPanel>
+                                
                                 <!--Gender-->
                                 <TextBlock
                                     Grid.Row="0" Grid.Column="3"
