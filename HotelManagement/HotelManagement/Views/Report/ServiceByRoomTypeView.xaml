@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="HotelManagement.Views.Report.ServiceByRoomTypeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:HotelManagement.Views.Report"
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <TextBlock Text="Choose room type" FontSize="18" VerticalAlignment="Center"
+                    HorizontalAlignment="Stretch" Margin="8 12 0 8" Foreground="{StaticResource PrimaryHueDarkBrush}"/>
+            </Grid>
+            <Grid Grid.Row="1">
+                <ScrollViewer x:Name="scvRoomTypes" HorizontalScrollBarVisibility="Hidden" Margin="4 1 4 4">
+                    <ItemsControl ItemsSource="{Binding RoomTypes}" HorizontalAlignment="left" Margin="0 5">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="True"
+                                  Style="{StaticResource MaterialDesignFilterChipPrimaryOutlineCheckBox}"
+                                  Content="{Binding name}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+            <lvc:CartesianChart Grid.Row="2" x:Name="lvc" Margin="10" Series="{Binding SeriesCollection}" LegendLocation="Right" >
+                <lvc:CartesianChart.AxisY>
+                    <lvc:Axis Title="Quantity" LabelFormatter="{Binding YFormatter}"></lvc:Axis>
+                </lvc:CartesianChart.AxisY>
+                <lvc:CartesianChart.AxisX>
+                    <lvc:Axis x:Name="titleX" Title="Month" Labels="{Binding Labels}"></lvc:Axis>
+                </lvc:CartesianChart.AxisX>
+            </lvc:CartesianChart>
+        </Grid>
+    </Grid>
+</UserControl>
