@@ -180,6 +180,7 @@
     </Compile>
     <Compile Include="ViewModels\AccountViewModel.cs" />
     <Compile Include="ViewModels\Report\GuestChart.cs" />
+    <Compile Include="ViewModels\Report\ServiceByRoomTypeViewModel.cs" />
     <Compile Include="ViewModels\Service\AddServicesViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\CalendarViewModel.cs" />

@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace HotelManagement.Views.Report
+namespace HotelManagement.Views
 {
     /// <summary>
     /// Interaction logic for ServiceByRoomTypeView.xaml

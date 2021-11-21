@@ -39,4 +39,7 @@
     <DataTemplate DataType="{x:Type viewModels:GuestChart}">
         <resUC:UC_GuestChart/>
     </DataTemplate>
+    <DataTemplate DataType="{x:Type viewModels:ServiceByRoomTypeViewModel}">
+        <views:ServiceByRoomTypeView/>
+    </DataTemplate>
 </ResourceDictionary>
