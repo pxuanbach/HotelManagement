@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Runtime;
 
-namespace HotelManagement.ViewModels.Service
+namespace HotelManagement.ViewModels
 {
     class ServicesViewModel : BaseViewModel
     {
@@ -49,7 +49,6 @@ namespace HotelManagement.ViewModels.Service
             {
                 selectedService = value;
                 OnPropertyChanged();
-                DataProvider.Instance.DB.SaveChanges();
             }
         }
         #endregion

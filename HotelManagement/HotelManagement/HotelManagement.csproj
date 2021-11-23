@@ -169,6 +169,9 @@
       <DependentUpon>UC_GuestChart.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\ServiceReportItem.cs" />
+    <Compile Include="Resources\UC\UC_RevenueChart.xaml.cs">
+      <DependentUpon>UC_RevenueChart.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Resources\UC\UC_Room.xaml.cs">
       <DependentUpon>UC_Room.xaml</DependentUpon>
     </Compile>
@@ -180,6 +183,7 @@
     </Compile>
     <Compile Include="ViewModels\AccountViewModel.cs" />
     <Compile Include="ViewModels\Report\GuestChart.cs" />
+    <Compile Include="ViewModels\Report\RevenueChart.cs" />
     <Compile Include="ViewModels\Service\AddServicesViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\CalendarViewModel.cs" />
@@ -288,6 +292,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\UC\UC_GuestChart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\UC\UC_RevenueChart.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -395,10 +395,8 @@ namespace HotelManagement.ViewModels
                 return false;
             }
         }
-        public void OpenFolioWindow(RoomViewModel room)
+        public void OpenFolioWindow(RoomViewModel p)
         {
-            AddServicesWindow addServicesWindow = new AddServicesWindow();
-            addServicesWindow.ShowDialog();
         }
 
         private ICommand _showFolioCommand;

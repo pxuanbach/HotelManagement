@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:HotelManagement.Views"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:viewModels="clr-namespace:HotelManagement.ViewModels.Service"
+             xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
              xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
              mc:Ignorable="d" 
