@@ -648,7 +648,7 @@ namespace HotelManagement.ViewModels
                     roomView.txbArrivalCustom.Text = reser.arrival.ToString();
                     roomView.txbDepCustom.Text = reser.departure.ToString();
                     roomView.txbStatusRoom.Text = reser.status;
-                    roomView.txbCountRoom.Text = DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == reser.id).Count().ToString();
+                    roomView.txbCountRoom.Text = DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == reser.id && x.room_booked_id == item.id).Count().ToString();
                     break;
                 }
                 else
@@ -775,12 +775,33 @@ namespace HotelManagement.ViewModels
         {
             string permission = CurrentAccount.Instance.Permission;
 
-            if (permission != "Admin")
+            switch (permission)
             {
-                view.btnAddRoom.IsEnabled = false;
-                view.btnAddType.IsEnabled = false;
-                view.btnMoreRoom.IsEnabled = false;
-                view.btnDelRoom.IsEnabled = false;
+                case "Admin":
+                default:
+                    return;
+                case "Reservation":
+                    view.btnAddType.IsEnabled = false;
+                    editTypePermission(view);
+                    return;
+                case "Receptionist":
+                case "Cashier":
+                case "Undefined":
+                    view.btnAddRoom.IsEnabled = false;
+                    view.btnAddType.IsEnabled = false;
+                    view.btnMoreRoom.IsEnabled = false;
+                    view.btnDelRoom.IsEnabled = false;
+                    editTypePermission(view);
+                    return;
+            }
+        }
+
+        void editTypePermission(RoomsView para)
+        {
+            foreach (UC_RoomType item in para.stkType.Children)
+            {
+                item.btnEdit.IsEnabled = false;
+                item.btnDelete.IsEnabled = false;
             }
         }
 

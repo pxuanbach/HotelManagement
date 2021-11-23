@@ -37,6 +37,11 @@
                 <RowDefinition Height="30"/>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="1"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
                 <TextBlock
                     Text="Type"
                     FontSize="15"
@@ -44,7 +49,7 @@
                     Foreground="Black"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left"
-                    Margin="35,20,0,0"/>
+                    Margin="30,20,0,0"/>
                 <ComboBox
                     x:Name="cbbType"
                     materialDesign:HintAssist.Hint="-Select-"
@@ -62,14 +67,14 @@
                     Foreground="Black"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left"
-                    Margin="180,20,0,0"/>
+                    Margin="200,20,0,0"/>
                 <ComboBox
                     materialDesign:HintAssist.Hint="-Select-"
                     materialDesign:HintAssist.HintOpacity=".50"
                     IsEditable="False"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left" 
-                    Margin="235,20,0,0"
+                    Margin="255,20,0,0"
                     x:Name="cbbFloor"/>
                 <TextBlock
                     Text="Status"
@@ -78,7 +83,7 @@
                     Foreground="Black"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left"
-                    Margin="310,20,0,0"/>
+                    Margin="330,20,0,0"/>
                 <ComboBox
                     x:Name="cbbStatus"
                     materialDesign:HintAssist.Hint="-Select-"
@@ -86,7 +91,7 @@
                     IsEditable="False"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left" 
-                    Margin="370,20,0,0">
+                    Margin="390,20,0,0">
                     <ComboBoxItem Content="All"/>
                     <ComboBoxItem Content="Operational"/>
                     <ComboBoxItem Content="No Show"/>
@@ -109,6 +114,7 @@
                     CommandParameter="{Binding ElementName=Room}"/>
                 <Button
                     x:Name="btnReset"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
                     Width="90"
                     Height="30"
                     HorizontalAlignment="Right"
@@ -167,6 +173,9 @@
                     Command="{Binding OpenAddTypeCommand}"
                     CommandParameter="{Binding ElementName=Room}"
                     Visibility="Hidden"/>
+                </Grid>
+                <Grid Grid.Row="1"
+                      Background="Gray"/>
             </Grid>
             <Grid Grid.Row="1"
                   x:Name="grdType">
