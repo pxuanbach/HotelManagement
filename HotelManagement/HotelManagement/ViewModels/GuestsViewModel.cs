@@ -386,7 +386,7 @@ namespace HotelManagement.ViewModels
         {
             string permission = CurrentAccount.Instance.Permission;
 
-            if (permission != "Admin")
+            if (permission != "Admin" && permission!= "Receptionist")
             {
                 return false;
             }
