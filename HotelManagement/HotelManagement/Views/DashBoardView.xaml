@@ -348,7 +348,7 @@
                             </lvc:Axis>
                         </lvc:CartesianChart.AxisY>
                     </lvc:CartesianChart>-->
-                    <Image Source="/Resources/dashboard side.jpg" HorizontalAlignment="Stretch" Stretch="Fill"/>
+                    <Image Source="/Resources/hotel_dash.png" HorizontalAlignment="Stretch" Stretch="Fill" Height="200"/>
                 </materialDesign:Card>
             </Grid>
         </Grid>
