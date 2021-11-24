@@ -13,14 +13,28 @@ namespace HotelManagement.Resources
             DependencyProperty.RegisterAttached("IsMonthYear", typeof(bool), typeof(DatePickerCalendar),
                                                 new FrameworkPropertyMetadata(false, OnIsMonthYearChanged));
 
+        public static readonly DependencyProperty IsYearProperty =
+            DependencyProperty.RegisterAttached("IsYear", typeof(bool), typeof(DatePickerCalendar),
+                                                new FrameworkPropertyMetadata(false, OnIsYearChanged));
+
         public static bool GetIsMonthYear(DependencyObject dobj)
         {
             return (bool)dobj.GetValue(IsMonthYearProperty);
         }
 
+        public static bool GetIsYear(DependencyObject dobj)
+        {
+            return (bool)dobj.GetValue(IsYearProperty);
+        }
+
         public static void SetIsMonthYear(DependencyObject dobj, bool value)
         {
             dobj.SetValue(IsMonthYearProperty, value);
+        }
+
+        public static void SetIsYear(DependencyObject dobj, bool value)
+        {
+            dobj.SetValue(IsYearProperty, value);
         }
 
         private static void OnIsMonthYearChanged(DependencyObject dobj, DependencyPropertyChangedEventArgs e)
@@ -29,11 +43,21 @@ namespace HotelManagement.Resources
 
             Application.Current.Dispatcher
                 .BeginInvoke(DispatcherPriority.Loaded,
-                             new Action<DatePicker, DependencyPropertyChangedEventArgs>(SetCalendarEventHandlers),
+                             new Action<DatePicker, DependencyPropertyChangedEventArgs>(SetCalendarMonthEventHandlers),
                              datePicker, e);
         }
 
-        private static void SetCalendarEventHandlers(DatePicker datePicker, DependencyPropertyChangedEventArgs e)
+        private static void OnIsYearChanged(DependencyObject dobj, DependencyPropertyChangedEventArgs e)
+        {
+            var datePicker = (DatePicker)dobj;
+
+            Application.Current.Dispatcher
+                .BeginInvoke(DispatcherPriority.Loaded,
+                             new Action<DatePicker, DependencyPropertyChangedEventArgs>(SetCalendarYearEventHandlers),
+                             datePicker, e);
+        }
+
+        private static void SetCalendarMonthEventHandlers(DatePicker datePicker, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue == e.OldValue)
                 return;
@@ -49,6 +73,23 @@ namespace HotelManagement.Resources
                 datePicker.CalendarClosed -= DatePickerOnCalendarClosed;
             }
         }
+        
+        private static void SetCalendarYearEventHandlers(DatePicker datePicker, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue == e.OldValue)
+                return;
+
+            if ((bool)e.NewValue)
+            {
+                datePicker.CalendarOpened += DatePickerOnCalendarYearOpened;
+                datePicker.CalendarClosed += DatePickerOnCalendarYearClosed;
+            }
+            else
+            {
+                datePicker.CalendarOpened -= DatePickerOnCalendarYearOpened;
+                datePicker.CalendarClosed -= DatePickerOnCalendarYearClosed;
+            }
+        }
 
         private static void DatePickerOnCalendarOpened(object sender, RoutedEventArgs routedEventArgs)
         {
@@ -56,6 +97,16 @@ namespace HotelManagement.Resources
             calendar.DisplayMode = CalendarMode.Year;
 
             calendar.DisplayModeChanged += CalendarOnDisplayModeChanged;
+
+            calendar.KeyDown += Calendar_KeyDown;
+        }
+
+        private static void DatePickerOnCalendarYearOpened(object sender, RoutedEventArgs routedEventArgs)
+        {
+            var calendar = GetDatePickerCalendar(sender);
+            calendar.DisplayMode = CalendarMode.Decade;
+
+            calendar.DisplayModeChanged += CalendarYearOnDisplayModeChanged;
 
             calendar.KeyDown += Calendar_KeyDown;
         }
@@ -72,6 +123,22 @@ namespace HotelManagement.Resources
             datePicker.SelectedDate = calendar.SelectedDate;
 
             calendar.DisplayModeChanged -= CalendarOnDisplayModeChanged;
+
+            calendar.KeyDown -= Calendar_KeyDown;
+        }
+
+        private static void DatePickerOnCalendarYearClosed(object sender, RoutedEventArgs routedEventArgs)
+        {
+            var datePicker = (DatePicker)sender;
+            var calendar = GetDatePickerCalendar(sender);
+            if (calendar.SelectedDate.HasValue)
+            {
+                // warning, this might not be what you want, it's a pretty aggressive selection, where the selected date is changed even when keyboard navigating to a new date and then trying to cancel the selection
+                calendar.SelectedDate = GetSelectedCalendarDate(calendar.DisplayDate);
+            }
+            datePicker.SelectedDate = calendar.SelectedDate;
+
+            calendar.DisplayModeChanged -= CalendarYearOnDisplayModeChanged;
 
             calendar.KeyDown -= Calendar_KeyDown;
         }
@@ -97,6 +164,18 @@ namespace HotelManagement.Resources
             datePicker.IsDropDownOpen = false;
         }
 
+        private static void CalendarYearOnDisplayModeChanged(object sender, CalendarModeChangedEventArgs e)
+        {
+            var calendar = (Calendar)sender;
+            if (calendar.DisplayMode != CalendarMode.Year)
+                return;
+
+            calendar.SelectedDate = GetSelectedCalendarYearDate(calendar.DisplayDate);
+
+            var datePicker = GetCalendarsDatePicker(calendar);
+            datePicker.IsDropDownOpen = false;
+        }
+
         private static Calendar GetDatePickerCalendar(object sender)
         {
             var datePicker = (DatePicker)sender;
@@ -117,6 +196,13 @@ namespace HotelManagement.Resources
             if (!selectedDate.HasValue)
                 return null;
             return new DateTime(selectedDate.Value.Year, selectedDate.Value.Month, 1);
+        }
+
+        private static DateTime? GetSelectedCalendarYearDate(DateTime? selectedDate)
+        {
+            if (!selectedDate.HasValue)
+                return null;
+            return new DateTime(selectedDate.Value.Year, 1, 1);
         }
     }
 }
