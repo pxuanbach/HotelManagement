@@ -395,9 +395,13 @@ namespace HotelManagement.ViewModels
                 return false;
             }
         }
-        public void OpenFolioWindow(RoomViewModel room)
+        public void OpenFolioWindow(RoomViewModel p)
         {
+            var room_booked = DataProvider.Instance.DB.ROOM_BOOKED.Where(rb => rb.reservation_id == StayInformation.ID && rb.room_id == p.RoomID).FirstOrDefault();
+            AddServicesViewModel addServicesViewModel = new AddServicesViewModel();
+            addServicesViewModel.getRoomName(room_booked.ROOM.name);
             AddServicesWindow addServicesWindow = new AddServicesWindow();
+            addServicesWindow.DataContext = addServicesViewModel;
             addServicesWindow.ShowDialog();
         }
 
