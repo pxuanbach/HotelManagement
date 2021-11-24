@@ -246,7 +246,7 @@
                             </GridViewColumn>
                             <GridViewColumn DisplayMemberBinding="{Binding Amount}">
                                 <GridViewColumn.Header>
-                                    <TextBlock Text="Amount" Foreground="Black" FontSize="14" FontWeight="SemiBold" Margin="8 0 0 0"/>
+                                    <TextBlock Text="Quantity" Foreground="Black" FontSize="14" FontWeight="SemiBold" Margin="8 0 0 0"/>
                                 </GridViewColumn.Header>
                             </GridViewColumn>
                             <GridViewColumn DisplayMemberBinding="{Binding Price}">

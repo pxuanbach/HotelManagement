@@ -155,7 +155,7 @@ namespace HotelManagement.ViewModels
             roomTable.AddCell(CellCenterFormat("Folio", f11W, 1, 3, true));
             roomTable.AddCell(CellCenterFormat("Price/Day", f11W, 2, 1, true));
             roomTable.AddCell(CellCenterFormat("Service Name", f11W, 1, 1, true));
-            roomTable.AddCell(CellCenterFormat("Amount", f11W, 1, 1, true));
+            roomTable.AddCell(CellCenterFormat("Quantity", f11W, 1, 1, true));
             roomTable.AddCell(CellCenterFormat("Price", f11W, 1, 1, true));
 
             //Load Rooms + Folio

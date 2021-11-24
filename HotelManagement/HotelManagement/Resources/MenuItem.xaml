@@ -39,5 +39,7 @@
     </DataTemplate>
     <DataTemplate DataType="{x:Type viewModels:RevenueChart}">
         <resUC:UC_RevenueChart/>
+    <DataTemplate DataType="{x:Type viewModels:ServiceByRoomTypeViewModel}">
+        <views:ServiceByRoomTypeView/>
     </DataTemplate>
 </ResourceDictionary>
