@@ -111,7 +111,7 @@
                     <Grid Grid.Column="1">
                         <Button
                             x:Name="btnAddService"
-                            Background="#637BCF"
+                            Background="{StaticResource PrimaryHueDarkBrush}"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Right"
                             Margin="35 0"
@@ -196,7 +196,7 @@
                             <DataGridTemplateColumn >
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Width="40" Padding="0" Background="#637BCF"
+                                        <Button Width="40" Padding="0" Background="{StaticResource PrimaryHueDarkBrush}"
                                         Style="{StaticResource MaterialDesignRaisedButton}"
                                         Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.DeleteServiceCommand}">
                                             <materialDesign:PackIcon Kind="Delete"/>

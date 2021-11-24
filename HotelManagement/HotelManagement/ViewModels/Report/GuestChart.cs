@@ -212,7 +212,8 @@ namespace HotelManagement.ViewModels
         {
             double count = 0;
 
-            List<RESERVATION> listRes = DataProvider.Instance.DB.RESERVATIONs.Where(y => y.arrival.Value.Month == month && y.arrival.Value.Year == year).ToList();
+            List<RESERVATION> listRes = DataProvider.Instance.DB.RESERVATIONs.Where(
+                y => y.arrival.Value.Month == month && y.arrival.Value.Year == year).ToList();
 
             foreach (RESERVATION item in listRes)
             {

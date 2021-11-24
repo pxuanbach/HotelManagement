@@ -172,8 +172,9 @@
                     </Grid>
                     <Grid Grid.Column="1">
                         <Button Width="50" Height="30" Margin="35 0 40 0"
+                                Background="{StaticResource PrimaryHueDarkBrush}"
                             Style="{StaticResource MaterialDesignRaisedButton}" 
-                            Content="{materialDesign:PackIcon Kind=Reload, Size=15}" 
+                            Content="{materialDesign:PackIcon Kind=Reload, Size=18}" 
                                 VerticalContentAlignment="Center"
                                 HorizontalContentAlignment="Center"
                             Foreground="White" 
@@ -338,7 +339,7 @@
                             <DataGridTemplateColumn x:Name="dtgEdit">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Width="40" Padding="0" Background="#637BCF"
+                                        <Button Width="40" Padding="0" Background="{StaticResource PrimaryHueDarkBrush}"
                                         Style="{StaticResource MaterialDesignRaisedButton}"
                                         Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.EditCommand}"
                                                 CommandParameter="{Binding ElementName=dtgEdit}">

@@ -43,6 +43,28 @@ namespace HotelManagement.ViewModels
         public ServicesViewModel ServicesViewModel { get; set; }
         #endregion
 
+        //Visible
+        private string _roomsVisible;
+        public string RoomsVisible { get { return _roomsVisible; } set { _roomsVisible = value; OnPropertyChanged(); } }
+
+        private string _bookingVisible;
+        public string BookingVisible { get { return _bookingVisible; } set { _bookingVisible = value; OnPropertyChanged(); } }
+
+        private string _guestsVisible;
+        public string GuestsVisible { get { return _guestsVisible; } set { _guestsVisible = value; OnPropertyChanged(); } }
+
+        private string _servicesVisible;
+        public string ServicesVisible { get { return _servicesVisible; } set { _servicesVisible = value; OnPropertyChanged(); } }
+
+        private string _invoicesVisible;
+        public string InvoicesVisible { get { return _invoicesVisible; } set { _invoicesVisible = value; OnPropertyChanged(); } }
+
+        private string _reportsVisible;
+        public string ReportsVisible { get { return _reportsVisible; } set { _reportsVisible = value; OnPropertyChanged(); } }
+        
+        private string _accountsVisible;
+        public string AccountsVisible { get { return _accountsVisible; } set { _accountsVisible = value; OnPropertyChanged(); } }
+
         public ICommand DashBoardViewCommmand { get; set; }
         public ICommand ReservationListViewCommand { get; set; }
         public ICommand CalendarViewCommmand { get; set; }
@@ -54,9 +76,20 @@ namespace HotelManagement.ViewModels
         public ICommand ServicesViewCommmand { get; set; }
 
         public ICommand CloseWindowCommand { get; set; }
+        public ICommand LogOutCommand { get; set; }
 
         public MainWindowViewModel()
         {
+            if (CurrentAccount.Instance.Permission == "Reservation")
+            {
+                RoomsVisible = "Visible";
+                BookingVisible = "Visible";
+                GuestsVisible = "Collapsed";
+                ServicesVisible = "Collapsed";
+                InvoicesVisible = "Collapsed";
+                ReportsVisible = "Collapsed";
+                AccountsVisible = "Collapsed";
+            }    
 
             DashBoardViewModel = new DashBoardViewModel();
             ReservationListViewModel = new ReservationListViewModel();
@@ -75,6 +108,17 @@ namespace HotelManagement.ViewModels
             }, (p) =>
             {
                 Application.Current.Shutdown();
+            });
+
+            LogOutCommand = new RelayCommand<MainWindow>((p) =>
+            {
+                return true;
+            }, (p) =>
+            {
+                CurrentAccount.Instance.DisposeCurrentAccount();
+                LoginWindow wd = new LoginWindow();
+                p.Close();
+                wd.Show();
             });
 
             #region Navigation

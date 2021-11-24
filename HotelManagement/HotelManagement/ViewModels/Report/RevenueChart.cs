@@ -71,14 +71,14 @@ namespace HotelManagement.ViewModels
             if (para.cbbChangeType.SelectedIndex == 0)
             {
                 LoadChartMonth(para);
-                para.txtNameChart.Text = "Chart of Visitors by Month";
+                para.txtNameChart.Text = "Chart of Revenue by Month";
                 para.grdYears.Visibility = Visibility.Visible;
                 para.titleX.Title = "Month";
             }
             else
             {
                 LoadChartYear(para);
-                para.txtNameChart.Text = "Chart of Visitors by Year";
+                para.txtNameChart.Text = "Chart of Revenue by Year";
                 para.grdYears.Visibility = Visibility.Collapsed;
                 para.titleX.Title = "Year";
             }
@@ -203,7 +203,16 @@ namespace HotelManagement.ViewModels
         private double GetRevenueByMonth(int month, int year)
         {
             double total = 0;
-            List<RESERVATION> listRES = DataProvider.Instance.DB.RESERVATIONs.Where(x => x.arrival.Value.Year == year && x.arrival.Value.Month == month && x.status == "Completed").ToList();
+            List<RESERVATION> listRES = DataProvider.Instance.DB.RESERVATIONs.Where(
+                x => x.arrival.Value.Year == year && x.arrival.Value.Month == month 
+                && x.status == "Completed").ToList();
+            List<RESERVATION> listRESconfirmed = DataProvider.Instance.DB.RESERVATIONs.Where(
+                x => x.arrival.Value.Year == year && x.arrival.Value.Month == month
+                && x.status == "Confirmed Cancelled").ToList();
+            List<RESERVATION> listRESnoshow = DataProvider.Instance.DB.RESERVATIONs.Where(
+                x => x.arrival.Value.Year == year && x.arrival.Value.Month == month
+                && x.status == "No Show Cancelled").ToList();
+
             foreach (var res in listRES)
             {
                 List<INVOICE> listInvoices = DataProvider.Instance.DB.INVOICEs.Where(x => x.reservation_id == res.id).ToList();
@@ -212,14 +221,33 @@ namespace HotelManagement.ViewModels
                     total += (double)invoice.total_money;
                 }
             }
+
+            //Confirmed Cancelled: tổng đơn giá phòng (1 ngày).
+            foreach (var res in listRESconfirmed)
+            {
+                total += CalculatorInvoice.TotalRoomPriceOfReservation(res);
+            }
+
+            //No Show Cancelled: totalDays * tổng đơn giá phòng.
+            foreach (var res in listRESnoshow)
+            {
+                total += CalculatorInvoice.RoomsTotalMoney(res);
+            }
+
             return total;
         }
 
         private double GetRevenueByYear(int year)
         {
             double total = 0;
-            List<RESERVATION> listRES = DataProvider.Instance.DB.RESERVATIONs.Where(x => x.arrival.Value.Year == year && x.status == "Completed").ToList();
-            foreach(var res in listRES)
+            List<RESERVATION> listRES = DataProvider.Instance.DB.RESERVATIONs.Where(
+                x => x.arrival.Value.Year == year && x.status == "Completed").ToList();
+            List<RESERVATION> listRESconfirmed = DataProvider.Instance.DB.RESERVATIONs.Where(
+                x => x.arrival.Value.Year == year && x.status == "Confirmed Cancelled").ToList();
+            List<RESERVATION> listRESnoshow = DataProvider.Instance.DB.RESERVATIONs.Where(
+                x => x.arrival.Value.Year == year && x.status == "No Show Cancelled").ToList();
+
+            foreach (var res in listRES)
             {
                 List<INVOICE> listInvoices = DataProvider.Instance.DB.INVOICEs.Where(x => x.reservation_id == res.id).ToList();
                 foreach (var invoice in listInvoices)
@@ -227,6 +255,19 @@ namespace HotelManagement.ViewModels
                     total += (double)invoice.total_money;
                 }
             }
+
+            //Confirmed Cancelled: tổng đơn giá phòng (1 ngày).
+            foreach (var res in listRESconfirmed)
+            {
+                total += CalculatorInvoice.TotalRoomPriceOfReservation(res);
+            }
+
+            //No Show Cancelled: totalDays * tổng đơn giá phòng.
+            foreach (var res in listRESnoshow)
+            {
+                total += CalculatorInvoice.RoomsTotalMoney(res);
+            }
+
             return total;
         }
     }
