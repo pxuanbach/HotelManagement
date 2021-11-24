@@ -217,7 +217,7 @@ namespace HotelManagement.ViewModels
 
             foreach (RESERVATION item in listRes)
             {
-                count += DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == item.id).Count();
+                count += DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == item.id && item.status == "Completed").Count();
             }
 
             return count;
@@ -231,7 +231,7 @@ namespace HotelManagement.ViewModels
 
             foreach (RESERVATION item in listRes)
             {
-                count += DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == item.id).Count();
+                count += DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == item.id && item.status == "Completed").Count();
             }
 
             return count;
