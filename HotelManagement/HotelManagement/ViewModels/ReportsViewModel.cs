@@ -39,7 +39,7 @@ namespace HotelManagement.ViewModels
             TopServiceViewModel = new TopServiceViewModel();
             GuestChart = new GuestChart();
 
-            //CurrentReportView = TopServiceViewModel;
+            //CurrentReportView = ServiceByRoomTypeViewModel;
 
             RevenueCommand = new RelayCommand<object>((para) => true,
                 (para) => CurrentReportView = null);
