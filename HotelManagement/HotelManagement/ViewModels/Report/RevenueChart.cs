@@ -71,14 +71,14 @@ namespace HotelManagement.ViewModels
             if (para.cbbChangeType.SelectedIndex == 0)
             {
                 LoadChartMonth(para);
-                para.txtNameChart.Text = "Chart of Visitors by Month";
+                para.txtNameChart.Text = "Chart of Revenue by Month";
                 para.grdYears.Visibility = Visibility.Visible;
                 para.titleX.Title = "Month";
             }
             else
             {
                 LoadChartYear(para);
-                para.txtNameChart.Text = "Chart of Visitors by Year";
+                para.txtNameChart.Text = "Chart of Revenue by Year";
                 para.grdYears.Visibility = Visibility.Collapsed;
                 para.titleX.Title = "Year";
             }

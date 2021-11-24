@@ -26,7 +26,7 @@
         <Grid Grid.Column="0">
             <Image Source="/Resources/image_1.png" HorizontalAlignment="Stretch" Stretch="Fill"/>
         </Grid>
-        <Grid Grid.Column="1" Background="#637BCF">
+        <Grid Grid.Column="1" Background="{StaticResource PrimaryHueDarkBrush}">
             <Button VerticalAlignment="Top" HorizontalAlignment="Right" 
                 Margin="6" Command="{Binding CloseWindowCommand}"
                 Background="Transparent" BorderBrush="White"

@@ -54,6 +54,7 @@ namespace HotelManagement.ViewModels
         public ICommand ServicesViewCommmand { get; set; }
 
         public ICommand CloseWindowCommand { get; set; }
+        public ICommand LogOutCommand { get; set; }
 
         public MainWindowViewModel()
         {
@@ -75,6 +76,17 @@ namespace HotelManagement.ViewModels
             }, (p) =>
             {
                 Application.Current.Shutdown();
+            });
+
+            LogOutCommand = new RelayCommand<MainWindow>((p) =>
+            {
+                return true;
+            }, (p) =>
+            {
+                CurrentAccount.Instance.DisposeCurrentAccount();
+                LoginWindow wd = new LoginWindow();
+                p.Close();
+                wd.Show();
             });
 
             #region Navigation
