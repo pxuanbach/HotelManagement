@@ -36,10 +36,9 @@ namespace HotelManagement.ViewModels
                 Application.Current.Shutdown();
             });
         }
-        public string getRoomName(string roomBookedName)
+        public void getRoomName(string roomBookedName)
         {
             RoomName = roomBookedName;
-            return roomBookedName;
         }
     }
 }
