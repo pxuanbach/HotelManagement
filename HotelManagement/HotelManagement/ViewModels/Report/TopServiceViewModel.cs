@@ -1,4 +1,6 @@
 ﻿using HotelManagement.Models;
+using LiveCharts;
+using LiveCharts.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,25 +15,53 @@ namespace HotelManagement.ViewModels
     class TopServiceViewModel : BaseViewModel
     {
         #region Properties
-        private int _selectedTop;
-        public int SelectedTop { get { return _selectedTop; } set { _selectedTop = value; OnPropertyChanged(); } }
+        private int _selectedTopQuantity;
+        public int SelectedTopQuantity 
+        { 
+            get { return _selectedTopQuantity; } 
+            set { _selectedTopQuantity = value; OnPropertyChanged(); } 
+        }
 
-        private List<int> _tops;
-        public List<int> Tops { get { return _tops; } set { _tops = value; OnPropertyChanged(); } }
-        
-        private DateTime _timeReport;
-        public DateTime TimeReport { get { return _timeReport; } set { _timeReport = value; OnPropertyChanged(); } }
+        private string _selectedType;
+        public string SelectedType
+        {
+            get { return _selectedType; }
+            set { _selectedType = value; OnPropertyChanged(); }
+        }
 
-        private string _selectedMode;
-        public string SelectedMode { get { return _selectedMode; } set { _selectedMode = value; OnPropertyChanged(); } }
+        private List<string> _types;
+        public List<string> Types { get { return _types; } set { _types = value; OnPropertyChanged(); } }
 
-        private ObservableCollection<ServiceReportItem> _services;
-        public ObservableCollection<ServiceReportItem> Services { get { return _services; } set { _services = value; OnPropertyChanged(); } }
+        private List<int> _topsQuantity;
+        public List<int> TopsQuantity { get { return _topsQuantity; } set { _topsQuantity = value; OnPropertyChanged(); } }
+
+        private string _selectedModeQuantity;
+        public string SelectedModeQuantity 
+        { 
+            get { return _selectedModeQuantity; } 
+            set { _selectedModeQuantity = value; OnPropertyChanged(); } 
+        }
+
+        private List<string> _modesQuantity;
+        public List<string> ModesQuantity { get { return _modesQuantity; } set { _modesQuantity = value; OnPropertyChanged(); } }
+
+        private DateTime _timeReportQuantity;
+        public DateTime TimeReportQuantity 
+        { 
+            get { return _timeReportQuantity; } 
+            set { _timeReportQuantity = value; OnPropertyChanged(); } 
+        }
+
+        private ObservableCollection<ServiceReportItem> _servicesQuantity;
+        public ObservableCollection<ServiceReportItem> ServicesQuantity 
+        { 
+            get { return _servicesQuantity; } 
+            set { _servicesQuantity = value; OnPropertyChanged(); } 
+        }
+
         #endregion
 
         #region Command
-        public ICommand MonthCommand { get; set; }
-        public ICommand YearCommand { get; set; }
         public ICommand ReloadCommand { get; set; }
         #endregion
 
@@ -39,70 +69,78 @@ namespace HotelManagement.ViewModels
         {
             InitProperties();
 
-            MonthCommand = new RelayCommand<object>((p) =>
-            {
-                return true;
-            }, (p) =>
-            {
-                SelectedMode = "Month";
-                LoadService();
-            });
-
-            YearCommand = new RelayCommand<object>((p) =>
-            {
-                return true;
-            }, (p) =>
-            {
-                SelectedMode = "Year";
-                LoadService();
-            });
-
             ReloadCommand = new RelayCommand<object>((p) =>
             {
                 return true;
             }, (p) =>
             {
-                LoadService();
+                LoadQuantity();
             });
         }
 
         void InitProperties()
         {
-            Services = new ObservableCollection<ServiceReportItem>();
-            SelectedMode = "Month";
+            ServicesQuantity = new ObservableCollection<ServiceReportItem>();
 
-            Tops = new List<int>();
-            Tops.Add(5);
-            Tops.Add(10);
-            Tops.Add(20);
-            Tops.Add(50);
-            Tops.Add(100);
-            SelectedTop = 5;
+            Types = new List<string>(
+                DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.date_updated == null).Select(x => x.name).ToList());
+            Types.Add("All");
+            SelectedType = "All";
 
-            TimeReport = DateTime.Now.AddMonths(-1);
-            LoadService();
+            TopsQuantity = new List<int>();
+            TopsQuantity.Add(5);
+            TopsQuantity.Add(10);
+            TopsQuantity.Add(20);
+            TopsQuantity.Add(50);
+            TopsQuantity.Add(100);
+            SelectedTopQuantity = 5;
+
+            ModesQuantity = new List<string>();
+            ModesQuantity.Add("Month");
+            ModesQuantity.Add("Year");
+            SelectedModeQuantity = "Month";
+
+            TimeReportQuantity = DateTime.Now.AddMonths(-1);
+            LoadQuantity();
         }
 
-        void LoadService()
+        void LoadQuantity()
         {
-            if (Services.Count > 0)
-                Services.Clear();
+            if (ServicesQuantity.Count > 0)
+                ServicesQuantity.Clear();
+            List<ServiceReportItem> Items = new List<ServiceReportItem>();
 
-            if (SelectedMode == "Month")
+            if (SelectedType == "All")
+                Items = LoadServicesQuantity(SelectedModeQuantity, SelectedTopQuantity, TimeReportQuantity);
+            else
+                Items = LoadServicesQuantityByType(SelectedModeQuantity, SelectedTopQuantity, TimeReportQuantity, SelectedType);
+
+            int index = 1;
+            foreach(var item in Items)
             {
-                LoadServiceByMonth();
-            } 
-            else if (SelectedMode == "Year")
-            {
-                LoadServiceByYear();
+                item.Index = index;
+                ServicesQuantity.Add(item);
+                index++;
             }    
         }
 
-        void LoadServiceByMonth()
+        List<ServiceReportItem> LoadServicesQuantity(string mode, int selectedTop, DateTime timeReport)
         {
-            var roomBookedList = DataProvider.Instance.DB.ROOM_BOOKED.Where(
-                    x => DbFunctions.DiffMonths(x.RESERVATION.departure, TimeReport) == 0).ToList();
-            ObservableCollection<ServiceReportItem> serviceReports = new ObservableCollection<ServiceReportItem>();
+            List<ROOM_BOOKED> roomBookedList = new List<ROOM_BOOKED>();
+            List<ServiceReportItem> serviceReports = new List<ServiceReportItem>();
+
+            if (mode == "Month")
+            {
+                roomBookedList = DataProvider.Instance.DB.ROOM_BOOKED.Where(
+                    x => DbFunctions.DiffMonths(x.RESERVATION.departure, timeReport) == 0
+                    && x.RESERVATION.status == "Completed").ToList();
+            }   
+            else if (mode == "Year")
+            {
+                roomBookedList = DataProvider.Instance.DB.ROOM_BOOKED.Where(
+                    x => DbFunctions.DiffYears(x.RESERVATION.departure, timeReport) == 0
+                    && x.RESERVATION.status == "Completed").ToList();
+            }    
 
             foreach (var roomBooked in roomBookedList)
             {
@@ -119,22 +157,33 @@ namespace HotelManagement.ViewModels
                     }
                     else
                     {
-                        isItemExist.Amount += folio.amount.Value;
+                        isItemExist.Quantity += folio.amount.Value;
                     }
                 }
             }
 
-            foreach (var item in serviceReports.Take(SelectedTop).OrderByDescending(x => x.Amount))
-            {
-                Services.Add(item);
-            }
+            return serviceReports.Take(selectedTop).OrderByDescending(x => x.Quantity).ToList();
         }
 
-        void LoadServiceByYear()
+        List<ServiceReportItem> LoadServicesQuantityByType(string mode, int selectedTop, DateTime timeReport, string type)
         {
-            var roomBookedList = DataProvider.Instance.DB.ROOM_BOOKED.Where(
-                    x => DbFunctions.DiffYears(x.RESERVATION.departure, TimeReport) == 0).ToList();
-            ObservableCollection<ServiceReportItem> serviceReports = new ObservableCollection<ServiceReportItem>();
+            List<ROOM_BOOKED> roomBookedList = new List<ROOM_BOOKED>();
+            List<ServiceReportItem> serviceReports = new List<ServiceReportItem>();
+
+            if (mode == "Month")
+            {
+                roomBookedList = DataProvider.Instance.DB.ROOM_BOOKED.Where(
+                    x => DbFunctions.DiffMonths(x.RESERVATION.departure, timeReport) == 0
+                    && x.ROOM.ROOMTYPE.name == type
+                    && x.RESERVATION.status == "Completed").ToList();
+            }
+            else if (mode == "Year")
+            {
+                roomBookedList = DataProvider.Instance.DB.ROOM_BOOKED.Where(
+                    x => DbFunctions.DiffYears(x.RESERVATION.departure, timeReport) == 0
+                    && x.ROOM.ROOMTYPE.name == type
+                    && x.RESERVATION.status == "Completed").ToList();
+            }
 
             foreach (var roomBooked in roomBookedList)
             {
@@ -151,15 +200,12 @@ namespace HotelManagement.ViewModels
                     }
                     else
                     {
-                        isItemExist.Amount += folio.amount.Value;
+                        isItemExist.Quantity += folio.amount.Value;
                     }
                 }
             }
 
-            foreach (var item in serviceReports.Take(SelectedTop).OrderByDescending(x => x.Amount))
-            {
-                Services.Add(item);
-            }
+            return serviceReports.Take(selectedTop).OrderByDescending(x => x.Quantity).ToList();
         }
     }
 }

@@ -180,6 +180,7 @@
     </Compile>
     <Compile Include="ViewModels\AccountViewModel.cs" />
     <Compile Include="ViewModels\Report\GuestChart.cs" />
+    <Compile Include="ViewModels\Report\ServiceByRoomTypeViewModel.cs" />
     <Compile Include="ViewModels\Service\AddServicesViewModel.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\CalendarViewModel.cs" />
@@ -244,6 +245,9 @@
       <DependentUpon>ReportsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Resources\DatePickerDateFormat.cs" />
+    <Compile Include="Views\Report\ServiceByRoomTypeView.xaml.cs">
+      <DependentUpon>ServiceByRoomTypeView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Report\TopServiceView.xaml.cs">
       <DependentUpon>TopServiceView.xaml</DependentUpon>
     </Compile>
@@ -360,6 +364,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ReportsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Report\ServiceByRoomTypeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
