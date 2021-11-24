@@ -15,14 +15,22 @@ namespace HotelManagement.ViewModels
     class TopServiceViewModel : BaseViewModel
     {
         #region Properties
-
-        #region Top services (Quantity)
         private int _selectedTopQuantity;
         public int SelectedTopQuantity 
         { 
             get { return _selectedTopQuantity; } 
             set { _selectedTopQuantity = value; OnPropertyChanged(); } 
         }
+
+        private string _selectedType;
+        public string SelectedType
+        {
+            get { return _selectedType; }
+            set { _selectedType = value; OnPropertyChanged(); }
+        }
+
+        private List<string> _types;
+        public List<string> Types { get { return _types; } set { _types = value; OnPropertyChanged(); } }
 
         private List<int> _topsQuantity;
         public List<int> TopsQuantity { get { return _topsQuantity; } set { _topsQuantity = value; OnPropertyChanged(); } }
@@ -50,19 +58,18 @@ namespace HotelManagement.ViewModels
             get { return _servicesQuantity; } 
             set { _servicesQuantity = value; OnPropertyChanged(); } 
         }
-        #endregion
 
         #endregion
 
         #region Command
-        public ICommand ReloadQuantityCommand { get; set; }
+        public ICommand ReloadCommand { get; set; }
         #endregion
 
         public TopServiceViewModel()
         {
             InitProperties();
 
-            ReloadQuantityCommand = new RelayCommand<object>((p) =>
+            ReloadCommand = new RelayCommand<object>((p) =>
             {
                 return true;
             }, (p) =>
@@ -74,6 +81,11 @@ namespace HotelManagement.ViewModels
         void InitProperties()
         {
             ServicesQuantity = new ObservableCollection<ServiceReportItem>();
+
+            Types = new List<string>(
+                DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.date_updated == null).Select(x => x.name).ToList());
+            Types.Add("All");
+            SelectedType = "All";
 
             TopsQuantity = new List<int>();
             TopsQuantity.Add(5);
@@ -98,7 +110,10 @@ namespace HotelManagement.ViewModels
                 ServicesQuantity.Clear();
             List<ServiceReportItem> Items = new List<ServiceReportItem>();
 
-            Items = LoadServicesQuantity(SelectedModeQuantity, SelectedTopQuantity, TimeReportQuantity);
+            if (SelectedType == "All")
+                Items = LoadServicesQuantity(SelectedModeQuantity, SelectedTopQuantity, TimeReportQuantity);
+            else
+                Items = LoadServicesQuantityByType(SelectedModeQuantity, SelectedTopQuantity, TimeReportQuantity, SelectedType);
 
             int index = 1;
             foreach(var item in Items)
@@ -126,6 +141,49 @@ namespace HotelManagement.ViewModels
                     x => DbFunctions.DiffYears(x.RESERVATION.departure, timeReport) == 0
                     && x.RESERVATION.status == "Completed").ToList();
             }    
+
+            foreach (var roomBooked in roomBookedList)
+            {
+                foreach (var folio in roomBooked.FOLIOs)
+                {
+                    var isItemExist = serviceReports.FirstOrDefault(x => x.Id == folio.SERVICE.id);
+                    if (isItemExist == null)
+                    {
+                        int price = (int)folio.SERVICE.price.Value;
+                        ServiceReportItem item = new ServiceReportItem(folio.SERVICE.id,
+                            folio.SERVICE.name, SeparateThousands(price.ToString()), folio.amount.Value);
+
+                        serviceReports.Add(item);
+                    }
+                    else
+                    {
+                        isItemExist.Quantity += folio.amount.Value;
+                    }
+                }
+            }
+
+            return serviceReports.Take(selectedTop).OrderByDescending(x => x.Quantity).ToList();
+        }
+
+        List<ServiceReportItem> LoadServicesQuantityByType(string mode, int selectedTop, DateTime timeReport, string type)
+        {
+            List<ROOM_BOOKED> roomBookedList = new List<ROOM_BOOKED>();
+            List<ServiceReportItem> serviceReports = new List<ServiceReportItem>();
+
+            if (mode == "Month")
+            {
+                roomBookedList = DataProvider.Instance.DB.ROOM_BOOKED.Where(
+                    x => DbFunctions.DiffMonths(x.RESERVATION.departure, timeReport) == 0
+                    && x.ROOM.ROOMTYPE.name == type
+                    && x.RESERVATION.status == "Completed").ToList();
+            }
+            else if (mode == "Year")
+            {
+                roomBookedList = DataProvider.Instance.DB.ROOM_BOOKED.Where(
+                    x => DbFunctions.DiffYears(x.RESERVATION.departure, timeReport) == 0
+                    && x.ROOM.ROOMTYPE.name == type
+                    && x.RESERVATION.status == "Completed").ToList();
+            }
 
             foreach (var roomBooked in roomBookedList)
             {
