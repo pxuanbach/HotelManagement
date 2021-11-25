@@ -80,20 +80,20 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="Time report:" Margin="4" VerticalAlignment="Center"/>
-                        <DatePicker Name="dpTimeReportQuantity" Width="auto" Margin="2 0 0 0"
+                        <DatePicker Name="dpTimeReport" Width="auto" Margin="2 0 0 0"
                             res:DatePickerCalendar.IsMonthYear="True"
                             res:DatePickerDateFormat.DateFormat="MM/yyyy"
                             SelectedDate="{Binding TimeReportQuantity}">
                             <i:Interaction.Triggers>
                                 <i:EventTrigger EventName="SelectedDateChanged">
                                     <i:InvokeCommandAction Command="{Binding ReloadCommand}" 
-                                   CommandParameter="{Binding ElementName=dpTimeReportQuantity}"/>
+                                   CommandParameter="{Binding ElementName=dpTimeReport}"/>
                                 </i:EventTrigger>
                             </i:Interaction.Triggers>
                         </DatePicker>
                     </StackPanel>
                 </StackPanel>
-                <ComboBox Grid.Column="1" x:Name="cbbModeQuantity" Padding="8 2 2 2" Margin="4"
+                <ComboBox Grid.Column="1" x:Name="cbbMode" Padding="8 2 2 2" Margin="4"
                           Style="{StaticResource MaterialDesignOutlinedComboBox}"
                           Foreground="{StaticResource PrimaryHueDarkBrush}"
                             BorderBrush="{StaticResource PrimaryHueDarkBrush}" Height="32"
