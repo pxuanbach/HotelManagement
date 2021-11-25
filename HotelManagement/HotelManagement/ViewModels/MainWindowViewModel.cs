@@ -77,6 +77,7 @@ namespace HotelManagement.ViewModels
 
         public ICommand CloseWindowCommand { get; set; }
         public ICommand LogOutCommand { get; set; }
+        public ICommand ChangePasswordCommand { get; set; }
 
         public MainWindowViewModel()
         {
@@ -101,6 +102,15 @@ namespace HotelManagement.ViewModels
                 LoginWindow wd = new LoginWindow();
                 p.Close();
                 wd.Show();
+            });
+
+            ChangePasswordCommand = new RelayCommand<object>((p) =>
+            {
+                return true;
+            }, (p) =>
+            {
+                ChangePasswordWindow wd = new ChangePasswordWindow();
+                wd.ShowDialog();
             });
 
             #region Navigation
