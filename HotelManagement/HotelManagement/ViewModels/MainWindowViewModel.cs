@@ -80,26 +80,8 @@ namespace HotelManagement.ViewModels
 
         public MainWindowViewModel()
         {
-            if (CurrentAccount.Instance.Permission == "Reservation")
-            {
-                RoomsVisible = "Visible";
-                BookingVisible = "Visible";
-                GuestsVisible = "Collapsed";
-                ServicesVisible = "Collapsed";
-                InvoicesVisible = "Collapsed";
-                ReportsVisible = "Collapsed";
-                AccountsVisible = "Collapsed";
-            }    
+            SwitchNavigationBar();
 
-            DashBoardViewModel = new DashBoardViewModel();
-            ReservationListViewModel = new ReservationListViewModel();
-            CalendarViewModel = new CalendarViewModel();
-            RoomsViewModels = new RoomsViewModels();
-            GuestsViewModel = new GuestsViewModel();
-            InvoiceViewModel = new InvoiceViewModel();
-            ReportsViewModel = new ReportsViewModel();
-            AccountViewModel = new AccountViewModel();
-            ServicesViewModel = new ServicesViewModel();
             DataTemplate = DashBoardViewModel;
 
             CloseWindowCommand = new RelayCommand<object>((p) =>
@@ -194,7 +176,63 @@ namespace HotelManagement.ViewModels
                 DataTemplate = ServicesViewModel;
             });
             #endregion
+        }
 
+        void SwitchNavigationBar()
+        {
+            DashBoardViewModel = new DashBoardViewModel();
+            CalendarViewModel = new CalendarViewModel();
+            
+            switch (CurrentAccount.Instance.Permission)
+            {
+                case "Reservation":
+                    RoomsViewModels = new RoomsViewModels();
+                    ReservationListViewModel = new ReservationListViewModel();
+                    GuestsVisible = "Collapsed";
+                    ServicesVisible = "Collapsed";
+                    InvoicesVisible = "Collapsed";
+                    ReportsVisible = "Collapsed";
+                    AccountsVisible = "Collapsed";
+                    break;
+                case "Receptionist":
+                    ReservationListViewModel = new ReservationListViewModel();
+                    GuestsViewModel = new GuestsViewModel();
+                    ServicesViewModel = new ServicesViewModel();
+                    RoomsVisible = "Collapsed";
+                    InvoicesVisible = "Collapsed";
+                    ReportsVisible = "Collapsed";
+                    AccountsVisible = "Collapsed";
+                    break;
+                case "Cashier":
+                    InvoiceViewModel = new InvoiceViewModel();
+                    ReportsViewModel = new ReportsViewModel();
+                    RoomsVisible = "Collapsed";
+                    BookingVisible = "Collapsed";
+                    GuestsVisible = "Collapsed";
+                    ServicesVisible = "Collapsed";
+                    AccountsVisible = "Collapsed";
+                    break;
+                case "Undefined":
+                    RoomsVisible = "Collapsed";
+                    BookingVisible = "Collapsed";
+                    GuestsVisible = "Collapsed";
+                    ServicesVisible = "Collapsed";
+                    InvoicesVisible = "Collapsed";
+                    ReportsVisible = "Collapsed";
+                    AccountsVisible = "Collapsed";
+                    break;
+                case "Admin":
+                    RoomsViewModels = new RoomsViewModels();
+                    ReservationListViewModel = new ReservationListViewModel();
+                    GuestsViewModel = new GuestsViewModel();
+                    ServicesViewModel = new ServicesViewModel();
+                    InvoiceViewModel = new InvoiceViewModel();
+                    ReportsViewModel = new ReportsViewModel();
+                    AccountViewModel = new AccountViewModel();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
