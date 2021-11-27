@@ -400,6 +400,7 @@ namespace HotelManagement.ViewModels
             var room_booked = DataProvider.Instance.DB.ROOM_BOOKED.Where(rb => rb.reservation_id == StayInformation.ID && rb.room_id == p.RoomID).FirstOrDefault();
             AddServicesViewModel addServicesViewModel = new AddServicesViewModel();
             addServicesViewModel.getRoomName(room_booked.ROOM.name);
+            addServicesViewModel.getRoomBookedId(room_booked.id);
             AddServicesWindow addServicesWindow = new AddServicesWindow();
             addServicesWindow.DataContext = addServicesViewModel;
             addServicesWindow.ShowDialog();
