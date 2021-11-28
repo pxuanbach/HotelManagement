@@ -87,28 +87,6 @@
                                 </Grid>
                             </Grid>
                         </Button>
-                        <Button x:Name="btnBooking" Background="Transparent" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
-                                Height="50" Padding="0" BorderThickness="0"
-                                Command="{Binding ReservationListViewCommand}">
-                            <Grid Height="40" Width="250">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="60"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Grid Grid.Column="0">
-                                    <materialDesign:PackIcon Foreground="{StaticResource PrimaryLightBrush}"
-                                                             Kind="Book"
-                                                             HorizontalAlignment="Center"
-                                                             VerticalAlignment="Center" Width="20" Height="20"/>
-                                </Grid>
-                                <Grid Grid.Column="1">
-                                    <TextBlock Foreground="{StaticResource PrimaryLightBrush}"
-                                               FontSize="14"
-                                               FontWeight="Regular"
-                                               VerticalAlignment="Center">Booking</TextBlock>
-                                </Grid>
-                            </Grid>
-                        </Button>
                         <Button x:Name="btnCalendar" Background="Transparent" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                                 Height="50" Padding="0" BorderThickness="0"
                                 Command="{Binding CalendarViewCommmand}">
@@ -131,29 +109,8 @@
                                 </Grid>
                             </Grid>
                         </Button>
-                        <Button x:Name="btnGuests" Background="Transparent" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
-                                Height="50" Padding="0" BorderThickness="0"
-                                Command="{Binding GuestsViewCommmand}">
-                            <Grid Height="40" Width="250">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="60"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Grid Grid.Column="0">
-                                    <materialDesign:PackIcon Foreground="{StaticResource PrimaryLightBrush}"
-                                                             Kind="CardAccountDetails"
-                                                             HorizontalAlignment="Center"
-                                                             VerticalAlignment="Center" Width="20" Height="20"/>
-                                </Grid>
-                                <Grid Grid.Column="1">
-                                    <TextBlock Foreground="{StaticResource PrimaryLightBrush}"
-                                               FontSize="14"
-                                               FontWeight="Regular"
-                                               VerticalAlignment="Center">Guests</TextBlock>
-                                </Grid>
-                            </Grid>
-                        </Button>
                         <Button x:Name="btnRooms" Background="Transparent" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                Visibility="{Binding RoomsVisible}"
                                 Height="50" Padding="0" BorderThickness="0"
                                 Command="{Binding RoomsViewCommmand}">
                             <Grid Height="40" Width="250">
@@ -175,7 +132,78 @@
                                 </Grid>
                             </Grid>
                         </Button>
+                        <Button x:Name="btnBooking" Background="Transparent" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                Height="50" Padding="0" BorderThickness="0"
+                                Visibility="{Binding BookingVisible}"
+                                Command="{Binding ReservationListViewCommand}">
+                            <Grid Height="40" Width="250">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0">
+                                    <materialDesign:PackIcon Foreground="{StaticResource PrimaryLightBrush}"
+                                                             Kind="Book"
+                                                             HorizontalAlignment="Center"
+                                                             VerticalAlignment="Center" Width="20" Height="20"/>
+                                </Grid>
+                                <Grid Grid.Column="1">
+                                    <TextBlock Foreground="{StaticResource PrimaryLightBrush}"
+                                               FontSize="14"
+                                               FontWeight="Regular"
+                                               VerticalAlignment="Center">Booking</TextBlock>
+                                </Grid>
+                            </Grid>
+                        </Button>
+                        
+                        <Button x:Name="btnGuests" Background="Transparent" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                Visibility="{Binding GuestsVisible}"
+                                Height="50" Padding="0" BorderThickness="0"
+                                Command="{Binding GuestsViewCommmand}">
+                            <Grid Height="40" Width="250">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0">
+                                    <materialDesign:PackIcon Foreground="{StaticResource PrimaryLightBrush}"
+                                                             Kind="CardAccountDetails"
+                                                             HorizontalAlignment="Center"
+                                                             VerticalAlignment="Center" Width="20" Height="20"/>
+                                </Grid>
+                                <Grid Grid.Column="1">
+                                    <TextBlock Foreground="{StaticResource PrimaryLightBrush}"
+                                               FontSize="14"
+                                               FontWeight="Regular"
+                                               VerticalAlignment="Center">Guests</TextBlock>
+                                </Grid>
+                            </Grid>
+                        </Button>
+                        <Button x:Name="btnServices" Background="Transparent" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                Visibility="{Binding ServicesVisible}"
+                                Height="50" Padding="0" BorderThickness="0"
+                                Command="{Binding ServicesViewCommmand}">
+                            <Grid Height="40" Width="250">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="60"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0">
+                                    <materialDesign:PackIcon Foreground="{StaticResource PrimaryLightBrush}"
+                                                             Kind="RoomService"
+                                                             HorizontalAlignment="Center"
+                                                             VerticalAlignment="Center" Width="20" Height="20"/>
+                                </Grid>
+                                <Grid Grid.Column="1">
+                                    <TextBlock Foreground="{StaticResource PrimaryLightBrush}"
+                                               FontSize="14"
+                                               FontWeight="Regular"
+                                               VerticalAlignment="Center">Services</TextBlock>
+                                </Grid>
+                            </Grid>
+                        </Button>
                         <Button x:Name="btnInvoices" Background="Transparent" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                Visibility="{Binding InvoicesVisible}"
                                 Height="50" Padding="0" BorderThickness="0"
                                 Command="{Binding InvoicesViewCommmand}">
                             <Grid Height="40" Width="250">
@@ -198,6 +226,7 @@
                             </Grid>
                         </Button>
                         <Button x:Name="btnReports" Background="Transparent" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                Visibility="{Binding ReportsVisible}"
                                 Height="50" Padding="0" BorderThickness="0"
                                 Command="{Binding ReportsViewCommmand}">
                             <Grid Height="40" Width="250">
@@ -220,6 +249,7 @@
                             </Grid>
                         </Button>
                         <Button x:Name="btnAccounts" Background="Transparent" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                Visibility="{Binding AccountsVisible}"
                                 Height="50" Padding="0" BorderThickness="0"
                                 Command="{Binding AccountsViewCommmand}">
                             <Grid Height="40" Width="250">
@@ -241,28 +271,7 @@
                                 </Grid>
                             </Grid>
                         </Button>
-                        <Button x:Name="btnServices" Background="Transparent" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
-                                Height="50" Padding="0" BorderThickness="0"
-                                Command="{Binding ServicesViewCommmand}">
-                            <Grid Height="40" Width="250">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="60"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <Grid Grid.Column="0">
-                                    <materialDesign:PackIcon Foreground="{StaticResource PrimaryLightBrush}"
-                                                             Kind="RoomService"
-                                                             HorizontalAlignment="Center"
-                                                             VerticalAlignment="Center" Width="20" Height="20"/>
-                                </Grid>
-                                <Grid Grid.Column="1">
-                                    <TextBlock Foreground="{StaticResource PrimaryLightBrush}"
-                                               FontSize="14"
-                                               FontWeight="Regular"
-                                               VerticalAlignment="Center">Services</TextBlock>
-                                </Grid>
-                            </Grid>
-                        </Button>
+                        
                     </StackPanel>
                     <!-- End: MenuItem -->
 
@@ -277,8 +286,28 @@
                 </Grid.RowDefinitions>
 
                 <!-- Start: Button Close | Title -->
-                <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,0" Height="30" Orientation="Horizontal" FlowDirection="RightToLeft">
-                    <Button x:Name="btnClose" Style="{StaticResource IconButtonsStyle}" Content="{DynamicResource close}" Tag="IsCloseButton" Command="{Binding CloseWindowCommand}"/>
+                <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,5" Orientation="Horizontal" FlowDirection="LeftToRight">
+                    <Button Grid.Row="6" HorizontalAlignment="Center" Width="auto" Margin="4"
+                      Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Command="{Binding ChangePasswordCommand}" CommandParameter="{Binding ElementName=home}"
+                      ToolTip="Change Password">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="KeyChange" Margin="0 0 4 0" VerticalAlignment="Center"
+                                    Height="20" Width="20"/>
+                            <TextBlock Text="Change password" FontSize="18"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Grid.Row="6" HorizontalAlignment="Center" Width="auto" Margin="4"
+                      Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Command="{Binding LogOutCommand}" CommandParameter="{Binding ElementName=home}"
+                      ToolTip="Log out">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="ExitToApp" Margin="0 0 4 0" VerticalAlignment="Center"
+                                    Height="20" Width="20"/>
+                            <TextBlock Text="Log out" FontSize="18"/>
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="btnClose" Margin="4" Style="{StaticResource IconButtonsStyle}" Content="{DynamicResource close}" Tag="IsCloseButton" Command="{Binding CloseWindowCommand}"/>
                 </StackPanel>
                 <!-- End: Button Close | Title -->
                 <Grid Grid.Row="1" Background="{StaticResource PrimaryDarkBrush}"/>

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HotelManagement.Views"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:viewModels="clr-namespace:HotelManagement.ViewModels.Service"
+        xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
         xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         mc:Ignorable="d"
@@ -45,6 +45,20 @@
                 </TextBox>
             </Grid>
             <Grid Grid.Column="1">
+                <TextBox
+                    x:Name="tbRoomName"
+                    
+                    Text="{Binding RoomName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Width="200"
+                    FontSize="14"
+                    Height="40"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Right"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    IsReadOnly="True"
+                    Margin="0 0 35 0">
+                </TextBox>
             </Grid>
         </Grid>
         <Grid Grid.Row="1" Background="White">

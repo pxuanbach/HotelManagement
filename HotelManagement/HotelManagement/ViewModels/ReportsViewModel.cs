@@ -29,6 +29,7 @@ namespace HotelManagement.ViewModels
 
         public TopServiceViewModel TopServiceViewModel { get; set; }
         public GuestChart GuestChart { get; set; }
+        public RevenueChart RevenueChart { get; set; }
 
         public ICommand RevenueCommand { get; set; }
         public ICommand GuestChartCommnad { get; set; }
@@ -38,13 +39,14 @@ namespace HotelManagement.ViewModels
         {
             TopServiceViewModel = new TopServiceViewModel();
             GuestChart = new GuestChart();
+            RevenueChart = new RevenueChart();
 
-            //CurrentReportView = ServiceByRoomTypeViewModel;
+            CurrentReportView = RevenueChart;
 
             RevenueCommand = new RelayCommand<object>((para) => true,
-                (para) => CurrentReportView = null);
+                (para) => CurrentReportView = RevenueChart);
 
-            GuestChartCommnad = new RelayCommand<object>((para) => true, 
+            GuestChartCommnad = new RelayCommand<object>((para) => true,
                 (para) => CurrentReportView = GuestChart);
 
             TopServiceCommand = new RelayCommand<object>((para) => true,

@@ -1,30 +1,25 @@
-﻿using HotelManagement.Models;
-using HotelManagement.Resources.UC;
-using LiveCharts;
-using LiveCharts.Wpf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HotelManagement.Views;
+using HotelManagement.Models;
+using HotelManagement.Resources.UC;
+using System.Windows.Input;
+using System.Runtime;
+using LiveCharts;
+using LiveCharts.Wpf;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace HotelManagement.ViewModels
 {
-    class GuestChart : BaseViewModel
+    class RevenueChart : BaseViewModel
     {
+
         private List<int> years;
-        public List<int> Years
-        {
-            get => years;
-            set
-            {
-                years = value;
-                OnPropertyChanged();
-            }
-        }
+        public List<int> Years { get => years; set { years = value; OnPropertyChanged(); } }
 
         private List<string> labels;
         public List<string> Labels
@@ -63,28 +58,27 @@ namespace HotelManagement.ViewModels
         public ICommand ChooseItemCommand { get; set; }
         public ICommand ChangeTypeCommand { get; set; }
 
-        public GuestChart()
+        public RevenueChart()
         {
-            InitCommand = new RelayCommand<UC_GuestChart>((para) => true, (para) => Init(para));
+            InitCommand = new RelayCommand<UC_RevenueChart>((para) => true, (para) => Init(para));
             ChooseItemCommand = new RelayCommand<ListBox>((para) => true, (para) => ChooseItem(para));
-            ChangeTypeCommand = new RelayCommand<UC_GuestChart>((para) => true, (para) => ChangeType(para));
+            ChangeTypeCommand = new RelayCommand<UC_RevenueChart>((para) => true, (para) => ChangeType(para));
 
             Years = DataProvider.Instance.DB.RESERVATIONs.Select(x => x.arrival.Value.Year).Distinct().ToList();
         }
-
-        private void ChangeType(UC_GuestChart para)
+        private void ChangeType(UC_RevenueChart para)
         {
             if (para.cbbChangeType.SelectedIndex == 0)
             {
                 LoadChartMonth(para);
-                para.txtNameChart.Text = "Chart of Visitors by Month";
+                para.txtNameChart.Text = "Chart of Revenue by Month";
                 para.grdYears.Visibility = Visibility.Visible;
                 para.titleX.Title = "Month";
             }
             else
             {
                 LoadChartYear(para);
-                para.txtNameChart.Text = "Chart of Visitors by Year";
+                para.txtNameChart.Text = "Chart of Revenue by Year";
                 para.grdYears.Visibility = Visibility.Collapsed;
                 para.titleX.Title = "Year";
             }
@@ -127,7 +121,7 @@ namespace HotelManagement.ViewModels
             }
             return false;
         }
-        private void Init(UC_GuestChart para)
+        private void Init(UC_RevenueChart para)
         {
             Labels = new List<string>();
 
@@ -135,13 +129,13 @@ namespace HotelManagement.ViewModels
 
         }
 
-        public void LoadChartMonth(UC_GuestChart para)
+        public void LoadChartMonth(UC_RevenueChart para)
         {
-            para.lbGuestChart.Items.Clear();
+            para.lbRevenueChart.Items.Clear();
             SeriesCollection = new SeriesCollection();
             foreach (int item in Years)
             {
-                para.lbGuestChart.Items.Add(new ListBoxItem() { Content = item.ToString() });
+                para.lbRevenueChart.Items.Add(new ListBoxItem() { Content = item.ToString() });
                 SeriesCollection.Add(new LineSeries
                 {
                     Title = item.ToString(),
@@ -149,7 +143,7 @@ namespace HotelManagement.ViewModels
                 });
             }
 
-            foreach (ListBoxItem item in para.lbGuestChart.Items)
+            foreach (ListBoxItem item in para.lbRevenueChart.Items)
             {
                 item.IsSelected = true;
             }
@@ -161,7 +155,7 @@ namespace HotelManagement.ViewModels
             YFormatter = value => value.ToString();
         }
 
-        public void LoadChartYear(UC_GuestChart para)
+        public void LoadChartYear(UC_RevenueChart para)
         {
             SeriesCollection = new SeriesCollection();
             SeriesCollection.Add(new LineSeries
@@ -177,65 +171,104 @@ namespace HotelManagement.ViewModels
 
             YFormatter = value => value.ToString();
         }
-
         private ChartValues<Double> getValueOfYears()
         {
             ChartValues<Double> values = new ChartValues<double>();
             foreach (int item in Years)
             {
-                values.Add(CountGuestbyYear(item));
+                values.Add(GetRevenueByYear(item));
             }
             return values;
         }
-
 
         private ChartValues<Double> getValueOfMonth(int year)
         {
             return new ChartValues<Double>
                 {
-                    CountGuestbyMonth(1, year),
-                    CountGuestbyMonth(2, year),
-                    CountGuestbyMonth(3, year),
-                    CountGuestbyMonth(4, year),
-                    CountGuestbyMonth(5, year),
-                    CountGuestbyMonth(6, year),
-                    CountGuestbyMonth(7, year),
-                    CountGuestbyMonth(8, year),
-                    CountGuestbyMonth(9, year),
-                    CountGuestbyMonth(10, year),
-                    CountGuestbyMonth(11, year),
-                    CountGuestbyMonth(12, year)
+                    GetRevenueByMonth(1, year),
+                    GetRevenueByMonth(2, year),
+                    GetRevenueByMonth(3, year),
+                    GetRevenueByMonth(4, year),
+                    GetRevenueByMonth(5, year),
+                    GetRevenueByMonth(6, year),
+                    GetRevenueByMonth(7, year),
+                    GetRevenueByMonth(8, year),
+                    GetRevenueByMonth(9, year),
+                    GetRevenueByMonth(10, year),
+                    GetRevenueByMonth(11, year),
+                    GetRevenueByMonth(12, year),
                 };
         }
 
-        private double CountGuestbyMonth(int month, int year)
+        private double GetRevenueByMonth(int month, int year)
         {
-            double count = 0;
+            double total = 0;
+            List<RESERVATION> listRES = DataProvider.Instance.DB.RESERVATIONs.Where(
+                x => x.arrival.Value.Year == year && x.arrival.Value.Month == month 
+                && x.status == "Completed").ToList();
+            List<RESERVATION> listRESconfirmed = DataProvider.Instance.DB.RESERVATIONs.Where(
+                x => x.arrival.Value.Year == year && x.arrival.Value.Month == month
+                && x.status == "Confirmed Cancelled").ToList();
+            List<RESERVATION> listRESnoshow = DataProvider.Instance.DB.RESERVATIONs.Where(
+                x => x.arrival.Value.Year == year && x.arrival.Value.Month == month
+                && x.status == "No Show Cancelled").ToList();
 
-            List<RESERVATION> listRes = DataProvider.Instance.DB.RESERVATIONs.Where(
-                y => y.arrival.Value.Month == month && y.arrival.Value.Year == year).ToList();
-
-            foreach (RESERVATION item in listRes)
+            foreach (var res in listRES)
             {
-                count += DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == item.id && item.status == "Completed").Count();
+                List<INVOICE> listInvoices = DataProvider.Instance.DB.INVOICEs.Where(x => x.reservation_id == res.id).ToList();
+                foreach (var invoice in listInvoices)
+                {
+                    total += (double)invoice.total_money;
+                }
             }
 
-            return count;
+            //Confirmed Cancelled: tổng đơn giá phòng (1 ngày).
+            foreach (var res in listRESconfirmed)
+            {
+                total += CalculatorInvoice.TotalRoomPriceOfReservation(res);
+            }
+
+            //No Show Cancelled: totalDays * tổng đơn giá phòng.
+            foreach (var res in listRESnoshow)
+            {
+                total += CalculatorInvoice.RoomsTotalMoney(res);
+            }
+
+            return total;
         }
 
-        private double CountGuestbyYear(int year)
+        private double GetRevenueByYear(int year)
         {
-            double count = 0;
+            double total = 0;
+            List<RESERVATION> listRES = DataProvider.Instance.DB.RESERVATIONs.Where(
+                x => x.arrival.Value.Year == year && x.status == "Completed").ToList();
+            List<RESERVATION> listRESconfirmed = DataProvider.Instance.DB.RESERVATIONs.Where(
+                x => x.arrival.Value.Year == year && x.status == "Confirmed Cancelled").ToList();
+            List<RESERVATION> listRESnoshow = DataProvider.Instance.DB.RESERVATIONs.Where(
+                x => x.arrival.Value.Year == year && x.status == "No Show Cancelled").ToList();
 
-            List<RESERVATION> listRes = DataProvider.Instance.DB.RESERVATIONs.Where(y => y.arrival.Value.Year == year).ToList();
-
-            foreach (RESERVATION item in listRes)
+            foreach (var res in listRES)
             {
-                count += DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == item.id && item.status == "Completed").Count();
+                List<INVOICE> listInvoices = DataProvider.Instance.DB.INVOICEs.Where(x => x.reservation_id == res.id).ToList();
+                foreach (var invoice in listInvoices)
+                {
+                    total += (double)invoice.total_money;
+                }
             }
 
-            return count;
+            //Confirmed Cancelled: tổng đơn giá phòng (1 ngày).
+            foreach (var res in listRESconfirmed)
+            {
+                total += CalculatorInvoice.TotalRoomPriceOfReservation(res);
+            }
+
+            //No Show Cancelled: totalDays * tổng đơn giá phòng.
+            foreach (var res in listRESnoshow)
+            {
+                total += CalculatorInvoice.RoomsTotalMoney(res);
+            }
+
+            return total;
         }
     }
 }
-
