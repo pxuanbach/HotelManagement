@@ -289,7 +289,7 @@
                 <StackPanel Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,5,10,5" Orientation="Horizontal" FlowDirection="LeftToRight">
                     <Button Grid.Row="6" HorizontalAlignment="Center" Width="auto" Margin="4"
                       Style="{StaticResource MaterialDesignOutlinedButton}"
-                            Command="{Binding ChangePasswordCommand}" CommandParameter="{Binding ElementName=home}"
+                            Command="{Binding ChangePasswordCommand}"
                       ToolTip="Change Password">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <materialDesign:PackIcon Kind="KeyChange" Margin="0 0 4 0" VerticalAlignment="Center"
