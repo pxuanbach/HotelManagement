@@ -485,10 +485,11 @@ namespace HotelManagement.ViewModels
         {
             if (e.PropertyName == nameof(GuestViewModel.Birthday))
             {
-                if ((sender as GuestViewModel).Age < 21)
+                if ((sender as GuestViewModel).Age < GuestViewModel.MinimumAge)
                 {
                     GuestInformation.Birthday = DateTime.Parse("01-01-2000");
-                    MessageBox.Show("Guest must be at least 21 years of age for reserving.", "WALKIN / RESERVATION POLICY");
+                    MessageBox.Show("Guest must be at least " + GuestViewModel.MinimumAge + 
+                        " years of age for reserving.", "WALKIN / RESERVATION POLICY");
                 }
             }
         }

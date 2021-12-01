@@ -43,6 +43,28 @@ namespace HotelManagement.ViewModels
         public ServicesViewModel ServicesViewModel { get; set; }
         #endregion
 
+        //Visible
+        private string _roomsVisible;
+        public string RoomsVisible { get { return _roomsVisible; } set { _roomsVisible = value; OnPropertyChanged(); } }
+
+        private string _bookingVisible;
+        public string BookingVisible { get { return _bookingVisible; } set { _bookingVisible = value; OnPropertyChanged(); } }
+
+        private string _guestsVisible;
+        public string GuestsVisible { get { return _guestsVisible; } set { _guestsVisible = value; OnPropertyChanged(); } }
+
+        private string _servicesVisible;
+        public string ServicesVisible { get { return _servicesVisible; } set { _servicesVisible = value; OnPropertyChanged(); } }
+
+        private string _invoicesVisible;
+        public string InvoicesVisible { get { return _invoicesVisible; } set { _invoicesVisible = value; OnPropertyChanged(); } }
+
+        private string _reportsVisible;
+        public string ReportsVisible { get { return _reportsVisible; } set { _reportsVisible = value; OnPropertyChanged(); } }
+        
+        private string _accountsVisible;
+        public string AccountsVisible { get { return _accountsVisible; } set { _accountsVisible = value; OnPropertyChanged(); } }
+
         public ICommand DashBoardViewCommmand { get; set; }
         public ICommand ReservationListViewCommand { get; set; }
         public ICommand CalendarViewCommmand { get; set; }
@@ -54,19 +76,13 @@ namespace HotelManagement.ViewModels
         public ICommand ServicesViewCommmand { get; set; }
 
         public ICommand CloseWindowCommand { get; set; }
+        public ICommand LogOutCommand { get; set; }
+        public ICommand ChangePasswordCommand { get; set; }
 
         public MainWindowViewModel()
         {
+            SwitchNavigationBar();
 
-            DashBoardViewModel = new DashBoardViewModel();
-            ReservationListViewModel = new ReservationListViewModel();
-            CalendarViewModel = new CalendarViewModel();
-            RoomsViewModels = new RoomsViewModels();
-            GuestsViewModel = new GuestsViewModel();
-            InvoiceViewModel = new InvoiceViewModel();
-            ReportsViewModel = new ReportsViewModel();
-            AccountViewModel = new AccountViewModel();
-            ServicesViewModel = new ServicesViewModel();
             DataTemplate = DashBoardViewModel;
 
             CloseWindowCommand = new RelayCommand<object>((p) =>
@@ -75,6 +91,26 @@ namespace HotelManagement.ViewModels
             }, (p) =>
             {
                 Application.Current.Shutdown();
+            });
+
+            LogOutCommand = new RelayCommand<MainWindow>((p) =>
+            {
+                return true;
+            }, (p) =>
+            {
+                CurrentAccount.Instance.DisposeCurrentAccount();
+                LoginWindow wd = new LoginWindow();
+                p.Close();
+                wd.Show();
+            });
+
+            ChangePasswordCommand = new RelayCommand<object>((p) =>
+            {
+                return true;
+            }, (p) =>
+            {
+                ChangePasswordWindow wd = new ChangePasswordWindow();
+                wd.ShowDialog();
             });
 
             #region Navigation
@@ -150,7 +186,63 @@ namespace HotelManagement.ViewModels
                 DataTemplate = ServicesViewModel;
             });
             #endregion
+        }
 
+        void SwitchNavigationBar()
+        {
+            DashBoardViewModel = new DashBoardViewModel();
+            CalendarViewModel = new CalendarViewModel();
+            
+            switch (CurrentAccount.Instance.Permission)
+            {
+                case "Reservation":
+                    RoomsViewModels = new RoomsViewModels();
+                    ReservationListViewModel = new ReservationListViewModel();
+                    GuestsVisible = "Collapsed";
+                    ServicesVisible = "Collapsed";
+                    InvoicesVisible = "Collapsed";
+                    ReportsVisible = "Collapsed";
+                    AccountsVisible = "Collapsed";
+                    break;
+                case "Receptionist":
+                    ReservationListViewModel = new ReservationListViewModel();
+                    GuestsViewModel = new GuestsViewModel();
+                    ServicesViewModel = new ServicesViewModel();
+                    RoomsVisible = "Collapsed";
+                    InvoicesVisible = "Collapsed";
+                    ReportsVisible = "Collapsed";
+                    AccountsVisible = "Collapsed";
+                    break;
+                case "Cashier":
+                    InvoiceViewModel = new InvoiceViewModel();
+                    ReportsViewModel = new ReportsViewModel();
+                    RoomsVisible = "Collapsed";
+                    BookingVisible = "Collapsed";
+                    GuestsVisible = "Collapsed";
+                    ServicesVisible = "Collapsed";
+                    AccountsVisible = "Collapsed";
+                    break;
+                case "Undefined":
+                    RoomsVisible = "Collapsed";
+                    BookingVisible = "Collapsed";
+                    GuestsVisible = "Collapsed";
+                    ServicesVisible = "Collapsed";
+                    InvoicesVisible = "Collapsed";
+                    ReportsVisible = "Collapsed";
+                    AccountsVisible = "Collapsed";
+                    break;
+                case "Admin":
+                    RoomsViewModels = new RoomsViewModels();
+                    ReservationListViewModel = new ReservationListViewModel();
+                    GuestsViewModel = new GuestsViewModel();
+                    ServicesViewModel = new ServicesViewModel();
+                    InvoiceViewModel = new InvoiceViewModel();
+                    ReportsViewModel = new ReportsViewModel();
+                    AccountViewModel = new AccountViewModel();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

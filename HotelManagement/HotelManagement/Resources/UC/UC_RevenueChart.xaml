@@ -89,7 +89,7 @@
         </lvc:CartesianChart>
         <TextBlock Grid.Row="2" 
                    x:Name="txtNameChart"
-                   Text="Chart of Visitors by Month"
+                   Text="Chart of Revenue by Month"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    FontSize="16"

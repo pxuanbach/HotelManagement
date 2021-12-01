@@ -212,11 +212,12 @@ namespace HotelManagement.ViewModels
         {
             double count = 0;
 
-            List<RESERVATION> listRes = DataProvider.Instance.DB.RESERVATIONs.Where(y => y.arrival.Value.Month == month && y.arrival.Value.Year == year).ToList();
+            List<RESERVATION> listRes = DataProvider.Instance.DB.RESERVATIONs.Where(
+                y => y.arrival.Value.Month == month && y.arrival.Value.Year == year).ToList();
 
             foreach (RESERVATION item in listRes)
             {
-                count += DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == item.id).Count();
+                count += DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == item.id && item.status == "Completed").Count();
             }
 
             return count;
@@ -230,7 +231,7 @@ namespace HotelManagement.ViewModels
 
             foreach (RESERVATION item in listRes)
             {
-                count += DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == item.id).Count();
+                count += DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == item.id && item.status == "Completed").Count();
             }
 
             return count;
