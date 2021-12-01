@@ -214,7 +214,7 @@ namespace HotelManagement.ViewModels
                     Folio.Add(folioItem); 
                 }
             }
-            if (TotalMoney > 0)
+            if (TotalMoney >= 0)
             {
                 TotalMoney -= (decimal)service.price;
             }
