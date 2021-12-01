@@ -8,7 +8,8 @@
         xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
         xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
-        mc:Ignorable="d"
+        mc:Ignorable="d" FontSize="14"
+        Name="addServiceWindow"
         Title="AddServicesWindow" Height="650" Width="1100">
     <Window.DataContext>
         <viewModels:AddServicesViewModel/>
@@ -50,7 +51,7 @@
                     Foreground="{StaticResource PrimaryHueDarkBrush}"
                     Text="{Binding RoomName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     Width="200"
-                    FontSize="14"
+                    FontSize="18"
                     Height="40"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Right"
@@ -249,20 +250,21 @@
             </Grid>
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="880"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0"
+                <Button Grid.Column="2"
                             x:Name="btnCancel"
-                            Background="{StaticResource btnClose}"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Right"
                             Margin="35 0"
                             Width="140"
                             Height="40"
-                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
                             ToolTip="Cancel"
                             Content="Cancel"
+                            CommandParameter="{Binding ElementName=addServiceWindow}"
                             Command="{Binding CloseWindowCommand}"/>
                 <Button Grid.Column="1"
                             x:Name="btnSave"
@@ -275,6 +277,7 @@
                             Style="{StaticResource MaterialDesignRaisedButton}"
                             ToolTip="Save"
                             Content="Save"
+                        CommandParameter="{Binding ElementName=addServiceWindow}"
                             Command="{Binding SaveFolioCommnad}"/>
             </Grid>
         </Grid>
