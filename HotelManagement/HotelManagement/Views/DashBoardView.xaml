@@ -44,7 +44,7 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <Grid Grid.Row="0">
-                                <TextBlock
+                                <TextBlock Margin="5 0"
                                     FontWeight="Bold">
                                     Today's status
                                 </TextBlock>
