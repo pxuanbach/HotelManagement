@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls;
@@ -203,6 +204,7 @@ namespace HotelManagement.ViewModels
                     case "GuestID":
                         if (string.IsNullOrEmpty(GuestID))
                             error = "Please enter guest ID";
+
                         break;
                     case "GuestName":
                         if (string.IsNullOrEmpty(GuestName))
@@ -278,7 +280,8 @@ namespace HotelManagement.ViewModels
             if (p == null)
             {
                 Title = "New Guest";
-                isReadOnly = true;
+                IsReadOnly = false;
+                GuestID = "";
                 GuestName = "";
                 GuestAddress = "";
                 GuestEmail = "";
@@ -288,7 +291,7 @@ namespace HotelManagement.ViewModels
             else
             {
                 Title = "Edit Guest";
-                isReadOnly = false;
+                IsReadOnly = true;
                 GuestID = p.id;
                 GuestName = p.name;
                 GuestAddress = p.address;
@@ -302,13 +305,27 @@ namespace HotelManagement.ViewModels
         public void SaveGuest()
         {
             var guestCount = DataProvider.Instance.DB.GUESTs.Where(x => x.id == GuestID).Count();
-            if (guestCount > 0)
+            if (guestCount > 0 && Title == "New Guest")
             {
-                ErrorMessage = "\"" + guestName + "\"" + " has already existed";
-                guestName = "";
+                ErrorMessage = "\"" + GuestID + "\"" + " has already existed";
+                GuestName = "";
                 return;
             }
             else
+                ErrorMessage = "";
+
+            int age = DateTime.Now.Year - GuestBirthday.Year;
+
+            if (GuestID == "" || GuestName == "" || GuestGender == ""  || (age < 2))
+            {
+                ErrorMessage = "Please fill in the error textbox.";
+                return;
+            } 
+            else
+            {
+                ErrorMessage = "";
+            }
+
             {
                 GUEST guest = new GUEST()
                 {
@@ -320,7 +337,7 @@ namespace HotelManagement.ViewModels
                     address = GuestAddress,
                     birthday = GuestBirthday,
                 };
-                DataProvider.Instance.DB.GUESTs.Add(guest);
+                DataProvider.Instance.DB.GUESTs.AddOrUpdate(guest);
                 DataProvider.Instance.DB.SaveChanges();
             }
             LoadGuest();
