@@ -205,16 +205,13 @@ namespace HotelManagement.ViewModels
             {
                 Folio.Remove(folioItem);
                 folioItem.Amount -= 1;
-                if (folioItem.Amount == 0)
+                if (folioItem.Amount != 0)
                 {
-                    return;
-                }
-                else 
-                {
-                    Folio.Add(folioItem); 
+
+                    Folio.Add(folioItem);
                 }
             }
-            if (TotalMoney > 0)
+            if (TotalMoney >= 0)
             {
                 TotalMoney -= (decimal)service.price;
             }
