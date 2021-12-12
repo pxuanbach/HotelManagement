@@ -135,6 +135,7 @@ namespace HotelManagement.ViewModels
                         {
                             item.Background = (Brush)new BrushConverter().ConvertFrom("#FDD835");
                         }
+                        
                         if (room.out_of_service == true)
                         {
                             item.Background = (Brush)new BrushConverter().ConvertFrom("#EF5350");
@@ -600,6 +601,7 @@ namespace HotelManagement.ViewModels
             foreach (UC_Room item in para.stkRoom.Children)
             {
                 flag = true;
+
                 if (item.txbType.Text != para.cbbType.Text && para.cbbType.Text != "All")
                     flag = false;
 
@@ -607,12 +609,15 @@ namespace HotelManagement.ViewModels
                     flag = false;
 
                 if (item.txbStatus.Text != para.cbbStatus.Text && para.cbbStatus.Text != "All")
-                    flag = false;
+                {
+                        flag = false;
+                }
 
                 if (flag == true)
                     item.Visibility = System.Windows.Visibility.Visible;
                 else
                     item.Visibility = System.Windows.Visibility.Collapsed;
+
             }
         }
 

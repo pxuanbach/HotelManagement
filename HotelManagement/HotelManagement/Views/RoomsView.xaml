@@ -92,15 +92,13 @@
                     VerticalAlignment="Top"
                     HorizontalAlignment="Left" 
                     Margin="390,20,0,0">
-                    <ComboBoxItem Content="All"/>
-                    <ComboBoxItem Content="Operational"/>
-                    <ComboBoxItem Content="No Show"/>
-                    <ComboBoxItem Content="Completed"/>
-                    <ComboBoxItem Content="Confirmed"/>
-                    <ComboBoxItem Content="Cancelled"/>
-                    <ComboBoxItem Content="On Request"/>
-                    <ComboBoxItem Content="Available"/>
-                </ComboBox>
+                        <ComboBoxItem Content="All"/>
+                        <ComboBoxItem Content="Due out"/>
+                        <ComboBoxItem Content="Occupied"/>
+                        <ComboBoxItem Content="No Show"/>
+                        <ComboBoxItem Content="Available"/>
+                        <ComboBoxItem Content="Reserved"/>
+                    </ComboBox>
                 <Button 
                     x:Name="btnSearch"
                     Width="100"
