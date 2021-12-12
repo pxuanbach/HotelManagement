@@ -11,7 +11,7 @@
         mc:Ignorable="d"
         Name="windowNewReservation"
         WindowStartupLocation="CenterScreen"
-        Background="WhiteSmoke"
+        Background="WhiteSmoke" Icon="/Resources/hotel.ico"
         SizeToContent="WidthAndHeight" ResizeMode="NoResize"
         Title="Walk In / New Reservation">
     <Grid>

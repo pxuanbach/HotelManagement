@@ -84,7 +84,18 @@ namespace HotelManagement.ViewModels
                 var service = DataProvider.Instance.DB.SERVICEs.SingleOrDefault(x => x.id == item.service_id);
                 FolioDisplayItem folioDisplayItem = new FolioDisplayItem(
                     service.id, service.name, item.amount.Value, SeparateThousands(((int)service.price).ToString()));
-                Folio.Add(folioDisplayItem);
+
+                var itemExist = Folio.FirstOrDefault(x => x.Id == folioDisplayItem.Id);
+
+                if (itemExist == null)
+                {
+                    Folio.Add(folioDisplayItem);
+                }    
+                else
+                {
+                    itemExist.Amount += folioDisplayItem.Amount;
+                }    
+                
             }
 
             FolioCount = folio.Count();

@@ -11,7 +11,7 @@
         Name="windowAddSharer"
         Background="WhiteSmoke"
         WindowStartupLocation="CenterScreen"
-        SizeToContent="WidthAndHeight"
+        SizeToContent="WidthAndHeight" Icon="/Resources/hotel.ico"
         ResizeMode="NoResize"
         Title="Add new sharer">
     <Grid>

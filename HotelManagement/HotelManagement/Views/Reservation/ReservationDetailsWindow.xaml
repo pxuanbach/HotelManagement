@@ -13,7 +13,7 @@
         WindowStartupLocation="CenterScreen"
         Background="WhiteSmoke"
         SizeToContent="WidthAndHeight"
-        ResizeMode="NoResize"
+        ResizeMode="NoResize" Icon="/Resources/hotel.ico"
         Title="Reservation Details">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>

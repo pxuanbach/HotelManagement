@@ -7,7 +7,7 @@
         xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
         xmlns:local="clr-namespace:HotelManagement.Views"
         mc:Ignorable="d" FontSize="14"
-        Name="folioOfRoomWindow"
+        Name="folioOfRoomWindow" Icon="/Resources/hotel.ico"
         WindowStartupLocation="CenterScreen"
         Title="Folio Of Room" MinHeight="700" MinWidth="1000" Height="700" Width="1000">
     <Window.DataContext>

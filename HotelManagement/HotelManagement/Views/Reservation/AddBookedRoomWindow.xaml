@@ -7,7 +7,7 @@
         xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
         mc:Ignorable="d"
         Background="WhiteSmoke"
-        Name="windowAddRoom"
+        Name="windowAddRoom" Icon="/Resources/hotel.ico"
         WindowStartupLocation="CenterScreen"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"

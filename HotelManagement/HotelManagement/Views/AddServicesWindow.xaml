@@ -9,7 +9,7 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
         xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         mc:Ignorable="d" FontSize="14"
-        Name="addServiceWindow"
+        Name="addServiceWindow" Icon="/Resources/hotel.ico"
         Title="AddServicesWindow" Height="650" Width="1100">
     <Window.DataContext>
         <viewModels:AddServicesViewModel/>
