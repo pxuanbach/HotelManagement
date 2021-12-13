@@ -41,10 +41,14 @@ namespace HotelManagement.Views
         {
             try
             {
-                // Enable.
-                this.autoListPopup.Visibility = Visibility.Visible;
-                this.autoListPopup.IsOpen = true;
-                this.autoList.Visibility = Visibility.Visible;
+                if (swEdit.IsChecked == true)
+                {
+                    // Enable.
+                    this.autoListPopup.Visibility = Visibility.Visible;
+                    this.autoListPopup.IsOpen = true;
+                    this.autoList.Visibility = Visibility.Visible;
+                }    
+                
             }
             catch (Exception ex)
             {
