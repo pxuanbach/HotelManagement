@@ -163,6 +163,8 @@
                                     Text="Phone" FontSize="16"/>
 
                                 <TextBox 
+                                    MaxLength="10"
+                                    materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
                                     Grid.Row="4" Grid.Column="4"
                                     FontSize="14" Width="100" Margin="0,3,0,3"
                                     Text="{Binding Path=GuestInformation.Phone}"

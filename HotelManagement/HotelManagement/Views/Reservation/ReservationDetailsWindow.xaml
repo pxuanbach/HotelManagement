@@ -169,6 +169,8 @@
 
                                 <TextBox 
                                     Grid.Row="4" Grid.Column="4"
+                                    MaxLength="10"
+                                    materialDesign:TextFieldAssist.CharacterCounterVisibility="Collapsed"
                                     FontSize="14" Width="100" Margin="0,3,0,3"
                                     Text="{Binding Path=GuestInformation.Phone}"
                                     Style="{StaticResource MaterialDesignTextBox}"
