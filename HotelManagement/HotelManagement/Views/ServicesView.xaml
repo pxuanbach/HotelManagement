@@ -1,0 +1,214 @@
+﻿<UserControl x:Class="HotelManagement.Views.ServicesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:HotelManagement.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+             xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="1100"
+             x:Name="servicesView">
+    <UserControl.DataContext>
+        <viewModels:ServicesViewModel/>
+    </UserControl.DataContext>
+    <Grid>
+        <materialDesign:DialogHost Name="dialog" Identifier="AccountDialog" CloseOnClickAway="True" 
+            DialogTheme="Inherit" IsOpen="{Binding IsOpenDialog}">
+        <materialDesign:DialogHost.DialogContent>
+            <Grid Background="White">
+                <Grid Height="280" Width="300">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="{Binding DialogTitle}" Margin="8" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <!--<TextBlock Grid.Row="1" Text="{Binding DialogTitle}" Margin="8 4 4 12"/>-->
+                        <TextBox Grid.Row="2" Margin="4"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 VerticalAlignment="Top" 
+                                 AcceptsReturn="True" Text="{Binding ServiceName}"
+                                 IsReadOnly="{Binding IsReadOnlyServiceName}"
+                                 materialDesign:HintAssist.Hint="Service's name"/>
+                        <TextBox x:Name="txbPrice"
+                            Grid.Row="3" Margin="4"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                            VerticalAlignment="Top" 
+                            AcceptsReturn="True" Text="{Binding ServicePrice}"
+                            materialDesign:HintAssist.Hint="Service's price">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="PreviewTextInput">
+                                    <ei:CallMethodAction TargetObject="{Binding}"
+                                                         MethodName="NumberValidationTextBox"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
+                        <TextBlock Grid.Row="4" Text="{Binding ErrorMessage}" Margin="0 0 0 4" HorizontalAlignment="Center" FontSize="14" Foreground="Red"/>
+                        <Grid Grid.Row="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" HorizontalAlignment="Center" Margin="4"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Command="{Binding SaveServiceCommand}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="ContentSave" Width="18" Height="18" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2 2 4 2"/>
+                            <TextBlock Text="Save" FontSize="18"/>
+                        </StackPanel>
+                        </Button>
+                            <Button Grid.Column="1" HorizontalAlignment="Center" Margin="4"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="CloseCircle" Width="18" Height="18" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2 2 4 2"/>
+                                    <TextBlock Text="Close" FontSize="18"/>
+                                </StackPanel>
+                        </Button>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </materialDesign:DialogHost.DialogContent>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="99"/>
+                    <RowDefinition Height="1"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0" Background="White">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0">
+                        <TextBox
+                    x:Name="tbSearch"
+                    Text="{Binding ContentSearch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Width="200"
+                    FontSize="14"
+                    Height="40"
+                    materialDesign:HintAssist.Hint="Service's name"
+                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Left"
+                    Margin="35 0">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="TextChanged">
+                                    <i:InvokeCommandAction Command="{Binding SearchServiceCommand}"
+                                                   CommandParameter= "{Binding ElementName=servicesView}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
+                    </Grid>
+                    <Grid Grid.Column="1">
+                        <Button
+                            x:Name="btnAddService"
+                            Background="{StaticResource PrimaryHueDarkBrush}"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Right"
+                            Margin="35 0"
+                            Width="140"
+                            Height="40"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            ToolTip="New Service"
+                            Content="New Service"
+                            Command="{Binding AddNewServiceCommand}"/>  
+                    </Grid>
+                </Grid>
+                <Grid Grid.Row="1" Background="White">
+                    <Rectangle Margin="35 0" Fill="#637BCF"/>
+                </Grid>
+                <Grid Grid.Row="2" Background="White">
+                    <DataGrid
+                        Width="1000"
+                 x:Name="dataGridServices" Margin="35"
+                 ItemsSource="{Binding Services, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 SelectedItem="{Binding SelectedService, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 CanUserResizeColumns="False" IsReadOnly="False"
+                 CanUserAddRows="False" AutoGenerateColumns="False"
+                 BorderThickness="1" BorderBrush="#637BCF">
+                        <DataGrid.Columns>
+                            <materialDesign:DataGridTextColumn
+                            Header="Id" Binding="{Binding ID}" 
+                            IsReadOnly="True">
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}"
+                                       BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}"
+                                       BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </materialDesign:DataGridTextColumn>
+                            <materialDesign:DataGridTextColumn
+                            Header="Name" Binding="{Binding Name}" IsReadOnly="True"
+                            >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}"
+                                       BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}"
+                                       BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </materialDesign:DataGridTextColumn>
+                            <materialDesign:DataGridTextColumn
+                            Header="Price" Binding="{Binding Price}" IsReadOnly="True"
+                            >
+                                <DataGridTextColumn.HeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}"
+                                       BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.HeaderStyle>
+
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}"
+                                       BasedOn="{StaticResource MaterialDesignDataGridTextColumnStyle}">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </materialDesign:DataGridTextColumn>
+                            <DataGridTemplateColumn >
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Width="40" Padding="0" Background="{StaticResource PrimaryHueDarkBrush}"
+                                        Style="{StaticResource MaterialDesignRaisedButton}"
+                                        Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.DeleteServiceCommand}">
+                                            <materialDesign:PackIcon Kind="Delete"/>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Grid>
+        </materialDesign:DialogHost>
+    </Grid>
+</UserControl>

@@ -1,0 +1,288 @@
+﻿<Window x:Class="HotelManagement.Views.FolioOfRoomWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:viewModels="clr-namespace:HotelManagement.ViewModels"
+        xmlns:local="clr-namespace:HotelManagement.Views"
+        mc:Ignorable="d" FontSize="14"
+        Name="folioOfRoomWindow" Icon="/Resources/hotel.ico"
+        WindowStartupLocation="CenterScreen"
+        Title="Folio Of Room" MinHeight="700" MinWidth="1000" Height="700" Width="1000">
+    <Window.DataContext>
+        <viewModels:FolioOfRoomViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <!-- Group Card -->
+        <Grid Grid.Row="0" Margin="2 2 2 10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.4*"/>
+                <ColumnDefinition Width="0.6*"/>
+            </Grid.ColumnDefinitions>
+            <materialDesign:Card Margin="4" Grid.Column="0"
+                Background="{StaticResource PrimaryHueMidBrush}"
+                Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"
+                Padding="4" Width="auto">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="0.2*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0" Margin="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <TextBlock Text="RESERVATION " Margin="0 8 8 8" FontSize="20" FontWeight="DemiBold"/>
+                        </Grid>
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="4">
+                            <TextBlock Text="ID: " FontWeight="Bold" Width="80"/>
+                            <TextBlock Text="{Binding ReservationId}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="4">
+                            <TextBlock Text="Arrival: " FontWeight="Bold" Width="80"/>
+                            <TextBlock Text="{Binding Arrival}"/>
+                        </StackPanel>
+                        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="4">
+                            <TextBlock Text="Departure: " FontWeight="Bold" Width="80"/>
+                            <TextBlock Text="{Binding Departure}"/>
+                        </StackPanel>
+                    </Grid>
+                    <materialDesign:PackIcon Grid.Column="1" Kind="Book"  HorizontalAlignment="Right"
+                        MaxHeight="65" Height="auto" Width="auto" Margin="4"/>
+                </Grid>
+            </materialDesign:Card>
+            <materialDesign:Card Margin="4" Grid.Column="1"
+                Background="{StaticResource PrimaryDarkBrush}"
+                Foreground="{DynamicResource PrimaryHueMidForegroundBrush}"
+                Padding="4" Width="auto">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="0.15*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0" Margin="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <TextBlock Text="ROOM " Margin="0 8 8 8" FontSize="20" FontWeight="DemiBold"/>
+                        </Grid>
+                        <StackPanel Grid.Row="1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width=".2*"/>
+                                    <ColumnDefinition Width=".4*"/>
+                                    <ColumnDefinition Width=".4*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="4 4 12 4">
+                                    <TextBlock Text="ID: " FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding RoomId}"/>
+                                </StackPanel>
+                                <Grid Grid.Column="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="4">
+                                        <TextBlock Text="Name: " FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding RoomName}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="4">
+                                        <TextBlock Text="Capacity: " FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding MaxGuest}"/>
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Grid.Column="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="4">
+                                        <TextBlock Text="Type: " FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding RoomType}"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="4">
+                                        <TextBlock Text="Price: " FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding Price}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Grid>
+                            <StackPanel Orientation="Horizontal" Margin="4">
+                                <TextBlock Text="Notes: " FontWeight="Bold"/>
+                                <TextBlock Text="{Binding Notes}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                    <materialDesign:PackIcon Grid.Column="1" Kind="Home" HorizontalAlignment="Right"
+                        MaxHeight="66" Height="auto" Width="auto" Margin="4"/>
+                </Grid>
+            </materialDesign:Card>
+        </Grid>
+        <!-- Guest -->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Guests:" FontSize="18" FontWeight="Bold" 
+                        Margin="6 0 0 0" Foreground="{StaticResource PrimaryHueDarkBrush}" 
+                        HorizontalAlignment="Stretch"  VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="4 4 10 4"
+                        VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <TextBlock Text="Count: " FontWeight="Bold"/>
+                    <TextBlock Text="{Binding GuestCount}"/>
+                </StackPanel>
+            </Grid>
+            <Border Grid.Row="1" BorderBrush="Silver" Margin="4 0 4 16" BorderThickness="0.4" CornerRadius="0 0 12 12" >
+                <ListView x:Name="lvGuests" ItemsSource="{Binding Guests}">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignGridViewItem}">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Setter Property="FontSize" Value="14"/>
+                            <Setter Property="Padding" Value="0"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn DisplayMemberBinding="{Binding id}">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="ID" Foreground="Black" FontSize="14" FontWeight="SemiBold" Margin="8 0 0 0"/>
+                                </GridViewColumn.Header>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding name}">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="Name" Foreground="Black" FontSize="14" FontWeight="SemiBold" Margin="8 0 0 0"/>
+                                </GridViewColumn.Header>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding gender}">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="Gender" Foreground="Black" FontSize="14" FontWeight="SemiBold" Margin="8 0 0 0"/>
+                                </GridViewColumn.Header>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding birthday, StringFormat={}{0:dd/MM/yyyy}}">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="Birthday" Foreground="Black" FontSize="14" FontWeight="SemiBold" Margin="8 0 0 0"/>
+                                </GridViewColumn.Header>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding address}">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="Address" Foreground="Black" FontSize="14" FontWeight="SemiBold" Margin="8 0 0 0"/>
+                                </GridViewColumn.Header>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding phone}">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="Phone" Foreground="Black" FontSize="14" FontWeight="SemiBold" Margin="8 0 0 0"/>
+                                </GridViewColumn.Header>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding email}">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="Email" Foreground="Black" FontSize="14" FontWeight="SemiBold" Margin="8 0 0 0"/>
+                                </GridViewColumn.Header>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Border>
+        </Grid>
+        <!-- Folio -->
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Folio:" FontSize="18" FontWeight="Bold" 
+                        Margin="6 0 0 0" Foreground="{StaticResource PrimaryHueDarkBrush}" 
+                        HorizontalAlignment="Stretch"  VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="4 4 10 4"
+                        VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <TextBlock Text="Count: " FontWeight="Bold"/>
+                    <TextBlock Text="{Binding FolioCount}"/>
+                </StackPanel>
+            </Grid>
+            <Border Grid.Row="1" BorderBrush="Silver" Margin="4 0 4 0" BorderThickness="0.4" CornerRadius="0 0 12 12" >
+                <ListView x:Name="lvFolio" ItemsSource="{Binding Folio}">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignGridViewItem}">
+                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            <Setter Property="FontSize" Value="14"/>
+                            <Setter Property="Padding" Value="0"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn DisplayMemberBinding="{Binding Id}">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="ID" Foreground="Black" FontSize="14" FontWeight="SemiBold" Margin="8 0 0 0"/>
+                                </GridViewColumn.Header>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding ServiceName}">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="Service Name" Foreground="Black" FontSize="14" FontWeight="SemiBold" Margin="8 0 0 0"/>
+                                </GridViewColumn.Header>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding Amount}">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="Quantity" Foreground="Black" FontSize="14" FontWeight="SemiBold" Margin="8 0 0 0"/>
+                                </GridViewColumn.Header>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding Price}">
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="Price" Foreground="Black" FontSize="14" FontWeight="SemiBold" Margin="8 0 0 0"/>
+                                </GridViewColumn.Header>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Border>
+        </Grid>
+        <!-- Total Money of Folio -->
+        <Grid Grid.Row="3">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Over Capacity Fee (" FontSize="16" FontWeight="Bold" 
+                    VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding OverCapacityFee}" FontSize="16" FontWeight="Bold" 
+                    VerticalAlignment="Center"/>
+                <TextBlock Text="%): " FontSize="16" FontWeight="Bold" 
+                    VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding OverCapacityFeeMoney}" FontSize="16" Margin="4 8 20 8" VerticalAlignment="Center"/>
+                <TextBlock Text="Room total:" FontSize="18" FontWeight="Bold" 
+                    Foreground="{StaticResource PrimaryHueDarkBrush}" 
+                    VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding RoomTotalMoney}" FontSize="18" Margin="4 8 20 8" VerticalAlignment="Center"/>
+                <TextBlock Text="Folio total:" FontSize="18" FontWeight="Bold" 
+                    Foreground="{StaticResource PrimaryHueDarkBrush}" 
+                    VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding FolioTotalMoney}" FontSize="18" Margin="4 8 20 8" VerticalAlignment="Center"/>
+                <TextBlock Text="Total:" FontSize="18" FontWeight="Bold" 
+                    Foreground="{StaticResource PrimaryHueDarkBrush}" 
+                    VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding TotalMoney}" FontSize="18" Margin="4 8 10 8" VerticalAlignment="Center"/>
+            </StackPanel>
+            
+        </Grid>
+    </Grid>
+</Window>
