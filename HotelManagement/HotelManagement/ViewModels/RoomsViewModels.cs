@@ -634,7 +634,7 @@ namespace HotelManagement.ViewModels
             Grid grid2 = (Grid)grid1.Parent;
             Grid grid3 = (Grid)grid2.Parent;
             this.roomView = (RoomsView)grid3.Parent;
-
+            ResetInfoCustom(roomView);
             this.roomView.txb_id.Text = para.txbID.Text;
             int id = int.Parse(para.txbID.Text);
             ROOM room = DataProvider.Instance.DB.ROOMs.Where(x => x.id == id).FirstOrDefault();
@@ -656,8 +656,6 @@ namespace HotelManagement.ViewModels
                     roomView.txbCountRoom.Text = DataProvider.Instance.DB.GUEST_BOOKING.Where(x => x.reservation_id == reser.id && x.room_booked_id == item.id).Count().ToString();
                     break;
                 }
-                else
-                    ResetInfoCustom(roomView);
             }
             ROOMTYPE type = DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.id == room.roomtype_id).FirstOrDefault();
 
@@ -725,15 +723,14 @@ namespace HotelManagement.ViewModels
                     }
                     else
                         room.txbStatus.Text = "Available";
-
-                    if (item.dirty == true)
-                    {
-                        room.Background = (Brush)new BrushConverter().ConvertFrom("#FDD835");
-                    }
-                    if (item.out_of_service == true)
-                    {
-                        room.Background = (Brush)new BrushConverter().ConvertFrom("#EF5350");
-                    }
+                }
+                if (item.dirty == true)
+                {
+                    room.Background = (Brush)new BrushConverter().ConvertFrom("#FDD835");
+                }
+                if (item.out_of_service == true)
+                {
+                    room.Background = (Brush)new BrushConverter().ConvertFrom("#EF5350");
                 }
                 para.stkRoom.Children.Add(room);
             }

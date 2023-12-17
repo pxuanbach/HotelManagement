@@ -167,9 +167,17 @@ namespace HotelManagement.ViewModels
             SelectedMode = "Month";
             Visibility = "Visible";
 
-            TimeReport = new DateTime(Years.First(), 1, 1);
-            DateStart = new DateTime(Years.First(), 1, 1);
-            DateEnd = new DateTime(Years[Years.Count - 1], 1, 1);
+            if (Years.FirstOrDefault() <= 0)
+            {
+                TimeReport = new DateTime(1900, 1, 1);
+                DateStart = new DateTime(1900, 1, 1);
+                DateEnd = new DateTime();
+            } else
+            {
+                TimeReport = new DateTime(Years.FirstOrDefault(), 1, 1);
+                DateStart = new DateTime(Years.First(), 1, 1);
+                DateEnd = new DateTime(Years[Years.Count - 1], 1, 1);
+            }
             LoadChartMonth(TimeReport.Year);
         }
 
@@ -274,7 +282,8 @@ namespace HotelManagement.ViewModels
             }
 
             Labels.Clear();
-            if (Years.Count < 6)
+
+            if (Years.Count > 0 & Years.Count < 6)
             {
                 Labels.Add((Years[0] - 1).ToString());
             }
@@ -292,7 +301,13 @@ namespace HotelManagement.ViewModels
             ChartValues<long> chartValues = new ChartValues<long>();
             long temp = 0;
 
-            if (Years.Count < 6)
+            if (Years.Count == 0)
+            {
+                temp = 0;
+                chartValues.Add(temp);
+            }
+
+            if (Years.Count > 0 & Years.Count < 6)
             {
                 temp = GetRevenueByYear(Years[0] - 1, roomType);
                 chartValues.Add(temp);

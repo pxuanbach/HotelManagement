@@ -557,7 +557,7 @@ namespace HotelManagement.ViewModels
                     String.IsNullOrEmpty(Phone) ||
                     String.IsNullOrEmpty(Address))
                     return false;
-                if (ID != null && ID.Length != 10) return false;
+                //if (ID != null && ID.Length != 10) return false;
                 return true;
             }
         }

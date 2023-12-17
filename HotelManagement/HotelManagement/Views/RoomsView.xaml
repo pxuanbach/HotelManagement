@@ -373,7 +373,7 @@
             <TextBlock
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Text="Count customer:"
+                Text="Count sharer:"
                 FontWeight="SemiBold"
                 FontSize="15"
                 Margin="30 180 0 0 "/>
