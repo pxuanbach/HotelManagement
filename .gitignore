@@ -132,6 +132,7 @@ $RECYCLE.BIN/
 
 _NCrunch*
 
+.vs
 .vs/*
 HotelManagement/.vs/HotelManagement/FileContentIndex/3034e94d-1b1f-489a-9c5f-bf02607e7551.vsidx
 HotelManagement/.vs/HotelManagement/FileContentIndex/14573657-0a05-4061-b80a-60fbb8c28d1f.vsidx
