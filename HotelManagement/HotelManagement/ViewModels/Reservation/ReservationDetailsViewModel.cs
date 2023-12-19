@@ -150,8 +150,8 @@ namespace HotelManagement.ViewModels
             if (sharer.ID != null)
             {
                 var db = new HotelManagementEntities();
-                var guest_booking = db.GUEST_BOOKING.SingleOrDefault(gb => gb.reservation_id == StayInformation.ID &&
-                gb.guest_id == sharer.ID);
+                var guest_booking = db.GUEST_BOOKING.FirstOrDefault(gb => gb.reservation_id == StayInformation.ID &&
+                    gb.guest_id == sharer.ID);
                 db.GUEST_BOOKING.Remove(guest_booking);
                 db.SaveChanges();
             }

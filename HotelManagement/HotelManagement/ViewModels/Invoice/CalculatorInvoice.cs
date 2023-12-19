@@ -73,7 +73,7 @@ namespace HotelManagement.ViewModels
 
         public static int ExactCapacity(int roomId, DateTime dateCreated)
         {
-            var room = DataProvider.Instance.DB.ROOMs.SingleOrDefault(x => x.id == roomId);
+            var room = DataProvider.Instance.DB.ROOMs.FirstOrDefault(x => x.id == roomId);
 
             List<ROOMTYPE> roomTypeList =
                 DataProvider.Instance.DB.ROOMTYPEs.Where(x => x.name == room.ROOMTYPE.name).ToList();

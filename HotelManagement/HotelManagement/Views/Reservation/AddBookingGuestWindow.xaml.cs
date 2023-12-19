@@ -36,6 +36,7 @@ namespace HotelManagement.Views
         }
 
         private GUEST SelectedGuest { get; set; }
+        private RoomViewModel SelectedRoom { get; set; }
 
         private void OpenAutoSuggestionBox()
         {
@@ -144,6 +145,28 @@ namespace HotelManagement.Views
                     ((NewReservationViewModel)this.DataContext).NewSharer.Address = SelectedGuest.address;
                 }
                 this.autoList.SelectedIndex = -1;
+            }
+            catch (Exception ex)
+            {
+                // Info.
+                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                Console.Write(ex);
+            }
+        }
+
+        private void cbbSelectRoom_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                SelectedRoom = (RoomViewModel)this.cbbSelectRoom.SelectedItem;
+                if (this.DataContext.GetType() == typeof(ReservationDetailsViewModel))
+                {
+                    ((ReservationDetailsViewModel)this.DataContext).NewSharer.Room = SelectedRoom;
+                }
+                else if (this.DataContext.GetType() == typeof(NewReservationViewModel))
+                {
+                    ((NewReservationViewModel)this.DataContext).NewSharer.Room = SelectedRoom;
+                }
             }
             catch (Exception ex)
             {

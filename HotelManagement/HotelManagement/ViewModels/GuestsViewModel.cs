@@ -240,7 +240,7 @@ namespace HotelManagement.ViewModels
             IsOpenDialog = false;
             LoadGuest();
             guestName = "null";
-            GuestBirthday = DateTime.Now;
+            GuestBirthday = DateTime.Parse("01-01-2000");
             SearchGuestCommand = new RelayCommand<GuestsView>((p) => true, (p) => Search());
             DeleteGuestCommand = new RelayCommand<object>((p) => true, (p) => Delete());
             AddNewGuestCommand = new RelayCommand<object>((p) => true, (p) => {
@@ -285,8 +285,9 @@ namespace HotelManagement.ViewModels
                 GuestName = "";
                 GuestAddress = "";
                 GuestEmail = "";
-                guestPhone = "";
+                GuestPhone = "";
                 GuestGender = "";
+                GuestBirthday = DateTime.Parse("01-01-2000");
             }
             else
             {

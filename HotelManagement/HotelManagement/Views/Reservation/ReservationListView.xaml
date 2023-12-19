@@ -150,7 +150,7 @@
                                     </Trigger>
 
                                     <Trigger Property="Text" Value="Confirmed">
-                                        <Setter Property="Foreground" Value="Yellow"/>
+                                        <Setter Property="Foreground" Value="BlueViolet"/>
                                     </Trigger>
 
                                     <Trigger Property="Text" Value="Operational">
@@ -166,7 +166,7 @@
                                     </Trigger>
 
                                     <Trigger Property="Text" Value="Completed">
-                                        <Setter Property="Foreground" Value="LightGreen"/>
+                                        <Setter Property="Foreground" Value="DarkGreen"/>
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>

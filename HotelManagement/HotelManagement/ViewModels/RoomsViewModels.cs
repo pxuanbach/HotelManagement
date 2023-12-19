@@ -641,8 +641,13 @@ namespace HotelManagement.ViewModels
             List<ROOM_BOOKED> listR = DataProvider.Instance.DB.ROOM_BOOKED.Where(x => x.room_id == id).ToList();
             foreach (ROOM_BOOKED item in listR)
             {
-                RESERVATION reser = DataProvider.Instance.DB.RESERVATIONs.Where(x => x.id == item.reservation_id).FirstOrDefault();
-                if (reser.arrival <= DateTime.Now && reser.departure >= DateTime.Now)
+                RESERVATION reser = DataProvider.Instance.DB.RESERVATIONs.Where(
+                    x => x.id == item.reservation_id 
+                ).FirstOrDefault();
+                if (
+                    reser.arrival <= DateTime.Now && reser.departure >= DateTime.Now
+                    && reser.status != "Completed" && reser.status != "Cancelled"
+                )
                 {
                     GUEST guest = DataProvider.Instance.DB.GUESTs.Where(x => x.id.ToString() == reser.main_guest).FirstOrDefault();
                     this.roomView.txbNameCustom.Text = guest.name;

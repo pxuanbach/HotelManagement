@@ -270,7 +270,7 @@ namespace HotelManagement.ViewModels
 
             if (Status == "On Request" || Status == "Confirmed" || Status == "No Show")
             {
-                if ((Status != "No Show" && Arrival == DateTime.Today) ||
+                if ((Status != "No Show" && Arrival <= DateTime.Today) ||
                     (Status == "No Show"))
                 {
                     option = new Option()
@@ -280,7 +280,7 @@ namespace HotelManagement.ViewModels
                     };
                     Options.Add(option);
                 }
-
+                    
                 option = new Option()
                 {
                     Content = "Cancel reservation",

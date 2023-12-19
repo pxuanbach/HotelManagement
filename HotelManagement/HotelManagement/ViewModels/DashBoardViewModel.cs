@@ -154,19 +154,19 @@ namespace HotelManagement.ViewModels
                         {
                             case "Completed":
                             case "Cancelled":
-                                if (ItemROOMsAvaiToday.IndexOf(res) == -1)
-                                    ItemROOMsAvaiToday.Add(res);
                                 break;
                             default:
+                                if (ItemROOMsAvaiToday.IndexOf(res) == -1)
+                                    ItemROOMsAvaiToday.Add(res);
                                 break;
                         }
                         break;
                     }
-                    else
-                    {
-                        if (ItemROOMsAvaiToday.IndexOf(res) == -1)
-                            ItemROOMsAvaiToday.Add(res);
-                    }
+                    //else
+                    //{
+                    //    if (ItemROOMsAvaiToday.IndexOf(res) == -1)
+                    //        ItemROOMsAvaiToday.Add(res);
+                    //}
                 }
             }
         }
@@ -292,7 +292,11 @@ namespace HotelManagement.ViewModels
         private List<ROOM> GetROOMs()
         {
             List<ROOM> res = new List<ROOM>();
-            res = DataProvider.Instance.DB.ROOMs.Where(x => x.isActive == true).ToList();
+            res = DataProvider.Instance.DB.ROOMs.Where(
+                x => x.isActive == true 
+                    & x.dirty == false 
+                    & x.out_of_service == false
+            ).ToList();
             return res;
         }
     }

@@ -186,7 +186,7 @@ namespace HotelManagement.ViewModels
                 // Insert reservation
                 var reservation = new RESERVATION()
                 {
-                    date_created = DateTime.Today,
+                    date_created = DateTime.Now,
                     arrival = StayInformation.Arrival,
                     departure = StayInformation.Departure,
                     main_guest = GuestInformation.ID,
@@ -327,7 +327,7 @@ namespace HotelManagement.ViewModels
             var StayInfo = sender as ReservationViewModel;
             if (e.PropertyName == nameof(ReservationViewModel.Arrival))
             {
-                if (StayInfo.Arrival < DateTime.Today)
+                if (StayInfo.Arrival < DateTime.Now)
                     StayInformation.Arrival = DateTime.Today;
 
                 if (StayInfo.Arrival == DateTime.Today)
@@ -428,9 +428,12 @@ namespace HotelManagement.ViewModels
                                Departure = rs.RESERVATION.departure,
                                Price = r.ROOMTYPE.price,
                                Capacity = r.ROOMTYPE.max_guest,
+                               Status = rs.RESERVATION.status
                            };
 
-            var booked = from r in allrooms where !(r.Arrival >= StayInformation.Departure || r.Departure <= StayInformation.Arrival) select r;
+            var booked = from r in allrooms where !(r.Arrival >= StayInformation.Departure || r.Departure <= StayInformation.Arrival) 
+                         && r.Status != "Cancelled" && r.Status != "Completed"
+                         select r;
 
             var availables = from r in allrooms
                              where r.CreatedRT <= DateTime.Today && (r.UpdatedRT == null || r.UpdatedRT >= DateTime.Today) &&

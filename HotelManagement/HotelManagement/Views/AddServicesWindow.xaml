@@ -142,7 +142,7 @@
                         <DataGridTemplateColumn >
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Width="40" Padding="0" Background="#637BCF"
+                                    <Button Width="40" Padding="0" Background="{DynamicResource PrimaryHueDarkBrush}"
                                         Style="{StaticResource MaterialDesignRaisedButton}"
                                         Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.AddServiceCommand}">
                                         <materialDesign:PackIcon Kind="Plus"/>
@@ -153,7 +153,7 @@
                         <DataGridTemplateColumn >
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Width="40" Padding="0" Background="#637BCF"
+                                    <Button Width="40" Padding="0" Background="{DynamicResource PrimaryHueDarkBrush}"
                                         Style="{StaticResource MaterialDesignRaisedButton}"
                                         Command="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=DataContext.RemoveServiceCommand}">
                                         <materialDesign:PackIcon Kind="Minus"/>
