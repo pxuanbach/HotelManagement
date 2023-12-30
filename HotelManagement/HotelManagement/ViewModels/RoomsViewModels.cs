@@ -691,7 +691,7 @@ namespace HotelManagement.ViewModels
                 foreach (ROOM_BOOKED booked in listR)
                 {
                     RESERVATION reser = DataProvider.Instance.DB.RESERVATIONs.Where(x => x.id == booked.reservation_id).FirstOrDefault();
-                    if (reser.arrival <= DateTime.Now && reser.departure >= DateTime.Now)
+                    if (reser.arrival <= DateTime.Now && reser.departure >= DateTime.Now && reser.status != "Cancelled" && reser.status != "Completed")
                     {
                         string status = reser.status;
                         switch (status)

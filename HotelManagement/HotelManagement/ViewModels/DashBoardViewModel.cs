@@ -8,6 +8,7 @@ using HotelManagement.Models;
 using HotelManagement.Resources.UC;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Data.Entity;
 
 namespace HotelManagement.ViewModels
 {
@@ -160,7 +161,7 @@ namespace HotelManagement.ViewModels
                                     ItemROOMsAvaiToday.Add(res);
                                 break;
                         }
-                        break;
+                        //break;
                     }
                     //else
                     //{
@@ -274,13 +275,19 @@ namespace HotelManagement.ViewModels
         private List<RESERVATION> GetRESERVATIONsCheckin()
         {
             List<RESERVATION> res = new List<RESERVATION>();
-            res = DataProvider.Instance.DB.RESERVATIONs.Where(x => x.arrival == DateTime.Now).ToList();
+            res = DataProvider.Instance.DB.RESERVATIONs.Where(x => 
+                DbFunctions.DiffDays(x.arrival, DateTime.Now) == 0
+                && (x.status != "Cancelled" && x.status != "No Show")
+            ).ToList();
             return res;
         }
         private List<RESERVATION> GetRESERVATIONsCheckout()
         {
             List<RESERVATION> res = new List<RESERVATION>();
-            res = DataProvider.Instance.DB.RESERVATIONs.Where(x => x.departure == DateTime.Now).ToList();
+            res = DataProvider.Instance.DB.RESERVATIONs.Where(x => 
+                DbFunctions.DiffDays(x.departure, DateTime.Now) == 0
+                && x.status == "Completed"
+            ).ToList();
             return res;
         }
         private List<RESERVATION> GetRESERVATIONs()
@@ -294,8 +301,8 @@ namespace HotelManagement.ViewModels
             List<ROOM> res = new List<ROOM>();
             res = DataProvider.Instance.DB.ROOMs.Where(
                 x => x.isActive == true 
-                    & x.dirty == false 
-                    & x.out_of_service == false
+                    && x.dirty == false 
+                    && x.out_of_service == false
             ).ToList();
             return res;
         }

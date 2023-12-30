@@ -1,7 +1,11 @@
 ﻿using HotelManagement.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Core;
+using System.Data.Entity;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,6 +33,15 @@ namespace HotelManagement.Models
         private DataProvider()
         {
             DB = new HotelManagementEntities();
+        }
+
+        public void RefreshAll()
+        {
+            if (DB.ChangeTracker.HasChanges())
+            {
+                DB.Dispose();
+                DB = new HotelManagementEntities();
+            }
         }
     }
 }

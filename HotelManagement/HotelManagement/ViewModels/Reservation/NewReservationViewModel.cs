@@ -7,6 +7,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Net.Mail;
+using System.Data.Entity;
 
 namespace HotelManagement.ViewModels
 {
@@ -184,6 +186,7 @@ namespace HotelManagement.ViewModels
                 }
 
                 // Insert reservation
+                if (Guaranteed) StayInformation.Status = "Confirmed";
                 var reservation = new RESERVATION()
                 {
                     date_created = DateTime.Now,
@@ -239,6 +242,10 @@ namespace HotelManagement.ViewModels
                     context.SaveChanges();
                 }
             }
+            try 
+            {
+                SendEmail();
+            } catch { }
             if (Instance != null)
                 Instance.LoadReservations();
             window.Close();
@@ -327,7 +334,7 @@ namespace HotelManagement.ViewModels
             var StayInfo = sender as ReservationViewModel;
             if (e.PropertyName == nameof(ReservationViewModel.Arrival))
             {
-                if (StayInfo.Arrival < DateTime.Now)
+                if (StayInfo.Arrival < DateTime.Today)
                     StayInformation.Arrival = DateTime.Today;
 
                 if (StayInfo.Arrival == DateTime.Today)
@@ -478,6 +485,64 @@ namespace HotelManagement.ViewModels
                 }
                 OnPropertyChanged(nameof(IsAllRoomsSelected));
             }
+        }
+
+        private void SendEmail()
+        {
+            string hotelName = "BTNQ";
+            MailMessage mail = new MailMessage(); //
+            mail.IsBodyHtml = true;
+            mail.From = new MailAddress("support@hotelbtn.com");
+            mail.To.Add(GuestInformation.Email);
+            mail.Subject = $"Reservation Confirmation at {hotelName} - {DateTime.Now}";
+            mail.Body = EmailBody(hotelName);
+            SmtpClient client = new SmtpClient("smtp.gmail.com");
+            client.Host = "smtp.gmail.com";
+
+            client.UseDefaultCredentials = false;
+            client.Port = 587;
+
+            client.Credentials = new System.Net.NetworkCredential("pxuanbach1412@gmail.com", "ifmpgfemoptjtzdd");
+
+            client.EnableSsl = true; 
+            client.Send(mail);
+        }
+
+        public string EmailBody(string hotelName)
+        {
+            return $"Dear {GuestInformation.Name}" +
+                $"<br/><br/>"
+                + $"Thank you for choosing {hotelName} for your stay. Below is the confirmation information for your reservation:<br/>"
+                + $"Reservation Details:<br/>"
+                + $"Guest Name: {GuestInformation.Name}<br/>"
+                + $"ID: {GuestInformation.ID}<br/>"
+                + $"Phone Number: {GuestInformation.Phone}<br/>"
+                + $"Room Type: {GenerateRoomTypesContent()}<br/>"
+                + $"ID: {GuestInformation.ID}<br/>"
+                + $"Check-in Time: {StayInformation.Arrival}<br/>"
+                + $"Check-out Time: {StayInformation.Departure}<br/><br/>"
+                + $"Note: Please review the reservation details above, and contact us immediately if there are any discrepancies.<br/>"
+                + $"Thank you, and we hope to welcome you soon!" +
+                $"<br/><br/>"
+                + "Best regards, <br/>" + hotelName
+            ;
+        }
+
+        public string GenerateRoomTypesContent()
+        {
+            string temp = "";
+            foreach (var room in SelectedRooms)
+            {
+                if (temp == "")
+                {
+                    temp = temp + room.RoomType;
+                } 
+                else
+                {
+                    temp = temp + ", " + room.RoomType;
+                }
+            }
+            return temp;
         }
     }
 

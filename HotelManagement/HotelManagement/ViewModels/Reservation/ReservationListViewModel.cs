@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -70,7 +71,7 @@ namespace HotelManagement.ViewModels
             CurrentPageReservations = new ObservableCollection<ReservationItemViewModel>();
 
             PageNavigationViewModel = new PageNavigationViewModel();
-            PageNavigationViewModel.PageSize = 4;
+            PageNavigationViewModel.PageSize = 8;
 
             PageNavigationViewModel.PropertyChanged += PageNavigationViewModel_PropertyChanged;
             ResetFilter();
@@ -229,7 +230,19 @@ namespace HotelManagement.ViewModels
 
         private void CheckIn()
         {
-            DataProvider.Instance.DB.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault().status = "Operational";
+            var reservation = DataProvider.Instance.DB.RESERVATIONs.Where(res => res.id == ID).FirstOrDefault();
+            reservation.status = "Operational";
+
+            try
+            {
+                var datediff = DateTime.Now - (DateTime)reservation.arrival;
+                if (datediff.Days < 0)
+                {
+                    reservation.early_checkin = true;
+                }
+            }
+            catch { }
+            DataProvider.Instance.DB.RESERVATIONs.AddOrUpdate(reservation);
             DataProvider.Instance.DB.SaveChanges();
             Instance.LoadReservations();
         }
@@ -268,9 +281,10 @@ namespace HotelManagement.ViewModels
                 Options.Add(option);
             }
 
-            if (Status == "On Request" || Status == "Confirmed" || Status == "No Show")
+            if (Status == "Confirmed" || Status == "No Show")
             {
-                if ((Status != "No Show" && Arrival <= DateTime.Today) ||
+                var diffOfDates = DateTime.Today - Arrival;
+                if ((Status != "No Show" && diffOfDates.Days >= -3) ||
                     (Status == "No Show"))
                 {
                     option = new Option()
@@ -280,7 +294,10 @@ namespace HotelManagement.ViewModels
                     };
                     Options.Add(option);
                 }
-                    
+            }
+
+            if (Status == "On Request" || Status == "Confirmed" || Status == "No Show")
+            {
                 option = new Option()
                 {
                     Content = "Cancel reservation",

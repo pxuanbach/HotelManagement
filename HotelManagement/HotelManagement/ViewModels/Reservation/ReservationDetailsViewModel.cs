@@ -3,7 +3,9 @@ using HotelManagement.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -418,24 +420,21 @@ namespace HotelManagement.ViewModels
         // Save data
         void SaveDataChange(Window window)
         {
-            using (var context = new HotelManagementEntities())
-            {
-                // Update main guest information
-                var main_guest = context.GUESTs.SingleOrDefault(mg => mg.id == GuestInformation.ID);
-                main_guest.name = GuestInformation.Name;
-                main_guest.gender = GuestInformation.Gender;
-                main_guest.birthday = GuestInformation.Birthday;
-                main_guest.email = GuestInformation.Email;
-                main_guest.phone = GuestInformation.Phone;
-                main_guest.address = GuestInformation.Address;
-                context.SaveChanges();
+            var main_guest = DataProvider.Instance.DB.GUESTs.FirstOrDefault(mg => mg.id == GuestInformation.ID);
+            main_guest.name = GuestInformation.Name;
+            main_guest.gender = GuestInformation.Gender;
+            main_guest.birthday = GuestInformation.Birthday;
+            main_guest.email = GuestInformation.Email;
+            main_guest.phone = GuestInformation.Phone;
+            main_guest.address = GuestInformation.Address;
+            DataProvider.Instance.DB.GUESTs.AddOrUpdate(main_guest);
+            DataProvider.Instance.DB.SaveChanges();
 
-                // Update reservation information
-                var reservation = context.RESERVATIONs.SingleOrDefault(res => res.id == StayInformation.ID);
-                reservation.arrival = StayInformation.Arrival;
-                reservation.departure = StayInformation.Departure;
-                context.SaveChanges();
-            }
+            var reservation = DataProvider.Instance.DB.RESERVATIONs.FirstOrDefault(res => res.id == StayInformation.ID);
+            reservation.arrival = StayInformation.Arrival;
+            reservation.departure = StayInformation.Departure;
+            DataProvider.Instance.DB.RESERVATIONs.AddOrUpdate(reservation);
+            DataProvider.Instance.DB.SaveChanges();
 
             Instance.LoadReservations();
 

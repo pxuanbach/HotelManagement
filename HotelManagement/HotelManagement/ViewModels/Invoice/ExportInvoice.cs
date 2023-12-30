@@ -32,7 +32,7 @@ namespace HotelManagement.ViewModels
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "PDF (*.pdf)|*.pdf";
-            sfd.FileName = "invoice.pdf";
+            sfd.FileName = $"invoice_{reservation.id}.pdf";
             bool fileError = false;
 
             if (sfd.ShowDialog() == DialogResult.OK)
